@@ -232,7 +232,7 @@ function retrieveDataforCountTable(selectedYear, selectedLocation, selectedEvent
     if (selectedEvent.includes("All ")) { 
       selectedEvent = ""; 
     }  else {
-      selectedEvent = "+"+selectedEvent;
+      selectedEvent = "+"+selectedEvent.split("-")[1];
     }
     
     switch(selectedLocation) {
@@ -272,24 +272,21 @@ function retrieveDataforCountTable(selectedYear, selectedLocation, selectedEvent
     if (selectedLocation.includes("All ")) { 
       selectedLocation = ""; 
     }
+    if (selectedEvent.includes("All ")) {
 
-    switch(selectedEvent) {
-      case "All Events":
-        // Do nothing
-        break;
-
-      default:
-        eventList = [selectedEvent];
+    } else {
+      eventList = [selectedEvent];
     }
 
     // Iterate over each name in the query array in order to query it
     for (var event of eventList) {
       // Remove category prefix from the event name
-      eventName = event.split("-")[1];
+      event = event.split("-")[1];
+      tagName = "+" + event;
       // Iterate over each table row 
-      for (i = 1; i < dataSet.length; i++) {
-        if (dataSet[i][0].includes(selectedYear) && dataSet[i][1].includes(selectedLocation) && dataSet[i][2].includes("+" + eventName)){
-          helperIncrementCount(eventName, countSelectionOccurance_Total);
+      for (i = 0; i < dataSet.length; i++) {
+        if (dataSet[i][0].includes(selectedYear) && dataSet[i][1].includes(selectedLocation) && dataSet[i][2].includes(tagName)){
+          helperIncrementCount(event, countSelectionOccurance_Total);
         }
       }
     }
@@ -403,7 +400,7 @@ function displayDataInTopPane() {
   selectEventElement.replaceChildren(); // Clear what's already there
   for (var event of eventList) {
       var optionElement = document.createElement("option");
-      optionElement.value = event.split("-")[1];
+      optionElement.value = event;
       optionElement.text = event;
       selectEventElement.appendChild(optionElement);
   }
