@@ -6,6 +6,7 @@
 </head>
 
 <script>
+
 // Define global variables
 var dataSet;
 var yearList = [];
@@ -187,7 +188,8 @@ function retrieveDataForTopPane() {
   cityList.sort().unshift("All cities");
 
   // retrieve the events list
-  eventList = dataSet[dataSet.length-1][3].split(";");
+  eventList = dataSet[dataSet.length-1][3].split(";"); // First poplate it from the provided list
+  eventList.unshift("All Events-All Events"); // Then add the all events to it
   for (let i = 1; i < dataSet.length; i++) {
     var cell = dataSet[i][2];
     // Iterate over all the + entries in the same cell
@@ -272,24 +274,22 @@ function retrieveDataforCountTable(selectedYear, selectedLocation, selectedEvent
     }
 
     switch(selectedEvent) {
-      case "All social events":
-        var eventList = socialEventList;
-        break;
-
-      case "All physical events":
-        var eventList = physicalEventList;
+      case "All Events":
+        // Do nothing
         break;
 
       default:
-        var eventList = [selectedEvent];
+        eventList = [selectedEvent];
     }
 
     // Iterate over each name in the query array in order to query it
     for (var event of eventList) {
+      // Remove category prefix from the event name
+      eventName = event.split("-")[1];
       // Iterate over each table row 
-      for (i = 0; i < dataSet.length; i++) {
-        if (dataSet[i][0].includes(selectedYear) && dataSet[i][1].includes(selectedLocation) && dataSet[i][2].includes("+" + event)){
-          helperIncrementCount(event, countSelectionOccurance_Total);
+      for (i = 1; i < dataSet.length; i++) {
+        if (dataSet[i][0].includes(selectedYear) && dataSet[i][1].includes(selectedLocation) && dataSet[i][2].includes("+" + eventName)){
+          helperIncrementCount(eventName, countSelectionOccurance_Total);
         }
       }
     }
