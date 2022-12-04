@@ -252,34 +252,36 @@ function retrieveDataforCountTable(selectedYear, selectedLocation, selectedEvent
   if (reportOnLocationRadio) {
     // Set year and event query words to "" if All was selected to allow making them a non criteria
     if (selectedYear.includes("All ")) { 
-      selectedYear = ""; 
+      queryYear = ""; 
+    } else {
+      queryYear = selectedYear;
     }
     
     if (selectedEvent.includes("All ")) { 
-      selectedEvent = ""; 
+      queryEvent = ""; 
     }  else {
-      selectedEvent = "+"+selectedEvent.split("-")[1];
+      queryEvent = "+"+selectedEvent.split("-")[1];
     }
     
     switch(selectedLocation) {
       case "All countries":
-        var locationList = countryList;
+        var queryLocation = countryList;
         break;
 
       case "All cities":
-        var locationList = cityList;
+        var queryLocation = cityList;
         break;
 
       default:
-        var locationList =[selectedLocation];
+        var queryLocation =[selectedLocation];
         break;
     }
     
     // Iterate over each name in the query array in order to query it
-    for (var location of locationList) {
+    for (var location of queryLocation) {
       // Iterate over each table row
       for (i = 0; i < importedDataSet.length; i++) {
-        if (importedDataSet[i][0].includes(selectedYear) && importedDataSet[i][1].includes(location) && importedDataSet[i][2].includes(selectedEvent)){
+        if (importedDataSet[i][0].includes(queryYear) && importedDataSet[i][1].includes(location) && importedDataSet[i][2].includes(queryEvent)){
           if (!importedDataSet[i][1].includes("("+location) && !importedDataSet[i][1].includes(location+")")) {
             helperIncrementCount(location, countSelectionOccurance_Total);
           }
@@ -293,25 +295,29 @@ function retrieveDataforCountTable(selectedYear, selectedLocation, selectedEvent
   } else {
     // Set year and location query words to "" if All was selected to allow making them a non criteria
     if (selectedYear.includes("All ")) { 
-      selectedYear = ""; 
+      queryYear = ""; 
+    } else {
+      queryYear = selectedYear;
     }
     if (selectedLocation.includes("All ")) { 
-      selectedLocation = ""; 
+      queryLocation = ""; 
+    } else {
+      queryLocation = selectedLocation;
     }
     if (selectedEvent.includes("All ")) {
-      eventListToQuery = eventList.slice(0);
+      queryEvent = eventList.slice(0);
     } else {
-      eventListToQuery = [selectedEvent];
+      queryEvent = [selectedEvent];
     }
 
     // Iterate over each name in the query array in order to query it
-    for (var event of eventListToQuery) {
+    for (var event of queryEvent) {
       // Remove category prefix from the event name
       event = event.split("-")[1];
       tagName = "+" + event;
       // Iterate over each table row 
       for (i = 0; i < importedDataSet.length; i++) {
-        if (importedDataSet[i][0].includes(selectedYear) && importedDataSet[i][1].includes(selectedLocation) && importedDataSet[i][2].includes(tagName)){
+        if (importedDataSet[i][0].includes(queryYear) && importedDataSet[i][1].includes(queryLocation) && importedDataSet[i][2].includes(tagName)){
           helperIncrementCount(event, countSelectionOccurance_Total);
         }
       }
@@ -460,7 +466,7 @@ function displayCountTable(countSelectionOccurance_Total, selectedYear, selected
     const tableColumns = tableRows[i].childNodes;
     if (reportOnLocationRadio) {
       // Set the parameters that get passed when the count is clicked on
-      var parameters = "\"" + selectedYear + "\", \"" + countSelectionOccurance_Total[i][0] + "\" ,\"" + selectedEvent + "\" ," + reportOnLocationRadio + "";
+      var parameters = "\"" + selectedYear + "\", \"" + countSelectionOccurance_Total[i][0] + "\" ,\"" + selectedEvent.split("-")[1] + "\" ," + reportOnLocationRadio + "";
       let onclick_value = "location.href='javascript:eventDisplayListViewClicked(" + parameters + ")';"
       tableColumns[1].setAttribute("onclick", onclick_value);
       tableColumns[1].setAttribute("style", "text-decoration:underline;");
