@@ -8,7 +8,7 @@
 <script>
 
 // Define global variables
-var dataSet;
+var importedDataSet;
 var yearList = [];
 var countryList = [];
 var cityList = [];
@@ -66,42 +66,6 @@ function helperCompareDates(date1, date2) {
   }
 }
 
-function helperDisplayTableHeader(columnNames) {
-  // Get table header element and clean it 
-  const thead_HTML_Element = document.getElementById("thead");
-  thead_HTML_Element.replaceChildren();
-  
-  // Create a new row
-  let row = thead_HTML_Element.insertRow();
-
-  // Iterate over the column names array to create a header for each
-  for (var i = 0; i < columnNames.length; i++) {
-    let cell = row.insertCell(i);
-    cell.innerHTML = columnNames[i];
-    cell.style.fontWeight = "bold";
-    cell.style.verticalAlign = "top";
-    // If this is not the last column then set width to fixed
-    if (columnNames[i] != "Event") {
-      cell.style.width = "150px";
-    }
-  }
-}
-
-function helperDisplayTableBody(array) {
-  // Get table body element and clean it 
-  const new_tbody_HTML_Element = document.getElementById("tbody"); // Get tbody HTML element
-  new_tbody_HTML_Element.replaceChildren() // Clear content
-  
-  // Iterate over each array line to first add a new line, then new cells within that line 
-  for (var i = 0; i < array.length; i++) {
-    let row = new_tbody_HTML_Element.insertRow();
-    for (var j = 0; j < array[i].length; j++) {
-      let cell = row.insertCell(j);
-      cell.innerHTML = array[i][j];
-    }
-  }
-}
-
 // EVENT FUNCTIONS
 
 function eventUploadButtonClicked(event) {
@@ -110,10 +74,17 @@ function eventUploadButtonClicked(event) {
       var data = new Uint8Array(e.target.result);
       var workbook = XLSX.read(data, {type: 'array'});
       var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-      dataSet = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }); // header: 1 instructs xlsx to create an 'array of arrays'
+      importedDataSet = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }); // header: 1 instructs xlsx to create an 'array of arrays'
+      importedDataSet.shift(); // Remove the table header
+
+      // Displaying Data in Top Pane
       retrieveDataForTopPane();
       displayDataInTopPane();
-      displayDataInTable();
+
+      // Displaying Data in Table
+      
+      var columnNames = ["Date", "Location", "Event"];
+      displayDataInTable(columnNames, importedDataSet);
   };
   reader.readAsArrayBuffer(event.target.files[0]);
   
@@ -122,6 +93,7 @@ function eventUploadButtonClicked(event) {
   document.getElementById("select-time").removeAttribute("disabled");
   document.getElementById("select-location").removeAttribute("disabled");
   document.getElementById("select-event").removeAttribute("disabled");
+  document.getElementById("keyword").removeAttribute("disabled");
 
   // Clear content of arrays
   dataSet = [];
@@ -137,20 +109,28 @@ function eventDisplayCountButtonClicked() {
   var selectedLocation = document.getElementById("select-location").value;
   var selectedEvent = document.getElementById("select-event").value;
   var reportOnLocationRadio = document.getElementsByName("filterby")[0].checked;
+
+  // Disable the keyword textbox since it is not useful when in this state
+  document.getElementById("keyword").setAttribute("disabled", "");
   
   // Get count of occurances
-  countSelectionOccurance_Total = retrieveDataforCountTable(selectedYear, selectedLocation, selectedEvent, reportOnLocationRadio);
-  
-  // Display count of occurances
-  displayCountTable(countSelectionOccurance_Total, selectedYear, selectedLocation, selectedEvent, reportOnLocationRadio);
+  retrieveDataforCountTable(selectedYear, selectedLocation, selectedEvent, reportOnLocationRadio);
 }
 
 function eventDisplayMonthsViewClicked(selectedYear, selectedLocation, clickedEvent) {
+  document.getElementById("keyword").setAttribute("disabled", "");
   retrieveDataforMonthsTable(selectedYear, selectedLocation, clickedEvent)
 }
 
-function eventDisplayListViewClicked(time, location, event, reportOnLocationRadio) {
-  retrieveDataforListTable(time, location, event, reportOnLocationRadio);
+function eventDisplayListViewClicked(time, location, event, reportOnLocationRadio ) {
+  document.getElementById("keyword").removeAttribute("disabled");
+  let keyWord = document.getElementById("keyword").value; // most likely it is blank sicne the textbox was greyed out 
+  retrieveDataforListTable(time, location, event, reportOnLocationRadio, keyWord);
+}
+
+function eventKeywordEntered() {
+  let keyWord = document.getElementById("keyword").value;
+  //console.log(keyWord);
 }
 
 // DATA RETRIEVAL FUNCTIONS
@@ -164,9 +144,9 @@ function retrieveDataForTopPane() {
   }
 
   // retrieve the locations list
-  // Iterate over every row in the table. Stop at length-1 as for some reason the dataSet has one blank row in the end
-  for (let i = 1; i < dataSet.length; i++) {
-    let rowLocationValueArray = dataSet[i][1].split(","); // Get the city and country values in an array
+  // Iterate over every row in the table
+  for (let i = 0; i < importedDataSet.length; i++) {
+    let rowLocationValueArray = importedDataSet[i][1].split(","); // Get the city and country values in an array
     // Iterate over every city_country that day
     for (let j = 0; j < rowLocationValueArray.length; j++) {
       var cityCountrySplitArray = rowLocationValueArray[j].split("_"); // Split city and country into an array
@@ -188,10 +168,10 @@ function retrieveDataForTopPane() {
   cityList.sort().unshift("All cities");
 
   // retrieve the events list
-  eventList = dataSet[dataSet.length-1][3].split(";"); // First poplate it from the provided list
-  eventList.unshift("All Events-All Events"); // Then add the all events to it
-  for (let i = 1; i < dataSet.length; i++) {
-    var cell = dataSet[i][2];
+  eventList = importedDataSet[importedDataSet.length-1][3].split(";"); // First populate it from the provided list
+  eventList.unshift("All events-All events"); // Then add the all events to it
+  for (let i = 0; i < importedDataSet.length; i++) {
+    var cell = importedDataSet[i][2];
     // Iterate over all the + entries in the same cell
     while (cell.includes("+")) { 
       let str = cell.slice(cell.indexOf("+"));
@@ -216,6 +196,52 @@ function retrieveDataForTopPane() {
       }
     }
   }
+}
+
+function retrieveDataforListTable(date, location, event, reportOnLocationRadio, searchWord) {
+  // Set the below to blank for ease of querying
+  if (date.includes("All ")) { 
+    date = ""; 
+  }
+  if (location.includes("All ")) { 
+    location = ""; 
+  } 
+  if (event.includes("All ")) { 
+    event = ""; 
+  } 
+  
+  if (event != "" && event != "All events-All events") {
+    event = "+" + event;
+  }
+
+  // Iterate over each row to find a match
+  var tempDataSet = [[]];
+  for (var i = 0; i < importedDataSet.length; i++) {
+    if (helperCompareDates(importedDataSet[i][0], date)) {
+      if (importedDataSet[i][1].includes(location)) {
+        if (importedDataSet[i][2].includes(event)) {
+          if (reportOnLocationRadio) {  
+            tempDataSet.push([importedDataSet[i][0], importedDataSet[i][1], importedDataSet[i][2]]);
+          } else {
+            tempDataSet.push([importedDataSet[i][0], importedDataSet[i][1], importedDataSet[i][2].slice(importedDataSet[i][2].indexOf(event)).slice(1, importedDataSet[i][2].slice(importedDataSet[i][2].indexOf(event)).indexOf("\n"))]);
+          }
+        }
+      }
+    }
+  }
+  tempDataSet.shift(); // remove first line as it's blank for some reason
+
+  // Set the displayDataSet
+  var dataSetToDisplay = [[]];
+  for (const line of tempDataSet) {
+    if (line[0].includes(searchWord) || line[1].includes(searchWord) || line[2].includes(searchWord)) {
+      dataSetToDisplay.push(line);
+    }
+  }
+  dataSetToDisplay.shift();
+
+  var columnNames = ["Date", "Location", "Event"];
+  displayDataInTable(columnNames, dataSetToDisplay);
 }
 
 function retrieveDataforCountTable(selectedYear, selectedLocation, selectedEvent, reportOnLocationRadio) {
@@ -252,9 +278,9 @@ function retrieveDataforCountTable(selectedYear, selectedLocation, selectedEvent
     // Iterate over each name in the query array in order to query it
     for (var location of locationList) {
       // Iterate over each table row
-      for (i = 0; i < dataSet.length; i++) {
-        if (dataSet[i][0].includes(selectedYear) && dataSet[i][1].includes(location) && dataSet[i][2].includes(selectedEvent)){
-          if (!dataSet[i][1].includes("("+location) && !dataSet[i][1].includes(location+")")) {
+      for (i = 0; i < importedDataSet.length; i++) {
+        if (importedDataSet[i][0].includes(selectedYear) && importedDataSet[i][1].includes(location) && importedDataSet[i][2].includes(selectedEvent)){
+          if (!importedDataSet[i][1].includes("("+location) && !importedDataSet[i][1].includes(location+")")) {
             helperIncrementCount(location, countSelectionOccurance_Total);
           }
         }
@@ -273,19 +299,19 @@ function retrieveDataforCountTable(selectedYear, selectedLocation, selectedEvent
       selectedLocation = ""; 
     }
     if (selectedEvent.includes("All ")) {
-
+      eventListToQuery = eventList.slice(0);
     } else {
-      eventList = [selectedEvent];
+      eventListToQuery = [selectedEvent];
     }
 
     // Iterate over each name in the query array in order to query it
-    for (var event of eventList) {
+    for (var event of eventListToQuery) {
       // Remove category prefix from the event name
       event = event.split("-")[1];
       tagName = "+" + event;
       // Iterate over each table row 
-      for (i = 0; i < dataSet.length; i++) {
-        if (dataSet[i][0].includes(selectedYear) && dataSet[i][1].includes(selectedLocation) && dataSet[i][2].includes(tagName)){
+      for (i = 0; i < importedDataSet.length; i++) {
+        if (importedDataSet[i][0].includes(selectedYear) && importedDataSet[i][1].includes(selectedLocation) && importedDataSet[i][2].includes(tagName)){
           helperIncrementCount(event, countSelectionOccurance_Total);
         }
       }
@@ -295,7 +321,8 @@ function retrieveDataforCountTable(selectedYear, selectedLocation, selectedEvent
     countSelectionOccurance_Total = Object.entries(countSelectionOccurance_Total);
   }
   
-  return countSelectionOccurance_Total;
+  // Display count of occurances
+  displayCountTable(countSelectionOccurance_Total, selectedYear, selectedLocation, selectedEvent, reportOnLocationRadio);
 }
 
 function retrieveDataforMonthsTable(selectedYear, selectedLocation, clickedEvent) {
@@ -312,10 +339,10 @@ function retrieveDataforMonthsTable(selectedYear, selectedLocation, clickedEvent
   }
 
   // Iterate over each table row and when there's a hit, increment occurance array for month-year combo
-  for (i = 0; i < dataSet.length; i++) {
-    if (dataSet[i][0].includes(selectedYear) && dataSet[i][1].includes(selectedLocation) && dataSet[i][2].includes(plusEvent)){
+  for (i = 0; i < importedDataSet.length; i++) {
+    if (importedDataSet[i][0].includes(selectedYear) && importedDataSet[i][1].includes(selectedLocation) && importedDataSet[i][2].includes(plusEvent)){
       // Get the month and year from the date
-      let date = dataSet[i][0];
+      let date = importedDataSet[i][0];
       let mm = date.slice(date.indexOf(" ")+1, date.indexOf("/"));
       let yyyy = date.substring(date.length - 4); 
       // Increment count for that particular mm/yyyy string
@@ -327,40 +354,6 @@ function retrieveDataforMonthsTable(selectedYear, selectedLocation, clickedEvent
   countSelectionOccurance_ByMonth = Object.entries(countSelectionOccurance_ByMonth);
 
   displayMonthsTable(countSelectionOccurance_ByMonth, clickedEvent)
-}
-
-function retrieveDataforListTable(date, location, event, reportOnLocationRadio) {
-  // Create arrays that will hold the data
-  let dates = [];
-  let locations = [];
-  let events = [];
-
-  // Set the below to blank for ease of querying
-  if (date.includes("All ")) { 
-    date = ""; 
-  }
-  if (location.includes("All ")) { 
-    location = ""; 
-  } 
-  if (event.includes("All ")) { 
-    event = ""; 
-  } else {
-    event = "+" + event;
-  }
-  // Iterate over each row to find a match
-  for (var i = 0; i < dataSet.length; i++) {
-    if (helperCompareDates(dataSet[i][0], date) && dataSet[i][1].includes(location) && dataSet[i][2].includes(event)) {
-      dates.push(dataSet[i][0]);
-      locations.push(dataSet[i][1]);
-      if (reportOnLocationRadio) {  
-        events.push(dataSet[i][2]);
-      } else{
-        events.push(dataSet[i][2].slice(dataSet[i][2].indexOf(event)).slice(1, dataSet[i][2].slice(dataSet[i][2].indexOf(event)).indexOf("\n")));
-      }
-    }
-  }
-
-  displayListTable(dates, locations, events);
 }
 
 // DISPLAY DATA FUNCTIONS
@@ -407,13 +400,39 @@ function displayDataInTopPane() {
 
 }
 
-function displayDataInTable() {
-  // Update the header
-  var columnNames = ["Date", "Location", "Event"];
-  helperDisplayTableHeader(columnNames);
+function displayDataInTable(columnNames, dataSetToDisplay) {
+    // Get table header element and clean it 
+    const thead_HTML_Element = document.getElementById("thead");
+  thead_HTML_Element.replaceChildren();
+  
+  // Create a new row
+  let row = thead_HTML_Element.insertRow();
 
-  dataSet.shift(); // Remove the table header
-  helperDisplayTableBody(dataSet);
+  // Iterate over the column names array to create a header for each
+  for (var i = 0; i < columnNames.length; i++) {
+    let cell = row.insertCell(i);
+    cell.innerHTML = columnNames[i];
+    cell.style.fontWeight = "bold";
+    cell.style.verticalAlign = "top";
+    // If this is not the last column then set width to fixed
+    if (columnNames[i] != "Event") {
+      cell.style.width = "150px";
+    }
+  }
+
+  // Get table body element and clean it 
+  const new_tbody_HTML_Element = document.getElementById("tbody"); // Get tbody HTML element
+  new_tbody_HTML_Element.replaceChildren() // Clear content
+  
+  // Iterate over each array line to first add a new line, then new cells within that line 
+  for (var i = 0; i < dataSetToDisplay.length; i++) {
+    let row = new_tbody_HTML_Element.insertRow();
+    for (var j = 0; j < dataSetToDisplay[i].length; j++) {
+      let cell = row.insertCell(j);
+      cell.innerHTML = dataSetToDisplay[i][j];
+    }
+  }
+
 }
 
 function displayCountTable(countSelectionOccurance_Total, selectedYear, selectedLocation, selectedEvent, reportOnLocationRadio) {
@@ -425,7 +444,6 @@ function displayCountTable(countSelectionOccurance_Total, selectedYear, selected
     var reportOnValue = "Events"; // Used as the column header
     var columnNames = ["Events", "Count", "More"];
   }
-  helperDisplayTableHeader(columnNames);
 
   // Display the body
   if (!reportOnLocationRadio) {
@@ -433,7 +451,8 @@ function displayCountTable(countSelectionOccurance_Total, selectedYear, selected
       countSelectionOccurance_Total[i].push("Months");
     }
   }
-  helperDisplayTableBody(countSelectionOccurance_Total);
+
+  displayDataInTable(columnNames, countSelectionOccurance_Total);
 
   // Add the hyperlinks to the body
   const tableRows = document.getElementById("tbody").childNodes;
@@ -470,12 +489,9 @@ function displayCountTable(countSelectionOccurance_Total, selectedYear, selected
 }
 
 function displayMonthsTable(countSelectionOccurance_ByMonth, clickedEvent) {
-  // Display the header
+  // Display data in table
   var columnNames = ["Date", "Count"];
-  helperDisplayTableHeader(columnNames);
-
-  // Display the body
-  helperDisplayTableBody(countSelectionOccurance_ByMonth);
+  displayDataInTable(columnNames, countSelectionOccurance_ByMonth);
 
   // Add the hyperlinks to the second cell of the body
   const tableRows = document.getElementById("tbody").childNodes;
@@ -485,7 +501,7 @@ function displayMonthsTable(countSelectionOccurance_ByMonth, clickedEvent) {
     let locationParam = "";
     let eventParam = clickedEvent;
     var parameters = "\"" + dateParam + "\", \"" + locationParam + "\" ,\"" + eventParam + "\" ," + false + "";
-    let onclick_value = "location.href='javascript:retrieveDataforListTable(" + parameters + ")';"
+    let onclick_value = "location.href='javascript:eventDisplayListViewClicked(" + parameters + ")';"
 
     // Apply them to the second cell of that row
     const tableColumns = tableRows[i].childNodes;
@@ -494,16 +510,6 @@ function displayMonthsTable(countSelectionOccurance_ByMonth, clickedEvent) {
   }
 }
 
-function displayListTable(dates, locations, events) {
-  // Update the header
-  var columnNames = ["Date", "Location", "Event"];
-  helperDisplayTableHeader(columnNames);
-
-  //Update the body
-  var bodyArray = [dates, locations, events];
-  var bodyArray_T = bodyArray[0].map((_, colIndex) => bodyArray.map(row => row[colIndex]));
-  helperDisplayTableBody(bodyArray_T);
-}
 
 </script>
 
@@ -526,6 +532,11 @@ function displayListTable(dates, locations, events) {
 
   #select-location, #select-event, #select-time {
     width: 180px;
+    padding: 10px 10px;
+  }
+
+  #keyword {
+    width: 157px;
     padding: 10px 10px;
   }
 
@@ -558,6 +569,8 @@ function displayListTable(dates, locations, events) {
     <label>Group by event</label><br>
 
     <button id="button-display-counttable" onclick="eventDisplayCountButtonClicked()" disabled>Display Count Table</button><br/>
+  
+    <input id="keyword" type="text" oninput="eventKeywordEntered()" disabled>
   </div>
 
   <table id="table-data">
