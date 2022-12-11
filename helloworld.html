@@ -8,63 +8,12 @@
 <script>
 
 // Define global variables
-var importedDataSet;
+var importedDataSet; // Data from excel file, program never changes it
+var lastDisplayedDataSet;
 var yearList = [];
 var countryList = [];
 var cityList = [];
 var eventList = [];
-
-// HELPER FUNCTIONS
-
-function helperIncrementCount(eventName, countOfOccurances) {
-  if (eventName in countOfOccurances) {
-      countOfOccurances[eventName] += 1;
-  } else {
-      countOfOccurances[eventName] = 1;
-  }
-}
-
-function helperCapitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function helperSortDictionaryIntoArray(dict) {
-  // Create array
-  var items = Object.keys(dict).map(function(key) {
-    return [key, dict[key]];
-  });
-
-  // Sort the array based on the second element
-  items.sort(function(first, second) {
-    return second[1] - first[1];
-  });
-
-  return items;
-}
-
-function helperCompareDates(date1, date2) {
-  // If date2 is in format mm/yyyy then compare the month and year values in each variable
-  if (date2.length == 7) { 
-    // Get the month and year from each date in order to compare them
-    let date1_mm = date1.slice(date1.indexOf(" ")+1, date1.indexOf("/"));
-    let date1_yyyy = date1.substring(date1.length - 4);
-    let date2_mm = date2.split("/")[0];
-    let date2_yyyy = date2.split("/")[1];
-
-    if (date1_mm == date2_mm && date1_yyyy == date2_yyyy) {
-      return true;
-    } else {
-      return false;
-    }
-  // Otherwise check if the dates are an exact match
-  } else {
-    if (date1.includes(date2)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-}
 
 // EVENT FUNCTIONS
 
@@ -77,23 +26,36 @@ function eventUploadButtonClicked(event) {
       importedDataSet = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }); // header: 1 instructs xlsx to create an 'array of arrays'
       importedDataSet.shift(); // Remove the table header
 
-      // Displaying Data in Top Pane
+      // Display Data in Top Pane
       retrieveDataForTopPane();
       displayDataInTopPane();
 
-      // Displaying Data in Table
-      
+      // Display Data in Table
       var columnNames = ["Date", "Location", "Event"];
       displayDataInTable(columnNames, importedDataSet);
+      lastDisplayedDataSet = importedDataSet.slice(0); // This is needed otherwise searching from the textbo wouldn't work
   };
   reader.readAsArrayBuffer(event.target.files[0]);
   
   // Make the HTML controls available
   document.getElementById("button-display-counttable").removeAttribute("disabled");
-  document.getElementById("select-time").removeAttribute("disabled");
+ 
+  // Dropdowns
+  document.getElementById("select-date").removeAttribute("disabled");
   document.getElementById("select-location").removeAttribute("disabled");
   document.getElementById("select-event").removeAttribute("disabled");
+
+  // Radio button
+  document.getElementById("radiobutton-groupby-location").removeAttribute("disabled");
+  document.getElementById("radiobutton-groupby-event").removeAttribute("disabled");
+  document.getElementById("radiobutton-groupbynone-showevents").removeAttribute("disabled");
+  document.getElementById("radiobutton-groupbynone-showall").removeAttribute("disabled");
+
+  // Search box
   document.getElementById("keyword").removeAttribute("disabled");
+
+  // Check the show all radio button by default
+  document.getElementById("radiobutton-groupbynone-showall").checked = true;
 
   // Clear content of arrays
   dataSet = [];
@@ -103,34 +65,74 @@ function eventUploadButtonClicked(event) {
   eventList = [];
 };
 
-function eventDisplayCountButtonClicked() {
+function eventDisplayButtonClicked() {
   // Gather inputs from panel
-  var selectedYear = document.getElementById("select-time").value;
+  var selectedYear = document.getElementById("select-date").value;
   var selectedLocation = document.getElementById("select-location").value;
   var selectedEvent = document.getElementById("select-event").value;
-  var reportOnLocationRadio = document.getElementsByName("filterby")[0].checked;
+  var groupBy;
+  if (document.getElementsByName("filterby")[0].checked) {
+    groupBy = "location";
+  } else if (document.getElementsByName("filterby")[1].checked) {
+    groupBy = "event";
+  } else if (document.getElementsByName("filterby")[2].checked) {
+    groupBy = "none-show-eventlines";
+  } else if (document.getElementsByName("filterby")[3].checked) {
+    groupBy = "none-show-alllines";
+  }
 
-  // Disable the keyword textbox since it is not useful when in this state
-  document.getElementById("keyword").setAttribute("disabled", "");
+  // Remove the first part of the event name
+  selectedEvent = selectedEvent.split("-")[1];
+
+  // Clear out the text box content
+  document.getElementById("keyword").value = "";
   
-  // Get count of occurances
-  retrieveDataforCountTable(selectedYear, selectedLocation, selectedEvent, reportOnLocationRadio);
+  // If no grouping then call the list function otherwise (i.e. if group by location or event) then call the group function
+  if (groupBy.includes("none")) {
+    let searchWord = "";
+    retrieveDataforListTable(importedDataSet, selectedYear, selectedLocation, selectedEvent, groupBy, searchWord)
+  } else {
+    // Disable the keyword textbox since it is not useful when in this state
+    document.getElementById("keyword").setAttribute("disabled", "");
+    retrieveDataforGroupTable(selectedYear, selectedLocation, selectedEvent, groupBy);
+  }
 }
 
-function eventDisplayMonthsViewClicked(selectedYear, selectedLocation, clickedEvent) {
+function eventHTMLMonthsClicked(selectedYear, selectedLocation, clickedEvent) {
   document.getElementById("keyword").setAttribute("disabled", "");
   retrieveDataforMonthsTable(selectedYear, selectedLocation, clickedEvent)
 }
 
-function eventDisplayListViewClicked(time, location, event, reportOnLocationRadio ) {
+function eventHTMLListClicked(selectedYear, chosenLocation, chosenEvent, groupBy ) {
   document.getElementById("keyword").removeAttribute("disabled");
-  let keyWord = document.getElementById("keyword").value; // most likely it is blank sicne the textbox was greyed out 
-  retrieveDataforListTable(time, location, event, reportOnLocationRadio, keyWord);
+  let searchWord = "";
+  document.getElementById("radiobutton-groupbynone-showevents").checked = true;
+  groupBy = "none-show-eventlines";
+  retrieveDataforListTable(importedDataSet, selectedYear, chosenLocation, chosenEvent, groupBy, searchWord);
 }
 
 function eventKeywordEntered() {
-  let keyWord = document.getElementById("keyword").value;
-  //console.log(keyWord);
+  let searchWord = document.getElementById("keyword").value;
+
+  // Gather inputs from panel
+  var selectedYear = document.getElementById("select-date").value;
+  var selectedLocation = document.getElementById("select-location").value;
+  var selectedEvent = document.getElementById("select-event").value;
+  var groupBy;
+  if (document.getElementsByName("filterby")[0].checked) {
+    groupBy = "location";
+  } else if (document.getElementsByName("filterby")[1].checked) {
+    groupBy = "event";
+  } else if (document.getElementsByName("filterby")[2].checked) {
+    groupBy = "none-show-eventlines";
+  } else if (document.getElementsByName("filterby")[3].checked) {
+    groupBy = "none-show-alllines";
+  }
+
+  // Remove the first part of the event name
+  selectedEvent = selectedEvent.split("-")[1];
+
+  retrieveDataforListTable(lastDisplayedDataSet, selectedYear, selectedLocation, selectedEvent, groupBy, searchWord)
 }
 
 // DATA RETRIEVAL FUNCTIONS
@@ -192,77 +194,119 @@ function retrieveDataForTopPane() {
       }
 
       if (unaccountedForEvent) {
-        eventList.push("Unaccounted-"+eventName);
+        eventList.push("Unaccounted-" + eventName);
       }
     }
   }
 }
 
-function retrieveDataforListTable(date, location, event, reportOnLocationRadio, searchWord) {
+function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, chosenEvent, groupBy, searchWord) {
   // Set the below to blank for ease of querying
-  if (date.includes("All ")) { 
-    date = ""; 
+  if (selectedYear.includes("All ")) { 
+    selectedYear = ""; 
   }
-  if (location.includes("All ")) { 
-    location = ""; 
+  if (chosenLocation.includes("All ")) { 
+    chosenLocation = ""; 
   } 
-  if (event.includes("All ")) { 
-    event = ""; 
-  } 
-  
-  if (event != "" && event != "All events-All events") {
-    event = "+" + event;
+
+  // Define an array for all the event names you want to query for, as they may be 1 or many/all 
+  var eventsToList = [];
+  if (chosenEvent.includes("All ") || chosenEvent == "") { 
+    // All events were selected, and so either display all the lines, or only those with events, depending on what the user chose
+    if (groupBy == "none-show-alllines") {
+      eventsToList.push(""); 
+    } else if (groupBy == "none-show-eventlines") {
+      // If user chose to show events then build the array to contain all the event names
+      for (var event of eventList) {
+        eventsToList.push("+" + event.split("-")[1]);
+      }
+    }
+  } else {
+    // Since only one event was selected then put it in the array as a single entry
+    eventsToList.push("+" + chosenEvent)
   }
 
-  // Iterate over each row to find a match
-  var tempDataSet = [[]];
-  for (var i = 0; i < importedDataSet.length; i++) {
-    if (helperCompareDates(importedDataSet[i][0], date)) {
-      if (importedDataSet[i][1].includes(location)) {
-        if (importedDataSet[i][2].includes(event)) {
-          if (reportOnLocationRadio) {  
-            tempDataSet.push([importedDataSet[i][0], importedDataSet[i][1], importedDataSet[i][2]]);
-          } else {
-            tempDataSet.push([importedDataSet[i][0], importedDataSet[i][1], importedDataSet[i][2].slice(importedDataSet[i][2].indexOf(event)).slice(1, importedDataSet[i][2].slice(importedDataSet[i][2].indexOf(event)).indexOf("\n"))]);
+  // Iterate over each row to find a match based on the 3 dropdowns
+  var tempDataSet = [];
+  for (var i = 0; i < datasetToQuery.length; i++) {
+    if (helperCompareDates(datasetToQuery[i][0], selectedYear)) {
+      if (datasetToQuery[i][1].includes(chosenLocation)) {
+        if (groupBy == "none-show-alllines") {
+          if (datasetToQuery[i][2].includes(eventsToList)) {
+            tempDataSet.push([datasetToQuery[i][0], datasetToQuery[i][1], datasetToQuery[i][2]]);
+          }
+        } else if (groupBy == "none-show-eventlines") {
+          var eventLines = [];
+          for (var event of eventsToList) {
+            if (datasetToQuery[i][2].includes(event)) {
+              eventLines.push("<br>" + datasetToQuery[i][2].slice(datasetToQuery[i][2].indexOf(event)).slice(0, datasetToQuery[i][2].slice(datasetToQuery[i][2].indexOf(event)).indexOf("\n")) + "<br>");
+            }
+          }
+          if (eventLines.length > 0) {
+            tempDataSet.push([datasetToQuery[i][0], datasetToQuery[i][1], eventLines.toString()]);
           }
         }
       }
     }
   }
-  tempDataSet.shift(); // remove first line as it's blank for some reason
 
-  // Set the displayDataSet
-  var dataSetToDisplay = [[]];
+  // Setting the content of lastDisplayedDataSet here rather than towards the end, as it should be done before the textbox content change (otherwise backspace wouldn't do anything)
+  lastDisplayedDataSet = tempDataSet.slice(0);
+
+  // Iterate over each row to find a match based on the keyword
+  var dataSetToDisplay = [];
   for (const line of tempDataSet) {
-    if (line[0].includes(searchWord) || line[1].includes(searchWord) || line[2].includes(searchWord)) {
+    if (line[0].toLowerCase().includes(searchWord.toLowerCase()) || line[1].toLowerCase().includes(searchWord.toLowerCase()) || line[2].toLowerCase().includes(searchWord.toLowerCase())) {
       dataSetToDisplay.push(line);
     }
   }
-  dataSetToDisplay.shift();
 
   var columnNames = ["Date", "Location", "Event"];
   displayDataInTable(columnNames, dataSetToDisplay);
 }
 
-function retrieveDataforCountTable(selectedYear, selectedLocation, selectedEvent, reportOnLocationRadio) {
-  // Define the needed arrays for output
-  var countSelectionOccurance_Total = {};
+function retrieveDataforGroupTable(selectedYear, selectedLocation, selectedEvent, groupBy) {
+  // Define variables needed for the queries
+  var queryYear;
+  var queryLocation;
+  var queryEvent;
+  var columnNames;
+  var filteredDataSet = []; // Data last displayed
+  var groupbyDataToDisplay = {}; // Define the needed arrays for output
 
-  // If Location radio is selected
-  if (reportOnLocationRadio) {
-    // Set year and event query words to "" if All was selected to allow making them a non criteria
-    if (selectedYear.includes("All ")) { 
-      queryYear = ""; 
-    } else {
-      queryYear = selectedYear;
+  // Set query words to "" if All was selected to allow making them a non criteria
+  if (selectedYear.includes("All ")) { 
+    queryYear = ""; 
+  } else {
+    queryYear = selectedYear;
+  }
+
+  if (selectedLocation.includes("All ")) { 
+    queryLocation = ""; 
+  } else {
+    queryLocation = selectedLocation;
+  }
+
+  if (selectedEvent.includes("All ")) { 
+    queryEvent = ""; 
+  }  else {
+    queryEvent = "+" + selectedEvent;
+  }
+
+  // Filter dataset based on the 3 dropdown criteria
+  for (i = 0; i < importedDataSet.length; i++) {
+    if (importedDataSet[i][0].includes(queryYear)) {
+      if (importedDataSet[i][1].includes(queryLocation)) {
+        if (importedDataSet[i][2].includes(queryEvent)) {
+          filteredDataSet.push([importedDataSet[i][0], importedDataSet[i][1], importedDataSet[i][2]])
+        }
+      }
     }
-    
-    if (selectedEvent.includes("All ")) { 
-      queryEvent = ""; 
-    }  else {
-      queryEvent = "+"+selectedEvent.split("-")[1];
-    }
-    
+  }
+
+  // If group by Location then 
+  if (groupBy == "location") {
+    // If group by location, then define the names to group by
     switch(selectedLocation) {
       case "All countries":
         var queryLocation = countryList;
@@ -277,33 +321,24 @@ function retrieveDataforCountTable(selectedYear, selectedLocation, selectedEvent
         break;
     }
     
-    // Iterate over each name in the query array in order to query it
+    // Iterate over each city or country name in the location array in order to query it
     for (var location of queryLocation) {
-      // Iterate over each table row
-      for (i = 0; i < importedDataSet.length; i++) {
-        if (importedDataSet[i][0].includes(queryYear) && importedDataSet[i][1].includes(location) && importedDataSet[i][2].includes(queryEvent)){
-          if (!importedDataSet[i][1].includes("("+location) && !importedDataSet[i][1].includes(location+")")) {
-            helperIncrementCount(location, countSelectionOccurance_Total);
-          }
+      for (i = 0; i < filteredDataSet.length; i++) {
+        if (filteredDataSet[i][1].includes(location) && !filteredDataSet[i][1].includes("("+location) && !filteredDataSet[i][1].includes(location+")")) {
+          helperIncrementCount(location, groupbyDataToDisplay);
         }
       }
     }
-
+    
     // Sort the array to have the countries with highest count first
-    countSelectionOccurance_Total = helperSortDictionaryIntoArray(countSelectionOccurance_Total);
+    groupbyDataToDisplay = helperSortDictionaryIntoArray(groupbyDataToDisplay); 
+    
+    // Set the columnNames for use when displaying the table
+    columnNames = ["Locations", "Count"]; 
   // If Event radio is selected
-  } else {
-    // Set year and location query words to "" if All was selected to allow making them a non criteria
-    if (selectedYear.includes("All ")) { 
-      queryYear = ""; 
-    } else {
-      queryYear = selectedYear;
-    }
-    if (selectedLocation.includes("All ")) { 
-      queryLocation = ""; 
-    } else {
-      queryLocation = selectedLocation;
-    }
+  } else if (groupBy == "event") {
+
+    // If group by event, then define the names to group by
     if (selectedEvent.includes("All ")) {
       queryEvent = eventList.slice(0);
     } else {
@@ -313,22 +348,30 @@ function retrieveDataforCountTable(selectedYear, selectedLocation, selectedEvent
     // Iterate over each name in the query array in order to query it
     for (var event of queryEvent) {
       // Remove category prefix from the event name
-      event = event.split("-")[1];
+      if (event.includes("-")) {
+        event = event.split("-")[1];
+      }
       tagName = "+" + event;
       // Iterate over each table row 
-      for (i = 0; i < importedDataSet.length; i++) {
-        if (importedDataSet[i][0].includes(queryYear) && importedDataSet[i][1].includes(queryLocation) && importedDataSet[i][2].includes(tagName)){
-          helperIncrementCount(event, countSelectionOccurance_Total);
+      for (i = 0; i < filteredDataSet.length; i++) {
+        if (filteredDataSet[i][2].includes(tagName)){
+          helperIncrementCount(event, groupbyDataToDisplay);
         }
       }
     }
 
-    // Convert dictionary to array for consistency with the helperSortDictionaryIntoArray function, since the display functions assume input is array  not dict
-    countSelectionOccurance_Total = Object.entries(countSelectionOccurance_Total);
-  }
-  
-  // Display count of occurances
-  displayCountTable(countSelectionOccurance_Total, selectedYear, selectedLocation, selectedEvent, reportOnLocationRadio);
+    // Convert dict to array as the display functions assume input is array not dict
+    groupbyDataToDisplay = Object.entries(groupbyDataToDisplay); 
+    
+    // Add the months column
+    for (let i = 0; i < groupbyDataToDisplay.length; i++) { groupbyDataToDisplay[i].push("Months"); } 
+    
+    // Set the columnNames for use when displaying the table
+    columnNames = ["Events", "Count", "More"]; 
+  } 
+
+  // Display the group table
+  displayGroupTable(groupbyDataToDisplay, columnNames, selectedYear, selectedLocation, selectedEvent, groupBy);
 }
 
 function retrieveDataforMonthsTable(selectedYear, selectedLocation, clickedEvent) {
@@ -365,11 +408,8 @@ function retrieveDataforMonthsTable(selectedYear, selectedLocation, clickedEvent
 // DISPLAY DATA FUNCTIONS
 
 function displayDataInTopPane() {
-  // Check the location radio button by default
-  document.getElementsByName("filterby")[0].checked = true;
-
   // Populate the time dropdown
-  var selectYearElement = document.getElementById("select-time");
+  var selectYearElement = document.getElementById("select-date");
   selectYearElement.replaceChildren(); // Clear what's already there
   for (var year of yearList) {
       var optionElement = document.createElement("option");
@@ -403,7 +443,6 @@ function displayDataInTopPane() {
       optionElement.text = event;
       selectEventElement.appendChild(optionElement);
   }
-
 }
 
 function displayDataInTable(columnNames, dataSetToDisplay) {
@@ -441,56 +480,45 @@ function displayDataInTable(columnNames, dataSetToDisplay) {
 
 }
 
-function displayCountTable(countSelectionOccurance_Total, selectedYear, selectedLocation, selectedEvent, reportOnLocationRadio) {
-  // Display the header
-  if (reportOnLocationRadio) {
-    var reportOnValue = "Locations"; // Used as the column header
-    var columnNames = ["Locations", "Count"];
-  } else {
-    var reportOnValue = "Events"; // Used as the column header
-    var columnNames = ["Events", "Count", "More"];
-  }
+function displayGroupTable(groupbyDataToDisplay, columnNames, selectedYear, selectedLocation, selectedEvent, groupBy) {
 
-  // Display the body
-  if (!reportOnLocationRadio) {
-    for (let i = 0; i < countSelectionOccurance_Total.length; i++) {
-      countSelectionOccurance_Total[i].push("Months");
-    }
-  }
-
-  displayDataInTable(columnNames, countSelectionOccurance_Total);
+  // Display the data in the table before adding the hyperlinks to some of the columns
+  displayDataInTable(columnNames, groupbyDataToDisplay);
 
   // Add the hyperlinks to the body
   const tableRows = document.getElementById("tbody").childNodes;
   for (let i = 0; i < tableRows.length; i++) {
     const tableColumns = tableRows[i].childNodes;
-    if (reportOnLocationRadio) {
-      // Set the parameters that get passed when the count is clicked on
-      var parameters = "\"" + selectedYear + "\", \"" + countSelectionOccurance_Total[i][0] + "\" ,\"" + selectedEvent.split("-")[1] + "\" ," + reportOnLocationRadio + "";
-      let onclick_value = "location.href='javascript:eventDisplayListViewClicked(" + parameters + ")';"
-      tableColumns[1].setAttribute("onclick", onclick_value);
-      tableColumns[1].setAttribute("style", "text-decoration:underline;");
-    } else {
-      // Set the parameters that get passed when the count is clicked on
-      var parameters = "\"" + selectedYear + "\", \"" + selectedLocation + "\" ,\"" + countSelectionOccurance_Total[i][0] + "\" ," + reportOnLocationRadio + "";
-      let onclick_value = "location.href='javascript:eventDisplayListViewClicked(" + parameters + ")';"
-      tableColumns[1].setAttribute("onclick", onclick_value);
-      tableColumns[1].setAttribute("style", "text-decoration:underline;");
-
-      // Set the parameters that get passed when months is clicked on
-      let parameters1 = "\"" + selectedYear + "\", \"" + selectedLocation + "\" ,\"" + countSelectionOccurance_Total[i][0] + "\"";
-      let onclick_value1 = "location.href='javascript:eventDisplayMonthsViewClicked(" + parameters1 + ")';"
+    
+    // Set the parameters that get passed when the count is clicked on
+    var yearToPass = selectedYear;
+    if (groupBy == "location") {
+      var locationToPass = groupbyDataToDisplay[i][0];
+      var eventToPass = selectedEvent;
+    } else if (groupBy == "event") {
+      var locationToPass = selectedLocation;
+      var eventToPass = groupbyDataToDisplay[i][0] ;
+    }
+    var parameters = "\"" + yearToPass + "\", \"" + locationToPass + "\", \"" + eventToPass + "\", \"" + groupBy + "\"";
+    let onclick_value = "location.href='javascript:eventHTMLListClicked(" + parameters + ")';"
+    tableColumns[1].setAttribute("onclick", onclick_value);
+    tableColumns[1].setAttribute("style", "text-decoration:underline;");
+    
+    // Set the parameters that get passed when months is clicked on
+    if (groupBy == "event") {
+      let parameters1 = "\"" + selectedYear + "\", \"" + selectedLocation + "\", \"" + groupbyDataToDisplay[i][0] + "\"";
+      let onclick_value1 = "location.href='javascript:eventHTMLMonthsClicked(" + parameters1 + ")';"
       tableColumns[2].setAttribute("onclick", onclick_value1);
       tableColumns[2].setAttribute("style", "text-decoration:underline;");
     }
   }
 
   // Add a totals row at the end
-  if (reportOnLocationRadio) {
+  if (groupBy == "location") {
     const new_tbody_HTML_Element = document.getElementById("tbody"); // Get tbody HTML element
     let totals_row = new_tbody_HTML_Element.insertRow();
     totals_row.insertCell(0).innerHTML = "<b>Total</b>";
-    totals_row.insertCell(1).innerHTML = "<b>" + countSelectionOccurance_Total.length + "</b>";
+    totals_row.insertCell(1).innerHTML = "<b>" + groupbyDataToDisplay.length + "</b>";
   }
 }
 
@@ -506,13 +534,66 @@ function displayMonthsTable(countSelectionOccurance_ByMonth, clickedEvent) {
     let dateParam = countSelectionOccurance_ByMonth[i][0];
     let locationParam = "";
     let eventParam = clickedEvent;
-    var parameters = "\"" + dateParam + "\", \"" + locationParam + "\" ,\"" + eventParam + "\" ," + false + "";
-    let onclick_value = "location.href='javascript:eventDisplayListViewClicked(" + parameters + ")';"
+    let groupBy = "none";
+    var parameters = "\"" + dateParam + "\", \"" + locationParam + "\", \"" + eventParam + "\", \"" + groupBy + "\"";
+    let onclick_value = "location.href='javascript:eventHTMLListClicked(" + parameters + ")';"
 
     // Apply them to the second cell of that row
     const tableColumns = tableRows[i].childNodes;
     tableColumns[1].setAttribute("onclick", onclick_value);
     tableColumns[1].setAttribute("style", "text-decoration:underline;");
+  }
+}
+
+// HELPER FUNCTIONS
+
+function helperIncrementCount(eventName, countOfOccurances) {
+  if (eventName in countOfOccurances) {
+      countOfOccurances[eventName] += 1;
+  } else {
+      countOfOccurances[eventName] = 1;
+  }
+}
+
+function helperCapitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function helperSortDictionaryIntoArray(dict) {
+  // Create array
+  var items = Object.keys(dict).map(function(key) {
+    return [key, dict[key]];
+  });
+
+  // Sort the array based on the second element
+  items.sort(function(first, second) {
+    return second[1] - first[1];
+  });
+
+  return items;
+}
+
+function helperCompareDates(date1, date2) {
+  // If date2 is in format mm/yyyy then compare the month and year values in each variable
+  if (date2.length == 7) { 
+    // Get the month and year from each date in order to compare them
+    let date1_mm = date1.slice(date1.indexOf(" ")+1, date1.indexOf("/"));
+    let date1_yyyy = date1.substring(date1.length - 4);
+    let date2_mm = date2.split("/")[0];
+    let date2_yyyy = date2.split("/")[1];
+
+    if (date1_mm == date2_mm && date1_yyyy == date2_yyyy) {
+      return true;
+    } else {
+      return false;
+    }
+  // Otherwise check if the dates are an exact match
+  } else {
+    if (date1.includes(date2)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 
@@ -536,7 +617,7 @@ function displayMonthsTable(countSelectionOccurance_ByMonth, clickedEvent) {
     padding: 10px 10px;
   }
 
-  #select-location, #select-event, #select-time {
+  #select-location, #select-event, #select-date {
     width: 180px;
     padding: 10px 10px;
   }
@@ -558,25 +639,29 @@ function displayMonthsTable(countSelectionOccurance_ByMonth, clickedEvent) {
   <div class="top-panel">     
     <input id="upload" type=file name="files[]" title="your text" onchange="eventUploadButtonClicked(event)"><br>
     
-    <select id="select-time" disabled>
+    <select id="select-date" disabled>
       <option value="All Years" selected>All Years</option>
     </select><br>
     
     <select id="select-location" disabled>
       <option value="All Countries" selected>All Countries</option>
     </select>
-    <input type="radio" id="radiobutton-location" name="filterby">
-    <label>Group by countries</label><br>
+    <input type="radio" id="radiobutton-groupby-location" name="filterby" disabled>
+    <label>Group by Loc.</label><br>
     
     <select id="select-event" disabled>
       <option value="All Social Events">All Social Events</option>
     </select>
-    <input type="radio" id="radiobutton-event" name="filterby">
-    <label>Group by event</label><br>
+    <input type="radio" id="radiobutton-groupby-event" name="filterby" disabled>
+    <label>Group by Ev.</label><br>
 
-    <button id="button-display-counttable" onclick="eventDisplayCountButtonClicked()" disabled>Display Count Table</button><br/>
-  
+    <button id="button-display-counttable" onclick="eventDisplayButtonClicked()" disabled>Display Data</button>
+    <input type="radio" id="radiobutton-groupbynone-showevents" name="filterby" disabled>
+    <label>No group (show ev)</label><br>
+
     <input id="keyword" type="text" oninput="eventKeywordEntered()" disabled>
+    <input type="radio" id="radiobutton-groupbynone-showall" name="filterby" disabled>
+    <label>No group (show all)</label><br>
   </div>
 
   <table id="table-data">
