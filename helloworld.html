@@ -236,14 +236,18 @@ function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, 
             tempDataSet.push([datasetToQuery[i][0], datasetToQuery[i][1], datasetToQuery[i][2]]);
           }
         } else if (groupBy == "none-show-eventlines") {
-          var eventLines = [];
+          var eventLine = ""; // will hold all the events of that line
           for (var event of eventsToList) {
             if (datasetToQuery[i][2].includes(event)) {
-              eventLines.push("<br>" + datasetToQuery[i][2].slice(datasetToQuery[i][2].indexOf(event)).slice(0, datasetToQuery[i][2].slice(datasetToQuery[i][2].indexOf(event)).indexOf("\n")) + "<br>");
+              //eventLine += datasetToQuery[i][2].slice(datasetToQuery[i][2].indexOf(event)).slice(0, datasetToQuery[i][2].slice(datasetToQuery[i][2].indexOf(event)).indexOf("\n")) + "<br>";
+              // The below is a bit long because the line has to be sliced at the first \n that occurs AFTER the event
+              let tempEventLine = ""; // will only hold one event in the line 
+              tempEventLine = datasetToQuery[i][2].slice(datasetToQuery[i][2].indexOf(event));
+              eventLine += tempEventLine.slice(0, tempEventLine.indexOf("<br>")) + "<br><br>";
             }
           }
-          if (eventLines.length > 0) {
-            tempDataSet.push([datasetToQuery[i][0], datasetToQuery[i][1], eventLines.toString()]);
+          if (eventLine != "") {
+            tempDataSet.push([datasetToQuery[i][0], datasetToQuery[i][1], eventLine]);
           }
         }
       }
