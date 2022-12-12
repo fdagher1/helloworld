@@ -473,6 +473,8 @@ function displayDataInTable(columnNames, dataSetToDisplay) {
   for (var i = 0; i < dataSetToDisplay.length; i++) {
     let row = new_tbody_HTML_Element.insertRow();
     for (var j = 0; j < dataSetToDisplay[i].length; j++) {
+      // Add line breaks as currently they are \r\n
+      dataSetToDisplay[i][j] = dataSetToDisplay[i][j].replace(/\r\n/g, "<br>");
       let cell = row.insertCell(j);
       cell.innerHTML = dataSetToDisplay[i][j];
     }
