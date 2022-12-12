@@ -1,0 +1,8 @@
+Code:
+Make the top pane fit better on the phone screen
+1- Set the "multiple" attribute on the select fields, update the code to allow for multiselect queries, and make the layout look nice.
+2- Remove last 2 columns from dataset
+3- Add data visualization
+4- Set column widths to show full date in one line, but make the app mobile friendly, using the media tag https://www.w3schools.com/csSref/css3_pr_mediaquery.php
+5- Add validation for user data format: Proper date format, city_country format, check if any event cell doesn't end with a \n or has a + that is not already covered in the lsit of +
+6- Add total of all days inside the Count header when All are selected, so I can see the total number of days i lived
