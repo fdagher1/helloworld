@@ -90,6 +90,7 @@ function eventDisplayButtonClicked() {
   // If no grouping then call the list function otherwise (i.e. if group by location or event) then call the group function
   if (groupBy.includes("none")) {
     let searchWord = "";
+    document.getElementById("keyword").removeAttribute("disabled");
     retrieveDataforListTable(importedDataSet, selectedYear, selectedLocation, selectedEvent, groupBy, searchWord)
   } else {
     // Disable the keyword textbox since it is not useful when in this state
@@ -478,7 +479,10 @@ function displayDataInTable(columnNames, dataSetToDisplay) {
     let row = new_tbody_HTML_Element.insertRow();
     for (var j = 0; j < dataSetToDisplay[i].length; j++) {
       // Add line breaks as currently they are \r\n
-      dataSetToDisplay[i][j] = dataSetToDisplay[i][j].replace(/\r\n/g, "<br>");
+      if (typeof dataSetToDisplay[i][j] === 'string') {
+        // Check if string first as when user chooses group by then this field may contain a number and the code fails 
+        dataSetToDisplay[i][j] = dataSetToDisplay[i][j].replace(/\r\n/g, "<br>");
+      }
       let cell = row.insertCell(j);
       cell.innerHTML = dataSetToDisplay[i][j];
     }
