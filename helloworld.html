@@ -38,7 +38,7 @@ function eventUploadButtonClicked(event) {
   reader.readAsArrayBuffer(event.target.files[0]);
   
   // Make the HTML controls available
-  document.getElementById("button-display-counttable").removeAttribute("disabled");
+  document.getElementById("button-displaytable").removeAttribute("disabled");
  
   // Dropdowns
   document.getElementById("select-date").removeAttribute("disabled");
@@ -64,6 +64,30 @@ function eventUploadButtonClicked(event) {
   cityList = [];
   eventList = [];
 };
+
+function eventDarkModeButtonClicked() {
+  if (darkModeBtnValue = document.getElementById("button-darktoggle").value == "Dark Mode: Off") {
+    document.getElementById("button-darktoggle").value = "Dark Mode: On";
+    document.getElementById("body").classList.add("dark");
+    document.getElementById("button-upload").classList.add("darkinput");
+    document.getElementById("button-displaytable").classList.add("darkinput");
+    document.getElementById("select-date").classList.add("darkinput");
+    document.getElementById("select-location").classList.add("darkinput");
+    document.getElementById("select-event").classList.add("darkinput");
+    document.getElementById("textbox-keyword").classList.add("dark");
+
+    document.getElementById("button-darktoggle").classList.remove("lightinput");
+  } else {
+    document.getElementById("button-darktoggle").value = "Dark Mode: Off";
+    document.getElementById("body").classList.remove("dark");
+    document.getElementById("button-upload").classList.remove("darkinput");
+    document.getElementById("button-displaytable").classList.remove("darkinput");
+    document.getElementById("select-date").classList.remove("darkinput");
+    document.getElementById("select-location").classList.remove("darkinput");
+    document.getElementById("select-event").classList.remove("darkinput");
+    document.getElementById("textbox-keyword").classList.remove("dark");
+  }
+}
 
 function eventDisplayButtonClicked() {
   // Gather inputs from panel
@@ -468,7 +492,7 @@ function displayDataInTable(columnNames, dataSetToDisplay) {
       cell.innerHTML = columnNames[i];
       cell.style.width = "150px";
     } else {
-      cell.innerHTML = columnNames[i] + " (Number of Lines = " + dataSetToDisplay.length + ")";
+      cell.innerHTML = columnNames[i] + " (# of rows: " + dataSetToDisplay.length + ")";
     }
   }
 
@@ -604,16 +628,14 @@ function helperCompareDates(date1, date2) {
 </script>
 
 <style>
-  .div-top-panel {
-    background-color: #ffffff;
-    border: 1px solid #1c87c9;
-    padding: 5px;
-    color: mediumblue
+  body {
+    background-color: white;
+    color: mediumblue;
   }
 
-  .div-table {
-    background-color: #ffffff;
-    color: mediumblue
+  .div-top-panel {
+    border: 1px solid #1c87c9;
+    padding: 5px;
   }
 
   td {
@@ -622,13 +644,16 @@ function helperCompareDates(date1, date2) {
     vertical-align: top;
   }
 
-  #button-upload, #select-date, #select-location, #select-event, #button-display-counttable {
-    width: 180px;
+  #button-upload, #select-date, #select-location, #select-event, #button-displaytable {
     border: 1px solid #1c87c9;
-    color: mediumblue
+    width: 180px;
   }
 
-  #button-display-counttable, #select-date, #select-location, #select-event {
+  #button-darktoggle {
+    float: right;
+  }
+
+  #button-displaytable, #select-date, #select-location, #select-event {
     padding: 10px 10px;
   }
 
@@ -636,29 +661,45 @@ function helperCompareDates(date1, date2) {
     width: 157px;
     padding: 10px 10px;
   }
+
+  .lightinput {
+    color: mediumblue;
+  }
+
+  .dark {
+    background-color: #222;
+    color: Gainsboro;
+  }
+
+  .darkinput {
+    background-color: #222;
+    color: Gainsboro;
+  }
 </style>
 
-<body>
+<body id="body">
   <div class="div-top-panel">     
-    <input id="button-upload" type=file name="files[]" title="your text" onchange="eventUploadButtonClicked(event)"><br>
-    
-    <select id="select-date" disabled>
+    <input type=file id="button-upload" name="files[]" class="lightinput" title="your text" onchange="eventUploadButtonClicked(event)">
+    <input type="button" id="button-darktoggle" class="lightinput" value="Dark Mode: Off" onclick="eventDarkModeButtonClicked()">
+    <br/>
+
+    <select id="select-date" class="lightinput" disabled>
       <option value="All Years" selected>All Years</option>
     </select><br>
     
-    <select id="select-location" disabled>
+    <select id="select-location" class="lightinput" disabled>
       <option value="All Countries" selected>All Countries</option>
     </select>
     <input type="radio" id="radiobutton-groupby-location" name="filterby" disabled>
     <label>Group by Loc.</label><br>
     
-    <select id="select-event" disabled>
+    <select id="select-event" class="lightinput" disabled>
       <option value="All Social Events">All Social Events</option>
     </select>
     <input type="radio" id="radiobutton-groupby-event" name="filterby" disabled>
     <label>Group by Ev.</label><br>
 
-    <button id="button-display-counttable" onclick="eventDisplayButtonClicked()" disabled>Display</button>
+    <input type="button" id="button-displaytable" class="lightinput" value="Display" onclick="eventDisplayButtonClicked()" disabled>
     <input type="radio" id="radiobutton-groupbynone-showevents" name="filterby" disabled>
     <label>No group (show ev)</label><br>
 
@@ -667,7 +708,7 @@ function helperCompareDates(date1, date2) {
     <label>No group (show all)</label><br>
   </div>
 
-  <div class="div-table">
+  <div>
     <table>
       <thead id="thead"></thead>
       <tbody id="tbody"></tbody>
