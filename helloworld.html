@@ -52,7 +52,7 @@ function eventUploadButtonClicked(event) {
   document.getElementById("radiobutton-groupbynone-showall").removeAttribute("disabled");
 
   // Search box
-  document.getElementById("keyword").removeAttribute("disabled");
+  document.getElementById("textbox-keyword").removeAttribute("disabled");
 
   // Check the show all radio button by default
   document.getElementById("radiobutton-groupbynone-showall").checked = true;
@@ -85,27 +85,27 @@ function eventDisplayButtonClicked() {
   selectedEvent = selectedEvent.split("-")[1];
 
   // Clear out the text box content
-  document.getElementById("keyword").value = "";
+  document.getElementById("textbox-keyword").value = "";
   
   // If no grouping then call the list function otherwise (i.e. if group by location or event) then call the group function
   if (groupBy.includes("none")) {
     let searchWord = "";
-    document.getElementById("keyword").removeAttribute("disabled");
+    document.getElementById("textbox-keyword").removeAttribute("disabled");
     retrieveDataforListTable(importedDataSet, selectedYear, selectedLocation, selectedEvent, groupBy, searchWord)
   } else {
     // Disable the keyword textbox since it is not useful when in this state
-    document.getElementById("keyword").setAttribute("disabled", "");
+    document.getElementById("textbox-keyword").setAttribute("disabled", "");
     retrieveDataforGroupTable(selectedYear, selectedLocation, selectedEvent, groupBy);
   }
 }
 
 function eventHTMLMonthsClicked(selectedYear, selectedLocation, clickedEvent) {
-  document.getElementById("keyword").setAttribute("disabled", "");
+  document.getElementById("textbox-keyword").setAttribute("disabled", "");
   retrieveDataforMonthsTable(selectedYear, selectedLocation, clickedEvent)
 }
 
 function eventHTMLListClicked(selectedYear, chosenLocation, chosenEvent, groupBy ) {
-  document.getElementById("keyword").removeAttribute("disabled");
+  document.getElementById("textbox-keyword").removeAttribute("disabled");
   let searchWord = "";
   document.getElementById("radiobutton-groupbynone-showevents").checked = true;
   groupBy = "none-show-eventlines";
@@ -113,7 +113,7 @@ function eventHTMLListClicked(selectedYear, chosenLocation, chosenEvent, groupBy
 }
 
 function eventKeywordEntered() {
-  let searchWord = document.getElementById("keyword").value;
+  let searchWord = document.getElementById("textbox-keyword").value;
 
   // Gather inputs from panel
   var selectedYear = document.getElementById("select-date").value;
@@ -382,7 +382,7 @@ function retrieveDataforGroupTable(selectedYear, selectedLocation, selectedEvent
 function retrieveDataforMonthsTable(selectedYear, selectedLocation, clickedEvent) {
   // Define the needed arrays for output
   var countSelectionOccurance_ByMonth = {};
-  plusEvent = "+" + clickedEvent;
+  hashtag = "#" + clickedEvent;
 
   // Set year and location query words to "" if All was selected to allow making them a non criteria
   if (selectedYear.includes("All ")) { 
@@ -394,7 +394,7 @@ function retrieveDataforMonthsTable(selectedYear, selectedLocation, clickedEvent
 
   // Iterate over each table row and when there's a hit, increment occurance array for month-year combo
   for (i = 0; i < importedDataSet.length; i++) {
-    if (importedDataSet[i][0].includes(selectedYear) && importedDataSet[i][1].includes(selectedLocation) && importedDataSet[i][2].includes(plusEvent)){
+    if (importedDataSet[i][0].includes(selectedYear) && importedDataSet[i][1].includes(selectedLocation) && importedDataSet[i][2].includes(hashtag)){
       // Get the month and year from the date
       let date = importedDataSet[i][0];
       let mm = date.slice(date.indexOf(" ")+1, date.indexOf("/"));
@@ -461,20 +461,22 @@ function displayDataInTable(columnNames, dataSetToDisplay) {
   // Iterate over the column names array to create a header for each
   for (var i = 0; i < columnNames.length; i++) {
     let cell = row.insertCell(i);
-    cell.innerHTML = columnNames[i];
     cell.style.fontWeight = "bold";
     cell.style.verticalAlign = "top";
-    // If this is not the last column then set width to fixed
-    if (columnNames[i] != "Event") {
+    // If this is not the last column then set width to fixed, else, display table length
+    if ( i != columnNames.length - 1) {
+      cell.innerHTML = columnNames[i];
       cell.style.width = "150px";
+    } else {
+      cell.innerHTML = columnNames[i] + " (Number of Lines = " + dataSetToDisplay.length + ")";
     }
   }
 
-  // Get table body element and clean it 
+  // Get table body element and clear it
   const new_tbody_HTML_Element = document.getElementById("tbody"); // Get tbody HTML element
   new_tbody_HTML_Element.replaceChildren() // Clear content
   
-  // Iterate over each array line to first add a new line, then new cells within that line 
+  // Then iterate over each array line to first add a new line, then new cells within that line 
   for (var i = 0; i < dataSetToDisplay.length; i++) {
     let row = new_tbody_HTML_Element.insertRow();
     for (var j = 0; j < dataSetToDisplay[i].length; j++) {
@@ -521,14 +523,6 @@ function displayGroupTable(groupbyDataToDisplay, columnNames, selectedYear, sele
       tableColumns[2].setAttribute("onclick", onclick_value1);
       tableColumns[2].setAttribute("style", "text-decoration:underline;");
     }
-  }
-
-  // Add a totals row at the end
-  if (groupBy == "location") {
-    const new_tbody_HTML_Element = document.getElementById("tbody"); // Get tbody HTML element
-    let totals_row = new_tbody_HTML_Element.insertRow();
-    totals_row.insertCell(0).innerHTML = "<b>Total</b>";
-    totals_row.insertCell(1).innerHTML = "<b>" + groupbyDataToDisplay.length + "</b>";
   }
 }
 
@@ -610,43 +604,43 @@ function helperCompareDates(date1, date2) {
 </script>
 
 <style>
-  .top-panel {
-    background-color: #2196F3;
-    padding: 10px 10px;
-    gap: 5px 10px;
+  .div-top-panel {
+    background-color: #ffffff;
+    border: 1px solid #1c87c9;
+    padding: 5px;
+    color: mediumblue
   }
 
-  #upload {
-    width: 180px;
-  
-  }
-
-  #button-show-event, #button-display-counttable {
-    width: 180px;
-    padding: 10px 10px;
-  }
-
-  #select-location, #select-event, #select-date {
-    width: 180px;
-    padding: 10px 10px;
-  }
-
-  #keyword {
-    width: 157px;
-    padding: 10px 10px;
+  .div-table {
+    background-color: #ffffff;
+    color: mediumblue
   }
 
   td {
-    vertical-align: top;
+    border: 1px solid #1c87c9;
     padding: 5px;
-    border: 1px solid #1c87c9;;
-    border-collapse: collapse;
+    vertical-align: top;
+  }
+
+  #button-upload, #select-date, #select-location, #select-event, #button-display-counttable {
+    width: 180px;
+    border: 1px solid #1c87c9;
+    color: mediumblue
+  }
+
+  #button-display-counttable, #select-date, #select-location, #select-event {
+    padding: 10px 10px;
+  }
+
+  #textbox-keyword {
+    width: 157px;
+    padding: 10px 10px;
   }
 </style>
 
 <body>
-  <div class="top-panel">     
-    <input id="upload" type=file name="files[]" title="your text" onchange="eventUploadButtonClicked(event)"><br>
+  <div class="div-top-panel">     
+    <input id="button-upload" type=file name="files[]" title="your text" onchange="eventUploadButtonClicked(event)"><br>
     
     <select id="select-date" disabled>
       <option value="All Years" selected>All Years</option>
@@ -664,21 +658,21 @@ function helperCompareDates(date1, date2) {
     <input type="radio" id="radiobutton-groupby-event" name="filterby" disabled>
     <label>Group by Ev.</label><br>
 
-    <button id="button-display-counttable" onclick="eventDisplayButtonClicked()" disabled>Display Data</button>
+    <button id="button-display-counttable" onclick="eventDisplayButtonClicked()" disabled>Display</button>
     <input type="radio" id="radiobutton-groupbynone-showevents" name="filterby" disabled>
     <label>No group (show ev)</label><br>
 
-    <input id="keyword" type="text" oninput="eventKeywordEntered()" disabled>
+    <input id="textbox-keyword" type="text" oninput="eventKeywordEntered()" disabled>
     <input type="radio" id="radiobutton-groupbynone-showall" name="filterby" disabled>
     <label>No group (show all)</label><br>
   </div>
 
-  <table id="table-data">
-    <thead id="thead">
-    </thead>
-    <tbody id="tbody">
-    </tbody>
-  </table>
+  <div class="div-table">
+    <table>
+      <thead id="thead"></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
 </body>
 
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>-->
