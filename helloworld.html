@@ -176,8 +176,8 @@ function retrieveDataForTopPane() {
   for (let i = 0; i < importedDataSet.length; i++) {
     var cell = importedDataSet[i][2];
     // Iterate over all the + entries in the same cell
-    while (cell.includes("+")) { 
-      let str = cell.slice(cell.indexOf("+"));
+    while (cell.includes("#")) { 
+      let str = cell.slice(cell.indexOf("#"));
       cell = str.slice(str.indexOf(" ")); 
       let eventName = str.slice(1,str.indexOf(" "));
       if (eventName.includes(".")) { 
@@ -210,7 +210,7 @@ function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, 
     chosenLocation = ""; 
   } 
 
-  // Define an array for all the event names you want to query for, as they may be 1 or many/all 
+  // Define an array for all the event names you want to query for, as they may be 1 or many, or all 
   var eventsToList = [];
   if (chosenEvent.includes("All ") || chosenEvent == "") { 
     // All events were selected, and so either display all the lines, or only those with events, depending on what the user chose
@@ -219,12 +219,12 @@ function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, 
     } else if (groupBy == "none-show-eventlines") {
       // If user chose to show events then build the array to contain all the event names
       for (var event of eventList) {
-        eventsToList.push("+" + event.split("-")[1]);
+        eventsToList.push("#" + event.split("-")[1]);
       }
     }
   } else {
     // Since only one event was selected then put it in the array as a single entry
-    eventsToList.push("+" + chosenEvent)
+    eventsToList.push("#" + chosenEvent)
   }
 
   // Iterate over each row to find a match based on the 3 dropdowns
@@ -295,7 +295,7 @@ function retrieveDataforGroupTable(selectedYear, selectedLocation, selectedEvent
   if (selectedEvent.includes("All ")) { 
     queryEvent = ""; 
   }  else {
-    queryEvent = "+" + selectedEvent;
+    queryEvent = "#" + selectedEvent;
   }
 
   // Filter dataset based on the 3 dropdown criteria
@@ -329,7 +329,7 @@ function retrieveDataforGroupTable(selectedYear, selectedLocation, selectedEvent
     // Iterate over each city or country name in the location array in order to query it
     for (var location of queryLocation) {
       for (i = 0; i < filteredDataSet.length; i++) {
-        if (filteredDataSet[i][1].includes(location) && !filteredDataSet[i][1].includes("("+location) && !filteredDataSet[i][1].includes(location+")")) {
+        if (filteredDataSet[i][1].includes(location) && !filteredDataSet[i][1].includes("(" + location) && !filteredDataSet[i][1].includes(location + ")")) {
           helperIncrementCount(location, groupbyDataToDisplay);
         }
       }
@@ -356,7 +356,7 @@ function retrieveDataforGroupTable(selectedYear, selectedLocation, selectedEvent
       if (event.includes("-")) {
         event = event.split("-")[1];
       }
-      tagName = "+" + event;
+      tagName = "#" + event;
       // Iterate over each table row 
       for (i = 0; i < filteredDataSet.length; i++) {
         if (filteredDataSet[i][2].includes(tagName)){
@@ -433,7 +433,7 @@ function displayDataInTopPane() {
       if (location.includes("All ")) {
         optionElement.text = location;
       } else {
-        optionElement.text = "+ " + location;
+        optionElement.text = "- " + location;
       }
       
       selectLocationElement.appendChild(optionElement);
