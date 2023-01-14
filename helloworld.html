@@ -68,24 +68,24 @@ function eventUploadButtonClicked(event) {
 function eventDarkModeButtonClicked() {
   if (darkModeBtnValue = document.getElementById("button-darktoggle").value == "Dark Mode: Off") {
     document.getElementById("button-darktoggle").value = "Dark Mode: On";
-    document.getElementById("body").classList.add("dark");
-    document.getElementById("button-upload").classList.add("darkinput");
-    document.getElementById("button-displaytable").classList.add("darkinput");
-    document.getElementById("select-date").classList.add("darkinput");
-    document.getElementById("select-location").classList.add("darkinput");
-    document.getElementById("select-event").classList.add("darkinput");
-    document.getElementById("textbox-keyword").classList.add("dark");
+    document.getElementById("body").classList.add("darkclass");
+    document.getElementById("button-upload").classList.add("darkclass");
+    document.getElementById("button-displaytable").classList.add("darkclass");
+    document.getElementById("select-date").classList.add("darkclass");
+    document.getElementById("select-location").classList.add("darkclass");
+    document.getElementById("select-event").classList.add("darkclass");
+    document.getElementById("textbox-keyword").classList.add("darkclass");
 
-    document.getElementById("button-darktoggle").classList.remove("lightinput");
+    document.getElementById("button-darktoggle").classList.remove("lightclass");
   } else {
     document.getElementById("button-darktoggle").value = "Dark Mode: Off";
-    document.getElementById("body").classList.remove("dark");
-    document.getElementById("button-upload").classList.remove("darkinput");
-    document.getElementById("button-displaytable").classList.remove("darkinput");
-    document.getElementById("select-date").classList.remove("darkinput");
-    document.getElementById("select-location").classList.remove("darkinput");
-    document.getElementById("select-event").classList.remove("darkinput");
-    document.getElementById("textbox-keyword").classList.remove("dark");
+    document.getElementById("body").classList.remove("darkclass");
+    document.getElementById("button-upload").classList.remove("darkclass");
+    document.getElementById("button-displaytable").classList.remove("darkclass");
+    document.getElementById("select-date").classList.remove("darkclass");
+    document.getElementById("select-location").classList.remove("darkclass");
+    document.getElementById("select-event").classList.remove("darkclass");
+    document.getElementById("textbox-keyword").classList.remove("darkclass");
   }
 }
 
@@ -665,16 +665,11 @@ function helperCompareDates(date1, date2) {
     padding: 10px 10px;
   }
 
-  .lightinput {
+  .lightclass {
     color: mediumblue;
   }
 
-  .dark {
-    background-color: #222;
-    color: Gainsboro;
-  }
-
-  .darkinput {
+  .darkclass {
     background-color: #222;
     color: Gainsboro;
   }
@@ -682,27 +677,27 @@ function helperCompareDates(date1, date2) {
 
 <body id="body">
   <div class="div-top-panel">     
-    <input type=file id="button-upload" name="files[]" class="lightinput" title="your text" onchange="eventUploadButtonClicked(event)">
-    <input type="button" id="button-darktoggle" class="lightinput" value="Dark Mode: Off" onclick="eventDarkModeButtonClicked()">
+    <input type=file id="button-upload" name="files[]" class="lightclass" title="your text" onchange="eventUploadButtonClicked(event)">
+    <input type="button" id="button-darktoggle" class="lightclass" value="Dark Mode: Off" onclick="eventDarkModeButtonClicked()">
     <br/>
 
-    <select id="select-date" class="lightinput" disabled>
+    <select id="select-date" class="lightclass" disabled>
       <option value="All Years" selected>All Years</option>
     </select><br>
     
-    <select id="select-location" class="lightinput" disabled>
+    <select id="select-location" class="lightclass" disabled>
       <option value="All Countries" selected>All Countries</option>
     </select>
     <input type="radio" id="radiobutton-groupby-location" name="filterby" disabled>
     <label>Group by Loc.</label><br>
     
-    <select id="select-event" class="lightinput" disabled>
+    <select id="select-event" class="lightclass" disabled>
       <option value="All Social Events">All Social Events</option>
     </select>
     <input type="radio" id="radiobutton-groupby-event" name="filterby" disabled>
     <label>Group by Ev.</label><br>
 
-    <input type="button" id="button-displaytable" class="lightinput" value="Display" onclick="eventDisplayButtonClicked()" disabled>
+    <input type="button" id="button-displaytable" class="lightclass" value="Display" onclick="eventDisplayButtonClicked()" disabled>
     <input type="radio" id="radiobutton-groupbyNoGrp-ShowEvents" name="filterby" disabled>
     <label>No group (show ev)</label><br>
 
