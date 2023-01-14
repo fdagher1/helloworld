@@ -48,7 +48,7 @@ function eventUploadButtonClicked(event) {
   // Radio button
   document.getElementById("radiobutton-groupby-location").removeAttribute("disabled");
   document.getElementById("radiobutton-groupby-event").removeAttribute("disabled");
-  document.getElementById("radiobutton-groupbynone-showevents").removeAttribute("disabled");
+  document.getElementById("radiobutton-groupbyNoGrp-ShowEvents").removeAttribute("disabled");
   document.getElementById("radiobutton-groupbynone-showall").removeAttribute("disabled");
 
   // Search box
@@ -100,9 +100,9 @@ function eventDisplayButtonClicked() {
   } else if (document.getElementsByName("filterby")[1].checked) {
     groupBy = "event";
   } else if (document.getElementsByName("filterby")[2].checked) {
-    groupBy = "none-show-eventlines";
+    groupBy = "NoGrp-ShowEvents";
   } else if (document.getElementsByName("filterby")[3].checked) {
-    groupBy = "none-show-alllines";
+    groupBy = "NoGrp-ShowLines";
   }
 
   // Remove the first part of the event name
@@ -112,7 +112,7 @@ function eventDisplayButtonClicked() {
   document.getElementById("textbox-keyword").value = "";
   
   // If no grouping then call the list function otherwise (i.e. if group by location or event) then call the group function
-  if (groupBy.includes("none")) {
+  if (groupBy.includes("NoGrp")) {
     let searchWord = "";
     document.getElementById("textbox-keyword").removeAttribute("disabled");
     retrieveDataforListTable(importedDataSet, selectedYear, selectedLocation, selectedEvent, groupBy, searchWord)
@@ -131,8 +131,8 @@ function eventHTMLMonthsClicked(selectedYear, selectedLocation, clickedEvent) {
 function eventHTMLListClicked(selectedYear, chosenLocation, chosenEvent, groupBy ) {
   document.getElementById("textbox-keyword").removeAttribute("disabled");
   let searchWord = "";
-  document.getElementById("radiobutton-groupbynone-showevents").checked = true;
-  groupBy = "none-show-eventlines";
+  document.getElementById("radiobutton-groupbyNoGrp-ShowEvents").checked = true;
+  groupBy = "NoGrp-ShowEvents";
   retrieveDataforListTable(importedDataSet, selectedYear, chosenLocation, chosenEvent, groupBy, searchWord);
 }
 
@@ -149,9 +149,9 @@ function eventKeywordEntered() {
   } else if (document.getElementsByName("filterby")[1].checked) {
     groupBy = "event";
   } else if (document.getElementsByName("filterby")[2].checked) {
-    groupBy = "none-show-eventlines";
+    groupBy = "NoGrp-ShowEvents";
   } else if (document.getElementsByName("filterby")[3].checked) {
-    groupBy = "none-show-alllines";
+    groupBy = "NoGrp-ShowLines";
   }
 
   // Remove the first part of the event name
@@ -226,7 +226,7 @@ function retrieveDataForTopPane() {
 }
 
 function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, chosenEvent, groupBy, searchWord) {
-  // Set the below to blank for ease of querying
+  // Set the below to blank for ease of querying and for displaying column header
   if (selectedYear.includes("All ")) { 
     selectedYear = ""; 
   }
@@ -236,11 +236,13 @@ function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, 
 
   // Define an array for all the event names you want to query for, as they may be 1 or many, or all 
   var eventsToList = [];
-  if (chosenEvent.includes("All ") || chosenEvent == "") { 
+  if (chosenEvent.includes("All ")) { 
+    // Set it to blank for better layout in the event column title
+    chosenEvent = "";
     // All events were selected, and so either display all the lines, or only those with events, depending on what the user chose
-    if (groupBy == "none-show-alllines") {
+    if (groupBy == "NoGrp-ShowLines") {
       eventsToList.push(""); 
-    } else if (groupBy == "none-show-eventlines") {
+    } else if (groupBy == "NoGrp-ShowEvents") {
       // If user chose to show events then build the array to contain all the event names
       for (var event of eventList) {
         eventsToList.push("#" + event.split("-")[1]);
@@ -256,11 +258,11 @@ function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, 
   for (var i = 0; i < datasetToQuery.length; i++) {
     if (helperCompareDates(datasetToQuery[i][0], selectedYear)) {
       if (datasetToQuery[i][1].includes(chosenLocation)) {
-        if (groupBy == "none-show-alllines") {
+        if (groupBy == "NoGrp-ShowLines") {
           if (datasetToQuery[i][2].includes(eventsToList)) {
             tempDataSet.push([datasetToQuery[i][0], datasetToQuery[i][1], datasetToQuery[i][2]]);
           }
-        } else if (groupBy == "none-show-eventlines") {
+        } else if (groupBy == "NoGrp-ShowEvents") {
           var eventLine = ""; // will hold all the events of that line
           for (var event of eventsToList) {
             if (datasetToQuery[i][2].includes(event)) {
@@ -290,7 +292,8 @@ function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, 
     }
   }
 
-  var columnNames = ["Date", "Location", "Event"];
+  let thirdColumnTitle = selectedYear + ", " + chosenLocation + ", " + chosenEvent;
+  var columnNames = ["Date", "Location", thirdColumnTitle];
   displayDataInTable(columnNames, dataSetToDisplay);
 }
 
@@ -396,7 +399,7 @@ function retrieveDataforGroupTable(selectedYear, selectedLocation, selectedEvent
     for (let i = 0; i < groupbyDataToDisplay.length; i++) { groupbyDataToDisplay[i].push("Months"); } 
     
     // Set the columnNames for use when displaying the table
-    columnNames = ["Events", "Count", "More"]; 
+    columnNames = ["Events", "Count", "Months"]; 
   } 
 
   // Display the group table
@@ -492,7 +495,7 @@ function displayDataInTable(columnNames, dataSetToDisplay) {
       cell.innerHTML = columnNames[i];
       cell.style.width = "150px";
     } else {
-      cell.innerHTML = columnNames[i] + " (# of rows: " + dataSetToDisplay.length + ")";
+      cell.innerHTML = columnNames[i] + " (" + dataSetToDisplay.length + " rows)";
     }
   }
 
@@ -700,7 +703,7 @@ function helperCompareDates(date1, date2) {
     <label>Group by Ev.</label><br>
 
     <input type="button" id="button-displaytable" class="lightinput" value="Display" onclick="eventDisplayButtonClicked()" disabled>
-    <input type="radio" id="radiobutton-groupbynone-showevents" name="filterby" disabled>
+    <input type="radio" id="radiobutton-groupbyNoGrp-ShowEvents" name="filterby" disabled>
     <label>No group (show ev)</label><br>
 
     <input id="textbox-keyword" type="text" oninput="eventKeywordEntered()" disabled>
