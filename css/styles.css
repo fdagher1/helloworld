@@ -1,0 +1,42 @@
+body {
+    background-color: white;
+    color: mediumblue;
+  }
+
+  .div-top-panel {
+    border: 1px solid #1c87c9;
+    padding: 5px;
+  }
+
+  td {
+    border: 1px solid #1c87c9;
+    padding: 5px;
+    vertical-align: top;
+  }
+
+  #button-upload, #select-date, #select-location, #select-event, #button-displaytable {
+    border: 1px solid #1c87c9;
+    width: 180px;
+  }
+
+  #button-darktoggle {
+    float: right;
+  }
+
+  #button-displaytable, #select-date, #select-location, #select-event {
+    padding: 10px 10px;
+  }
+
+  #textbox-keyword {
+    width: 157px;
+    padding: 10px 10px;
+  }
+
+  .lightclass {
+    color: mediumblue;
+  }
+
+  .darkclass {
+    background-color: #222;
+    color: Gainsboro;
+  }
