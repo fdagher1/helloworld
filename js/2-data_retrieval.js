@@ -1,3 +1,50 @@
+function validateFileFormatAndData(){
+  // VALIDATE EACH EVENT CELL
+  for (let i = 0; i < importedDataSet.length; i++) { 
+    var event_cell = importedDataSet[i][2]; // retrieve the event cell content
+    
+    // CHECK IF CELL IS BLANK
+    if (typeof event_cell === 'undefined') {
+      return "The event cell in row number " + ++i + " is blank.";
+    }
+
+    // CHECK IF CELL DOES NOT END WITH A BREAK LINE
+    if (event_cell.charAt(event_cell.length-1) != "\n") { // I found it odd that \n is treated as 1 character
+      return "The event cell in the row after row number " + ++i + " does not end with a line break.";
+    }
+
+    // CHECK IF THERE ARE CELL TAGS THAT ARE NOT IN THE EVENT LIST ALREADY
+    // Retrieve the events list from the bottom cell
+    eventList = importedDataSet[importedDataSet.length-1][3].split(";"); 
+    // Check if there are any tags in the event cell that are missing from the list
+    while (event_cell.includes("#")) { // Iterate over all the # entries in the same cell
+      let new_event_cell = event_cell.slice(event_cell.indexOf("#")); // Remove anything before the first # in the cell
+      event_cell = new_event_cell.slice(new_event_cell.indexOf(" ")); // Place anything after the first space from the tag in a new cell to iterate over once this is done 
+      let eventName = new_event_cell.slice(1,new_event_cell.indexOf(" ")); // Get the tag name
+      if (eventName.includes(".")) { 
+        eventName = eventName.slice(0, eventName.indexOf(".")); // Remove the "."" from the tag name if it happens to be linked to it. 
+        // Should we handle cases like +Workout<br>
+      }
+      // Check if event name is not in the provided event list
+      var event_is_in_list = false;
+      for (let j = 0; j < eventList.length; j++) {
+        if (eventList[j].includes("-"+eventName)) {
+          event_is_in_list = true;
+          break;
+        }
+      }
+      if (event_is_in_list == false){
+        // Since the loop over the event list completed with no breaks, then the event name is missing
+        return "The event " + eventName + " found in the row after row number " + ++i + " is missing from the list.";
+      }
+    }
+  }
+
+  // Since no errors returned, return "file is valid" instead
+  console.log("file is valid");
+  return "file is valid";
+}
+
 function retrieveDataForTopPane() {
   // retrieve the years list
   var currentYear = new Date().getFullYear();
@@ -33,32 +80,6 @@ function retrieveDataForTopPane() {
   // retrieve the events list
   eventList = importedDataSet[importedDataSet.length-1][3].split(";"); // First populate it from the provided list
   eventList.unshift("All events-All events"); // Then add the all events to it
-  for (let i = 0; i < importedDataSet.length; i++) {
-    var cell = importedDataSet[i][2];
-    // Iterate over all the + entries in the same cell
-    while (cell.includes("#")) { 
-      let str = cell.slice(cell.indexOf("#"));
-      cell = str.slice(str.indexOf(" ")); 
-      let eventName = str.slice(1,str.indexOf(" "));
-      if (eventName.includes(".")) { 
-        eventName = eventName.slice(0, eventName.indexOf(".")); // This allows handling edge cases like +Workout.
-      }
-      eventName = helperCapitalizeFirstLetter(eventName); // Capitalize the first letter
-      
-      // Check if event name is not in the provided event list
-      let unaccountedForEvent = true;
-      for (let j = 0; j < eventList.length; j++) {
-        if (eventList[j].includes(eventName)) {
-          unaccountedForEvent = false;
-          break;
-        }
-      }
-
-      if (unaccountedForEvent) {
-        eventList.push("Unaccounted-" + eventName);
-      }
-    }
-  }
 }
   
 function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, chosenEvent, groupBy, searchWord) {
@@ -76,9 +97,9 @@ function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, 
     // Set it to blank for better layout in the event column title
     chosenEvent = "";
     // All events were selected, and so either display all the lines, or only those with events, depending on what the user chose
-    if (groupBy == "NoGrp-ShowLines") {
+    if (groupBy == "nogrp-showlines") {
       eventsToList.push(""); 
-    } else if (groupBy == "NoGrp-ShowEvents") {
+    } else if (groupBy == "nogrp-showevents") {
       // If user chose to show events then build the array to contain all the event names
       for (var event of eventList) {
         eventsToList.push("#" + event.split("-")[1]);
@@ -94,11 +115,11 @@ function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, 
   for (var i = 0; i < datasetToQuery.length; i++) {
     if (helperCompareDates(datasetToQuery[i][0], selectedYear)) {
       if (datasetToQuery[i][1].includes(chosenLocation)) {
-        if (groupBy == "NoGrp-ShowLines") {
+        if (groupBy == "nogrp-showlines") {
           if (datasetToQuery[i][2].includes(eventsToList)) {
             tempDataSet.push([datasetToQuery[i][0], datasetToQuery[i][1], datasetToQuery[i][2]]);
           }
-        } else if (groupBy == "NoGrp-ShowEvents") {
+        } else if (groupBy == "nogrp-showevents") {
           var eventLine = ""; // will hold all the events of that line
           for (var event of eventsToList) {
             if (datasetToQuery[i][2].includes(event)) {
