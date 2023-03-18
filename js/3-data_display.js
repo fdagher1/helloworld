@@ -1,3 +1,11 @@
+function displayFileValidityError(error_message){
+  const new_tbody_HTML_Element = document.getElementById("tbody"); // Get tbody HTML element
+  new_tbody_HTML_Element.replaceChildren() // Clear content
+  let row = new_tbody_HTML_Element.insertRow(); // Create new row
+  let cell = row.insertCell(0); // Create new cell
+  cell.innerHTML = error_message; // Enter error message in the cell
+}
+
 function displayDataInTopPane() {
   // Populate the time dropdown
   var selectYearElement = document.getElementById("select-date");

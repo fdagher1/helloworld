@@ -9,12 +9,17 @@ var eventList = [];
 function eventUploadButtonClicked(event) {
   var reader = new FileReader();
   reader.onload = function(e) {
-      var data = new Uint8Array(e.target.result);
-      var workbook = XLSX.read(data, {type: 'array'});
-      var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-      importedDataSet = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }); // header: 1 instructs xlsx to create an 'array of arrays'
-      importedDataSet.shift(); // Remove the table header
+    var data = new Uint8Array(e.target.result);
+    var workbook = XLSX.read(data, {type: 'array'});
+    var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+    importedDataSet = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }); // header: 1 instructs xlsx to create an 'array of arrays'
+    importedDataSet.shift(); // Remove the table header
 
+    // Validate XLSX format and data
+    var file_validity_message = validateFileFormatAndData();
+
+    // If file is valid then proceed with displaying the top pane otherwise advise user to look in the browser's console for errors
+    if (file_validity_message == "file is valid") {
       // Display Data in Top Pane
       retrieveDataForTopPane();
       displayDataInTopPane();
@@ -23,6 +28,9 @@ function eventUploadButtonClicked(event) {
       var columnNames = ["Date", "Location", "Event"];
       displayDataInTable(columnNames, importedDataSet);
       lastDisplayedDataSet = importedDataSet.slice(0); // This is needed otherwise searching from the textbox wouldn't work
+    } else {
+      displayFileValidityError(file_validity_message);
+    }
   };
   reader.readAsArrayBuffer(event.target.files[0]);
   
@@ -37,7 +45,7 @@ function eventUploadButtonClicked(event) {
   // Radio button
   document.getElementById("radiobutton-groupby-location").removeAttribute("disabled");
   document.getElementById("radiobutton-groupby-event").removeAttribute("disabled");
-  document.getElementById("radiobutton-groupbyNoGrp-ShowEvents").removeAttribute("disabled");
+  document.getElementById("radiobutton-groupbynogrp-showevents").removeAttribute("disabled");
   document.getElementById("radiobutton-groupbynone-showall").removeAttribute("disabled");
 
   // Search box
@@ -84,14 +92,14 @@ function eventDisplayButtonClicked() {
   var selectedLocation = document.getElementById("select-location").value;
   var selectedEvent = document.getElementById("select-event").value;
   var groupBy;
-  if (document.getElementsByName("filterby")[0].checked) {
+  if (document.getElementById("radiobutton-groupby-location").checked) {
     groupBy = "location";
-  } else if (document.getElementsByName("filterby")[1].checked) {
+  } else if (document.getElementById("radiobutton-groupby-event").checked) {
     groupBy = "event";
-  } else if (document.getElementsByName("filterby")[2].checked) {
-    groupBy = "NoGrp-ShowEvents";
-  } else if (document.getElementsByName("filterby")[3].checked) {
-    groupBy = "NoGrp-ShowLines";
+  } else if (document.getElementById("radiobutton-groupbynogrp-showevents").checked) {
+    groupBy = "nogrp-showevents";
+  } else if (document.getElementById("radiobutton-groupbynone-showall").checked) {
+    groupBy = "nogrp-showlines";
   }
 
   // Remove the first part of the event name
@@ -101,7 +109,7 @@ function eventDisplayButtonClicked() {
   document.getElementById("textbox-keyword").value = "";
   
   // If no grouping then call the list function otherwise (i.e. if group by location or event) then call the group function
-  if (groupBy.includes("NoGrp")) {
+  if (groupBy.includes("nogrp")) {
     let searchWord = "";
     document.getElementById("textbox-keyword").removeAttribute("disabled");
     retrieveDataforListTable(importedDataSet, selectedYear, selectedLocation, selectedEvent, groupBy, searchWord)
@@ -120,8 +128,8 @@ function eventHTMLMonthsClicked(selectedYear, selectedLocation, clickedEvent) {
 function eventHTMLListClicked(selectedYear, chosenLocation, chosenEvent, groupBy ) {
   document.getElementById("textbox-keyword").removeAttribute("disabled");
   let searchWord = "";
-  document.getElementById("radiobutton-groupbyNoGrp-ShowEvents").checked = true;
-  groupBy = "NoGrp-ShowEvents";
+  document.getElementById("radiobutton-groupbynogrp-showevents").checked = true;
+  groupBy = "nogrp-showevents";
   retrieveDataforListTable(importedDataSet, selectedYear, chosenLocation, chosenEvent, groupBy, searchWord);
 }
 
@@ -133,14 +141,14 @@ function eventKeywordEntered() {
   var selectedLocation = document.getElementById("select-location").value;
   var selectedEvent = document.getElementById("select-event").value;
   var groupBy;
-  if (document.getElementsByName("filterby")[0].checked) {
+  if (document.getElementById("radiobutton-groupby-location").checked) {
     groupBy = "location";
-  } else if (document.getElementsByName("filterby")[1].checked) {
+  } else if (document.getElementById("radiobutton-groupby-event").checked) {
     groupBy = "event";
-  } else if (document.getElementsByName("filterby")[2].checked) {
-    groupBy = "NoGrp-ShowEvents";
-  } else if (document.getElementsByName("filterby")[3].checked) {
-    groupBy = "NoGrp-ShowLines";
+  } else if (document.getElementById("radiobutton-groupbynone-showall").checked) {
+    groupBy = "nogrp-showlines";
+  } else if (document.getElementById("radiobutton-groupbynogrp-showevents").checked) {
+    groupBy = "nogrp-showevents";
   }
 
   // Remove the first part of the event name
