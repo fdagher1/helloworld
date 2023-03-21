@@ -45,7 +45,7 @@ function displayDataInTopPane() {
 }
   
 function displayDataInTable(columnNames, dataSetToDisplay) {
-  // Clear table header element then a new row to it
+  // Clear table header element then add new row to it
   const thead_HTML_Element = document.getElementById("thead");
   thead_HTML_Element.replaceChildren();
   let row = thead_HTML_Element.insertRow();
@@ -83,37 +83,37 @@ function displayDataInTable(columnNames, dataSetToDisplay) {
   }
 }
   
-  function displayGroupTable(groupbyDataToDisplay, columnNames, selectedYear, selectedLocation, selectedEvent, groupBy) {
-    // Display the data in the table before adding the hyperlinks to some of the columns
-    displayDataInTable(columnNames, groupbyDataToDisplay);
-  
-    // Add the hyperlinks to the body
-    const tableRows = document.getElementById("tbody").childNodes;
-    for (let i = 0; i < tableRows.length; i++) {
-      const tableColumns = tableRows[i].childNodes;
-      
-      // Set the parameters that get passed when the count is clicked on
-      var yearToPass = selectedYear;
-      if (groupBy == "location") {
-        var locationToPass = groupbyDataToDisplay[i][0];
-        var eventToPass = selectedEvent;
-      } else if (groupBy == "event") {
-        var locationToPass = selectedLocation;
-        var eventToPass = groupbyDataToDisplay[i][0] ;
-      }
-      var parameters = "\"" + yearToPass + "\", \"" + locationToPass + "\", \"" + eventToPass + "\", \"" + groupBy + "\"";
-      let onclick_value = "location.href='javascript:eventHTMLListClicked(" + parameters + ")';"
-      tableColumns[1].setAttribute("onclick", onclick_value);
-      tableColumns[1].setAttribute("style", "text-decoration:underline;");
-      
-      // Set the parameters that get passed when months is clicked on
-      if (groupBy == "event") {
-        let parameters1 = "\"" + selectedYear + "\", \"" + selectedLocation + "\", \"" + groupbyDataToDisplay[i][0] + "\"";
-        let onclick_value1 = "location.href='javascript:eventHTMLMonthsClicked(" + parameters1 + ")';"
-        tableColumns[2].setAttribute("onclick", onclick_value1);
-        tableColumns[2].setAttribute("style", "text-decoration:underline;");
-      }
+function displayGroupTable(groupbyDataToDisplay, columnNames, selectedYear, selectedLocation, selectedEvent, groupBy) {
+  // Display the data in the table before adding the hyperlinks to some of the columns
+  displayDataInTable(columnNames, groupbyDataToDisplay);
+
+  // Add the hyperlinks to the body
+  const tableRows = document.getElementById("tbody").childNodes;
+  for (let i = 0; i < tableRows.length; i++) {
+    const tableColumns = tableRows[i].childNodes;
+    
+    // Set the parameters that get passed when the count is clicked on
+    var yearToPass = selectedYear;
+    if (groupBy == "location") {
+      var locationToPass = groupbyDataToDisplay[i][0];
+      var eventToPass = selectedEvent;
+    } else if (groupBy == "event") {
+      var locationToPass = selectedLocation;
+      var eventToPass = groupbyDataToDisplay[i][0] ;
     }
+    var parameters = "\"" + yearToPass + "\", \"" + locationToPass + "\", \"" + eventToPass + "\", \"" + groupBy + "\"";
+    let onclick_value = "location.href='javascript:eventHTMLListClicked(" + parameters + ")';"
+    tableColumns[1].setAttribute("onclick", onclick_value);
+    tableColumns[1].setAttribute("style", "text-decoration:underline;");
+    
+    // Set the parameters that get passed when months is clicked on
+    if (groupBy == "event") {
+      let parameters1 = "\"" + selectedYear + "\", \"" + selectedLocation + "\", \"" + groupbyDataToDisplay[i][0] + "\"";
+      let onclick_value1 = "location.href='javascript:eventHTMLMonthsClicked(" + parameters1 + ")';"
+      tableColumns[2].setAttribute("onclick", onclick_value1);
+      tableColumns[2].setAttribute("style", "text-decoration:underline;");
+    }
+  }
 }
   
 function displayMonthsTable(countSelectionOccurance_ByMonth, clickedEvent) {
@@ -137,4 +137,10 @@ function displayMonthsTable(countSelectionOccurance_ByMonth, clickedEvent) {
     tableColumns[1].setAttribute("onclick", onclick_value);
     tableColumns[1].setAttribute("style", "text-decoration:underline;");
   }
+}
+
+function displayPaySumTable(paySumAmount_ByMonth) {
+  // Display data in table
+  var columnNames = ["Date", "Count"];
+  displayDataInTable(columnNames, paySumAmount_ByMonth);
 }

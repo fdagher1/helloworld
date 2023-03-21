@@ -1,8 +1,8 @@
 function helperIncrementCount(eventName, countOfOccurances) {
   if (eventName in countOfOccurances) {
-      countOfOccurances[eventName] += 1;
+    countOfOccurances[eventName] += 1;
   } else {
-      countOfOccurances[eventName] = 1;
+    countOfOccurances[eventName] = 1;
   }
 }
   
@@ -45,5 +45,44 @@ function helperCompareDates(date1, date2) {
     } else {
       return false;
     }
+  }
+}
+
+function helperGetTotalAmountFromLine(line) {
+  var total = 0;
+  var stringAmount = "";
+  var dollarSignDetected = false;
+  var skipDollarCheck = false;
+  for (var i = 0; i < line.length; i++) { // iterate over every character and only add when the beginning is a $ sign      
+    if (dollarSignDetected) {
+      if (line.charAt(i) >= '0' && line.charAt(i) <= "9") {
+        stringAmount = stringAmount + line.charAt(i);
+        skipDollarCheck = true;
+      } else {
+        skipDollarCheck = false;
+      }
+    }
+    
+    if (!skipDollarCheck) {
+      if (line.charAt(i) == "$") {
+        dollarSignDetected = true;
+      } else {
+        dollarSignDetected = false;
+        if (stringAmount != "") {
+          total += parseInt(stringAmount);
+          stringAmount = "";
+        }
+      }
+    }
+  }
+
+  return total;
+}
+
+function helperPaySumAmount(dateValue, paySumTotal, paySumAmount_ByMonth) {
+  if (dateValue in paySumAmount_ByMonth) {
+    paySumAmount_ByMonth[dateValue] += paySumTotal;
+  } else {
+    paySumAmount_ByMonth[dateValue] = paySumTotal;
   }
 }

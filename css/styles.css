@@ -19,7 +19,7 @@ body {
     width: 180px;
   }
 
-  #button-darktoggle {
+  #button-darktoggle, #button-advanced {
     float: right;
   }
 
