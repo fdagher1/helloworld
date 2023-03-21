@@ -23,7 +23,9 @@
 
       <select id="select-date" class="lightclass" disabled>
         <option value="All Years" selected>All Years</option>
-      </select><br>
+      </select>
+      <input type="button" id="button-advanced" class="lightclass" value="Advanced" onclick="eventAdvancedButtonClicked()" disabled>
+      <br/>
       
       <select id="select-location" class="lightclass" disabled>
         <option value="All Countries" selected>All Countries</option>
@@ -38,11 +40,11 @@
       <label>Group by Ev.</label><br>
 
       <input type="button" id="button-displaytable" class="lightclass" value="Display" onclick="eventDisplayButtonClicked()" disabled>
-      <input type="radio" id="radiobutton-groupbynone-showall" name="filterby" disabled>
+      <input type="radio" id="radiobutton-groupbynone-showalllines" name="filterby" disabled>
       <label>Show All Lines</label><br>
 
       <input id="textbox-keyword" type="text" oninput="eventKeywordEntered()" disabled>
-      <input type="radio" id="radiobutton-groupbynogrp-showevents" name="filterby" disabled>
+      <input type="radio" id="radiobutton-groupbynone-showeventonly" name="filterby" disabled>
       <label>Show Events</label><br>
     </div>
 

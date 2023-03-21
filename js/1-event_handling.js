@@ -35,7 +35,9 @@ function eventUploadButtonClicked(event) {
   reader.readAsArrayBuffer(event.target.files[0]);
   
   // Make the HTML controls available
+  // Buttons
   document.getElementById("button-displaytable").removeAttribute("disabled");
+  document.getElementById("button-advanced").removeAttribute("disabled");
  
   // Dropdowns
   document.getElementById("select-date").removeAttribute("disabled");
@@ -45,14 +47,14 @@ function eventUploadButtonClicked(event) {
   // Radio button
   document.getElementById("radiobutton-groupby-location").removeAttribute("disabled");
   document.getElementById("radiobutton-groupby-event").removeAttribute("disabled");
-  document.getElementById("radiobutton-groupbynogrp-showevents").removeAttribute("disabled");
-  document.getElementById("radiobutton-groupbynone-showall").removeAttribute("disabled");
+  document.getElementById("radiobutton-groupbynone-showeventonly").removeAttribute("disabled");
+  document.getElementById("radiobutton-groupbynone-showalllines").removeAttribute("disabled");
 
   // Search box
   document.getElementById("textbox-keyword").removeAttribute("disabled");
 
   // Check the show all radio button by default
-  document.getElementById("radiobutton-groupbynone-showall").checked = true;
+  document.getElementById("radiobutton-groupbynone-showalllines").checked = true;
 
   // Clear content of arrays
   dataSet = [];
@@ -96,10 +98,10 @@ function eventDisplayButtonClicked() {
     groupBy = "location";
   } else if (document.getElementById("radiobutton-groupby-event").checked) {
     groupBy = "event";
-  } else if (document.getElementById("radiobutton-groupbynogrp-showevents").checked) {
-    groupBy = "nogrp-showevents";
-  } else if (document.getElementById("radiobutton-groupbynone-showall").checked) {
-    groupBy = "nogrp-showlines";
+  } else if (document.getElementById("radiobutton-groupbynone-showeventonly").checked) {
+    groupBy = "nogrp-showeventonly";
+  } else if (document.getElementById("radiobutton-groupbynone-showalllines").checked) {
+    groupBy = "nogrp-showalllines";
   }
 
   // Remove the first part of the event name
@@ -112,7 +114,7 @@ function eventDisplayButtonClicked() {
   if (groupBy.includes("nogrp")) {
     let searchWord = "";
     document.getElementById("textbox-keyword").removeAttribute("disabled");
-    retrieveDataforListTable(importedDataSet, selectedYear, selectedLocation, selectedEvent, groupBy, searchWord)
+    retrieveDataforListTable(importedDataSet, selectedYear, selectedLocation, selectedEvent, groupBy, searchWord);
   } else {
     // Disable the keyword textbox since it is not useful when in this state
     document.getElementById("textbox-keyword").setAttribute("disabled", "");
@@ -128,8 +130,8 @@ function eventHTMLMonthsClicked(selectedYear, selectedLocation, clickedEvent) {
 function eventHTMLListClicked(selectedYear, chosenLocation, chosenEvent, groupBy ) {
   document.getElementById("textbox-keyword").removeAttribute("disabled");
   let searchWord = "";
-  document.getElementById("radiobutton-groupbynogrp-showevents").checked = true;
-  groupBy = "nogrp-showevents";
+  document.getElementById("radiobutton-groupbynone-showeventonly").checked = true;
+  groupBy = "nogrp-showeventonly";
   retrieveDataforListTable(importedDataSet, selectedYear, chosenLocation, chosenEvent, groupBy, searchWord);
 }
 
@@ -145,14 +147,20 @@ function eventKeywordEntered() {
     groupBy = "location";
   } else if (document.getElementById("radiobutton-groupby-event").checked) {
     groupBy = "event";
-  } else if (document.getElementById("radiobutton-groupbynone-showall").checked) {
-    groupBy = "nogrp-showlines";
-  } else if (document.getElementById("radiobutton-groupbynogrp-showevents").checked) {
-    groupBy = "nogrp-showevents";
+  } else if (document.getElementById("radiobutton-groupbynone-showalllines").checked) {
+    groupBy = "nogrp-showalllines";
+  } else if (document.getElementById("radiobutton-groupbynone-showeventonly").checked) {
+    groupBy = "nogrp-showeventonly";
   }
 
   // Remove the first part of the event name
   selectedEvent = selectedEvent.split("-")[1];
 
   retrieveDataforListTable(lastDisplayedDataSet, selectedYear, selectedLocation, selectedEvent, groupBy, searchWord);
+}
+
+function eventAdvancedButtonClicked() {
+  var selectedYear = document.getElementById("select-date").value;
+  var selectedLocation = document.getElementById("select-location").value;
+  retrieveDataForPaySum(selectedYear, selectedLocation);
 }

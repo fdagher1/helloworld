@@ -41,7 +41,6 @@ function validateFileFormatAndData(){
   }
 
   // Since no errors returned, return "file is valid" instead
-  console.log("file is valid");
   return "file is valid";
 }
 
@@ -64,13 +63,13 @@ function retrieveDataForTopPane() {
       // Add city name to array
       let cityName = cityCountrySplitArray[0].trim();
       if (!cityName.includes("(") && !cityList.includes(cityName)) { 
-          cityList.push(helperCapitalizeFirstLetter(cityName)); 
+          cityList.push(cityName); 
       }
 
       // Add country name to array
       let countryName = cityCountrySplitArray[1].trim();
       if (!countryName.includes(")") && !countryList.includes(countryName)) {
-          countryList.push(helperCapitalizeFirstLetter(countryName));
+          countryList.push(countryName);
       }
     }
   }
@@ -97,9 +96,9 @@ function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, 
     // Set it to blank for better layout in the event column title
     chosenEvent = "";
     // All events were selected, and so either display all the lines, or only those with events, depending on what the user chose
-    if (groupBy == "nogrp-showlines") {
+    if (groupBy == "nogrp-showalllines") {
       eventsToList.push(""); 
-    } else if (groupBy == "nogrp-showevents") {
+    } else if (groupBy == "nogrp-showeventonly") {
       // If user chose to show events then build the array to contain all the event names
       for (var event of eventList) {
         eventsToList.push("#" + event.split("-")[1]);
@@ -115,16 +114,14 @@ function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, 
   for (var i = 0; i < datasetToQuery.length; i++) {
     if (helperCompareDates(datasetToQuery[i][0], selectedYear)) {
       if (datasetToQuery[i][1].includes(chosenLocation)) {
-        if (groupBy == "nogrp-showlines") {
+        if (groupBy == "nogrp-showalllines") {
           if (datasetToQuery[i][2].includes(eventsToList)) {
             tempDataSet.push([datasetToQuery[i][0], datasetToQuery[i][1], datasetToQuery[i][2]]);
           }
-        } else if (groupBy == "nogrp-showevents") {
+        } else if (groupBy == "nogrp-showeventonly") {
           var eventLine = ""; // will hold all the events of that line
           for (var event of eventsToList) {
             if (datasetToQuery[i][2].includes(event)) {
-              //eventLine += datasetToQuery[i][2].slice(datasetToQuery[i][2].indexOf(event)).slice(0, datasetToQuery[i][2].slice(datasetToQuery[i][2].indexOf(event)).indexOf("\n")) + "<br>";
-              // The below is a bit long because the line has to be sliced at the first \n that occurs AFTER the event
               let tempEventLine = ""; // will only hold one event in the line 
               tempEventLine = datasetToQuery[i][2].slice(datasetToQuery[i][2].indexOf(event));
               eventLine += tempEventLine.slice(0, tempEventLine.indexOf("<br>")) + "<br><br>";
@@ -141,7 +138,7 @@ function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, 
   // Setting the content of lastDisplayedDataSet here rather than towards the end, as it should be done before the textbox content change (otherwise backspace wouldn't do anything)
   lastDisplayedDataSet = tempDataSet.slice(0);
 
-  // Iterate over each row to find a match based on the keyword
+  // Iterate over each row to find a match based on the keyword, if any
   var dataSetToDisplay = [];
   for (const line of tempDataSet) {
     if (line[0].toLowerCase().includes(searchWord.toLowerCase()) || line[1].toLowerCase().includes(searchWord.toLowerCase()) || line[2].toLowerCase().includes(searchWord.toLowerCase())) {
@@ -292,4 +289,50 @@ function retrieveDataforMonthsTable(selectedYear, selectedLocation, clickedEvent
   countSelectionOccurance_ByMonth = Object.entries(countSelectionOccurance_ByMonth);
 
   displayMonthsTable(countSelectionOccurance_ByMonth, clickedEvent);
+}
+
+function retrieveDataForPaySum(selectedYear, selectedLocation) {
+  // Define the needed arrays for output
+  var paySumAmount_ByMonth = {};
+  hashtag = "#Pay";
+
+  // Set year and location query words to "" if All was selected to allow making them a non criteria
+  if (selectedYear.includes("All ")) { 
+    selectedYear = ""; 
+  }
+  if (selectedLocation.includes("All ")) { 
+    selectedLocation = ""; 
+  }
+
+  // Iterate over each table row and when there's a hit, increment occurance array for month-year combo
+  for (i = 0; i < importedDataSet.length; i++) {
+    if (importedDataSet[i][0].includes(selectedYear) && importedDataSet[i][1].includes(selectedLocation) && importedDataSet[i][2].includes(hashtag)){
+      // Get the month and year from the date
+      let date = importedDataSet[i][0];
+      let mm = date.slice(date.indexOf(" ")+1, date.indexOf("/"));
+      let yyyy = date.substring(date.length - 4); 
+      let dateValue = mm + "/" + yyyy;
+     
+      // Get the #Pay line from that cell
+      let payLine = importedDataSet[i][2].slice(importedDataSet[i][2].indexOf(hashtag));
+      payLine = payLine.slice(0, payLine.indexOf("<br>")); // THIS CAN POSSIBLY BE MERGED WITH THE TOP LINE AT SOME POINT
+
+      // Get the pay amount from that cell
+      var paySumTotal = helperGetTotalAmountFromLine(payLine);
+     
+      // Increment count for that particular mm/yyyy string
+      helperPaySumAmount(dateValue, paySumTotal, paySumAmount_ByMonth);
+    }
+  }
+
+  // Convert the dictionary to an array for consistency (since the dicionary sorting helper function I have converts the dict to an array as well)
+  var sumPayAmount_ByMonth = Object.entries(paySumAmount_ByMonth);
+
+  var total = 0;
+  for (i = 0; i < sumPayAmount_ByMonth.length; i++) {
+    total += sumPayAmount_ByMonth[i][1];
+  }
+  console.log(total);
+
+  displayPaySumTable(sumPayAmount_ByMonth);
 }
