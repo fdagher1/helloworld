@@ -25,27 +25,34 @@ function helperSortDictionaryIntoArray(dict) {
 }
   
 function helperCompareDates(date1, date2) {
+  if (date2 == "") {
+    return true;
+  }
+  
   // If date2 is in format mm/yyyy then compare the month and year values in each variable
-  if (date2.length == 7) { 
+  if (date2.length == 6 || date2.length == 7) { 
     // Get the month and year from each date in order to compare them
-    let date1_mm = date1.slice(date1.indexOf(" ")+1, date1.indexOf("/"));
-    let date1_yyyy = date1.substring(date1.length - 4);
-    let date2_mm = date2.split("/")[0];
-    let date2_yyyy = date2.split("/")[1];
-
-    if (date1_mm == date2_mm && date1_yyyy == date2_yyyy) {
-      return true;
-    } else {
-      return false;
-    }
+    var date1 = new Date(date1);
+    var date1_mm = (date1.getMonth()+1).toString();
+    var date1_yyyy = date1.getFullYear().toString();
+    var date2_mm = date2.split("/")[0];
+    var date2_yyyy = date2.split("/")[1];
   // Otherwise check if the dates are an exact match
   } else {
-    if (date1.includes(date2)) {
-      return true;
-    } else {
-      return false;
-    }
+    var date1 = new Date(date1);
+    var date2 = new Date(date2);
+    var date1_mm = (date1.getMonth()+1).toString();
+    var date1_yyyy = date1.getFullYear().toString();
+    var date2_mm = (date2.getMonth()+1).toString();
+    var date2_yyyy = date2.getFullYear().toString();
   }
+
+  if (date1_mm == date2_mm && date1_yyyy == date2_yyyy) {
+    return true;
+  } else {
+    return false;
+  }
+
 }
 
 function helperGetTotalAmountFromLine(line) {
@@ -77,12 +84,4 @@ function helperGetTotalAmountFromLine(line) {
   }
 
   return total;
-}
-
-function helperPaySumAmount(dateValue, paySumTotal, paySumAmount_ByMonth) {
-  if (dateValue in paySumAmount_ByMonth) {
-    paySumAmount_ByMonth[dateValue] += paySumTotal;
-  } else {
-    paySumAmount_ByMonth[dateValue] = paySumTotal;
-  }
 }
