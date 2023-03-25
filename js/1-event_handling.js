@@ -37,7 +37,7 @@ function eventUploadButtonClicked(event) {
   // Make the HTML controls available
   // Buttons
   document.getElementById("button-displaytable").removeAttribute("disabled");
-  document.getElementById("button-advanced").removeAttribute("disabled");
+  document.getElementById("button-summary").removeAttribute("disabled");
  
   // Dropdowns
   document.getElementById("select-date").removeAttribute("disabled");
@@ -159,8 +159,6 @@ function eventKeywordEntered() {
   retrieveDataforListTable(lastDisplayedDataSet, selectedYear, selectedLocation, selectedEvent, groupBy, searchWord);
 }
 
-function eventAdvancedButtonClicked() {
-  var selectedYear = document.getElementById("select-date").value;
-  var selectedLocation = document.getElementById("select-location").value;
-  retrieveDataForPaySum(selectedYear, selectedLocation);
+function eventSummaryButtonClicked() {
+  retrieveDataForSummaryTable();
 }

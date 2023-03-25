@@ -22,9 +22,13 @@ function validateFileFormatAndData(){
       event_cell = new_event_cell.slice(new_event_cell.indexOf(" ")); // Place anything after the first space from the tag in a new cell to iterate over once this is done 
       let eventName = new_event_cell.slice(1,new_event_cell.indexOf(" ")); // Get the tag name
       if (eventName.includes(".")) { 
-        eventName = eventName.slice(0, eventName.indexOf(".")); // Remove the "."" from the tag name if it happens to be linked to it. 
-        // Should we handle cases like +Workout<br>
+        eventName = eventName.slice(0, eventName.indexOf(".")); // Remove the "." from the tag name if it happens to be linked to it. 
       }
+      if (eventName.includes(",")) { 
+        eventName = eventName.slice(0, eventName.indexOf(",")); // Remove the "," from the tag name if it happens to be linked to it. 
+      }
+      // Should we handle other cases than . and , like <br> perhaps?
+
       // Check if event name is not in the provided event list
       var event_is_in_list = false;
       for (let j = 0; j < eventList.length; j++) {
@@ -79,6 +83,7 @@ function retrieveDataForTopPane() {
   // retrieve the events list
   eventList = importedDataSet[importedDataSet.length-1][3].split(";"); // First populate it from the provided list
   eventList.unshift("All events-All events"); // Then add the all events to it
+  eventList.pop(); // Remove the last line as it is blank
 }
   
 function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, chosenEvent, groupBy, searchWord) {
@@ -277,9 +282,12 @@ function retrieveDataforMonthsTable(selectedYear, selectedLocation, clickedEvent
   for (i = 0; i < importedDataSet.length; i++) {
     if (importedDataSet[i][0].includes(selectedYear) && importedDataSet[i][1].includes(selectedLocation) && importedDataSet[i][2].includes(hashtag)){
       // Get the month and year from the date
-      let date = importedDataSet[i][0];
-      let mm = date.slice(date.indexOf(" ")+1, date.indexOf("/"));
-      let yyyy = date.substring(date.length - 4); 
+      //let date = importedDataSet[i][0];
+      //let mm = date.slice(date.indexOf(" ")+1, date.indexOf("/"));
+      //let yyyy = date.substring(date.length - 4); 
+      let date = new Date(importedDataSet[i][0]); // Get corresponding date
+      let mm = (date.getMonth()+1).toString();
+      let yyyy = date.getFullYear().toString();
       // Increment count for that particular mm/yyyy string
       helperIncrementCount(mm + "/" + yyyy, countSelectionOccurance_ByMonth);
     }
@@ -291,48 +299,92 @@ function retrieveDataforMonthsTable(selectedYear, selectedLocation, clickedEvent
   displayMonthsTable(countSelectionOccurance_ByMonth, clickedEvent);
 }
 
-function retrieveDataForPaySum(selectedYear, selectedLocation) {
-  // Define the needed arrays for output
-  var paySumAmount_ByMonth = {};
-  hashtag = "#Pay";
-
-  // Set year and location query words to "" if All was selected to allow making them a non criteria
-  if (selectedYear.includes("All ")) { 
-    selectedYear = ""; 
-  }
-  if (selectedLocation.includes("All ")) { 
-    selectedLocation = ""; 
+function retrieveDataForSummaryTable() {
+  // Iterate over the datasheet to build the month/year array
+  var startDate = new Date(importedDataSet[0][0]); 
+  var endDate = new Date(importedDataSet[importedDataSet.length - 1][0]); 
+  var month_year_arr = [];
+  while (new Date(startDate.getFullYear(), startDate.getMonth()) >= new Date(endDate.getFullYear(), endDate.getMonth())) {
+    var month_year = (startDate.getMonth()+1).toString() +"/" + startDate.getFullYear().toString(); //Adding 1 to month as it starts from 0 rather than 1
+    month_year_arr.push(month_year);
+    startDate.setMonth(startDate.getMonth() - 1); // subtract 1 month from the date in order to keep looping
   }
 
-  // Iterate over each table row and when there's a hit, increment occurance array for month-year combo
-  for (i = 0; i < importedDataSet.length; i++) {
-    if (importedDataSet[i][0].includes(selectedYear) && importedDataSet[i][1].includes(selectedLocation) && importedDataSet[i][2].includes(hashtag)){
-      // Get the month and year from the date
-      let date = importedDataSet[i][0];
-      let mm = date.slice(date.indexOf(" ")+1, date.indexOf("/"));
-      let yyyy = date.substring(date.length - 4); 
-      let dateValue = mm + "/" + yyyy;
-     
-      // Get the #Pay line from that cell
-      let payLine = importedDataSet[i][2].slice(importedDataSet[i][2].indexOf(hashtag));
-      payLine = payLine.slice(0, payLine.indexOf("<br>")); // THIS CAN POSSIBLY BE MERGED WITH THE TOP LINE AT SOME POINT
-
-      // Get the pay amount from that cell
-      var paySumTotal = helperGetTotalAmountFromLine(payLine);
-     
-      // Increment count for that particular mm/yyyy string
-      helperPaySumAmount(dateValue, paySumTotal, paySumAmount_ByMonth);
+  // Build the dictionary for the count of each tag in each month (dictionary of a dictionary)
+  // Ex: countByMonth["#Workout"]["1/2023"] = 0; 
+  var tagsToQuery = ["#Workout", "#Jog", "#Tennis", "#Gathering", "#Met", "#Date", "Travel", "#Orgasm", "#Pay", "#Session"]
+  var countByMonth = {};
+  for (let tagToQuery of tagsToQuery) {
+    countByMonth[tagToQuery] = {};
+    for (let month_year of month_year_arr) {
+      let temp_month_year_dict = {};
+      temp_month_year_dict[month_year] = 0;
+      countByMonth[tagToQuery] = Object.assign(countByMonth[tagToQuery], temp_month_year_dict);
+      // The above is needed as countByMonth[tagToQuery] = {month_year: 0}; results in month_year used as value 
     }
   }
 
-  // Convert the dictionary to an array for consistency (since the dicionary sorting helper function I have converts the dict to an array as well)
-  var sumPayAmount_ByMonth = Object.entries(paySumAmount_ByMonth);
-
-  var total = 0;
-  for (i = 0; i < sumPayAmount_ByMonth.length; i++) {
-    total += sumPayAmount_ByMonth[i][1];
+  // Iterate over the datasheet to count the hits for tags
+  for (i = 0; i < importedDataSet.length; i++) {
+    for (let tagToQuery of tagsToQuery) {
+      if (importedDataSet[i][2].includes(tagToQuery)) {
+        // Get the date
+        var cell_date = new Date(importedDataSet[i][0]);
+        var month_year = (cell_date.getMonth()+1).toString() +"/" + cell_date.getFullYear().toString();
+        
+        // Increment count in dictionary
+        countByMonth[tagToQuery][month_year] += 1
+      }
+    }
   }
-  console.log(total);
 
-  displayPaySumTable(sumPayAmount_ByMonth);
+  // Build the dictionary for holding other data from each month, like pay amount, etc.
+  var tagsToQueryWithin = ["#Pay"]
+  var sumByMonth = {};
+  for (let tagToQuery of tagsToQueryWithin) {
+    sumByMonth[tagToQuery] = {};
+    for (let month_year of month_year_arr) {
+      let temp_month_year_dict = {};
+      temp_month_year_dict[month_year] = 0;
+      sumByMonth[tagToQuery] = Object.assign(sumByMonth[tagToQuery], temp_month_year_dict);
+      // The above is needed as sumByMonth[tagsToQueryWithin] = {month_year: 0}; results in month_year used as value 
+    }
+  }
+
+  // Iterate over the datasheet for other data
+  for (i = 0; i < importedDataSet.length; i++) {
+    for (let tagToQueryWithin of tagsToQueryWithin) {
+      switch (tagToQueryWithin) {
+        case "#Pay":
+          if (importedDataSet[i][2].includes(tagToQueryWithin)) {
+            // Get the #Pay line from that cell
+            let payLine = importedDataSet[i][2].slice(importedDataSet[i][2].indexOf(tagToQueryWithin));
+            payLine = payLine.slice(0, payLine.indexOf("<br>")); // THIS CAN POSSIBLY BE MERGED WITH THE TOP LINE AT SOME POINT
+
+            // Get the pay amount from that cell
+            var paySumTotal = helperGetTotalAmountFromLine(payLine);
+
+            // Get the date
+            var cell_date = new Date(importedDataSet[i][0]); // Get corresponding date
+            var month_year = (cell_date.getMonth()+1).toString() +"/" + cell_date.getFullYear().toString();
+            
+            // Add data to dictionary
+            sumByMonth[tagToQueryWithin][month_year] += paySumTotal
+          }
+          break;
+
+        case "Desire":
+          break;
+      }
+    }
+  }
+
+  // Create the column names for use when displaying the data
+  var countColumnNames = tagsToQuery.slice();
+  countColumnNames.unshift("Month");
+  var queryWithinColumnNames = ["Paid ($)"];
+  columnNames = countColumnNames.concat(queryWithinColumnNames);
+
+  // Send data to display
+  displaySummaryTable(columnNames, month_year_arr, countByMonth, sumByMonth);
 }
