@@ -6,10 +6,6 @@ function helperIncrementCount(eventName, countOfOccurances) {
   }
 }
   
-function helperCapitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-  
 function helperSortDictionaryIntoArray(dict) {
   // Create array
   var items = Object.keys(dict).map(function(key) {
