@@ -139,7 +139,7 @@ function displayMonthsTable(countSelectionOccurance_ByMonth, clickedEvent) {
   }
 }
 
-function displaySummaryTable(columnNames, month_year_arr, countByMonth, sumByMonth) {
+function displaySummaryByMonthTable(columnNames, month_year_arr, countByMonth, sumByMonth) {
   // Clear table header element then add new row to it
   const thead_HTML_Element = document.getElementById("thead");
   thead_HTML_Element.replaceChildren();

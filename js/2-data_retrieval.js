@@ -1,7 +1,19 @@
 function validateFileFormatAndData(){
   // VALIDATE EACH EVENT CELL
   for (let i = 0; i < importedDataSet.length; i++) { 
-    var event_cell = importedDataSet[i][2]; // retrieve the event cell content
+    
+    // CHECK LOCATION ENTRY VALIDITY
+    let rowLocationValueArray = importedDataSet[i][1].split(","); // Get the city and country values in an array
+    // Iterate over every city_country that day
+    for (let j = 0; j < rowLocationValueArray.length; j++) {
+      var cityCountrySplitArray = rowLocationValueArray[j].split("_"); // Split city and country into an array
+      if (cityCountrySplitArray.length != 2) {
+        return "The location provided in row number " + i + " is missing an underscore";
+      }
+    }
+    
+    // CHECK EVENT ENTRY VALIDITY
+    var event_cell = importedDataSet[i][2];
     
     // CHECK IF CELL IS BLANK
     if (typeof event_cell === 'undefined') {
@@ -63,7 +75,10 @@ function retrieveDataForTopPane() {
     // Iterate over every city_country that day
     for (let j = 0; j < rowLocationValueArray.length; j++) {
       var cityCountrySplitArray = rowLocationValueArray[j].split("_"); // Split city and country into an array
-      
+      if (cityCountrySplitArray.length != 0) {
+
+      }
+
       // Add city name to array
       let cityName = cityCountrySplitArray[0].trim();
       if (!cityName.includes("(") && !cityList.includes(cityName)) { 
@@ -85,7 +100,7 @@ function retrieveDataForTopPane() {
   eventList.unshift("All events-All events"); // Then add the all events to it
   eventList.pop(); // Remove the last line as it is blank
 }
-  
+
 function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, chosenEvent, groupBy, searchWord) {
   // Set the below to blank for ease of querying and for displaying column header
   if (selectedYear.includes("All ")) { 
@@ -299,7 +314,15 @@ function retrieveDataforMonthsTable(selectedYear, selectedLocation, clickedEvent
   displayMonthsTable(countSelectionOccurance_ByMonth, clickedEvent);
 }
 
-function retrieveDataForSummaryTable() {
+function retrieveDataForSummaryByMonthTable(selectedYear, selectedLocation) {
+  // Set the below to blank for ease of querying and for displaying column header
+  if (selectedYear.includes("All ")) { 
+    selectedYear = ""; 
+  }
+  if (selectedLocation.includes("All ")) { 
+    selectedLocation = ""; 
+  }
+  
   // Iterate over the datasheet to build the month/year array
   var startDate = new Date(importedDataSet[0][0]); 
   var endDate = new Date(importedDataSet[importedDataSet.length - 1][0]); 
@@ -327,13 +350,15 @@ function retrieveDataForSummaryTable() {
   // Iterate over the datasheet to count the hits for tags
   for (i = 0; i < importedDataSet.length; i++) {
     for (let tagToQuery of tagsToQuery) {
-      if (importedDataSet[i][2].includes(tagToQuery)) {
-        // Get the date
-        var cell_date = new Date(importedDataSet[i][0]);
-        var month_year = (cell_date.getMonth()+1).toString() +"/" + cell_date.getFullYear().toString();
-        
-        // Increment count in dictionary
-        countByMonth[tagToQuery][month_year] += 1
+      if (importedDataSet[i][1].includes(selectedLocation)) {
+        if (importedDataSet[i][2].includes(tagToQuery)) {
+          // Get the date
+          var cell_date = new Date(importedDataSet[i][0]);
+          var month_year = (cell_date.getMonth()+1).toString() +"/" + cell_date.getFullYear().toString();
+          
+          // Increment count in dictionary
+          countByMonth[tagToQuery][month_year] += 1
+        }
       }
     }
   }
@@ -386,5 +411,5 @@ function retrieveDataForSummaryTable() {
   columnNames = countColumnNames.concat(queryWithinColumnNames);
 
   // Send data to display
-  displaySummaryTable(columnNames, month_year_arr, countByMonth, sumByMonth);
+  displaySummaryByMonthTable(columnNames, month_year_arr, countByMonth, sumByMonth);
 }
