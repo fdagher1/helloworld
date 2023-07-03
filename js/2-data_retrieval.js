@@ -3,9 +3,9 @@ function validateFileFormatAndData(){
   for (let i = 0; i < importedDataSet.length; i++) { 
     
     // CHECK DATE ORDER
-    var latestDateToInclude = new Date(importedDataSet[0][0]); 
-    var earliestDateToInclude = new Date(importedDataSet[importedDataSet.length - 1][0]); 
-    if (latestDateToInclude < earliestDateToInclude) {
+    var latestDateToQuery = new Date(importedDataSet[0][0]); 
+    var earliestDateToQuery = new Date(importedDataSet[importedDataSet.length - 1][0]); 
+    if (latestDateToQuery < earliestDateToQuery) {
       return "The dates should be ordered in a descending chronological order.";
     }
 
@@ -325,8 +325,8 @@ function retrieveDataForSummaryByMonthTable(selectedYear, selectedLocation) {
   // Set some variables first  
   var firstRowDate = new Date(importedDataSet[0][0]);
   var lastRowDate = new Date(importedDataSet[importedDataSet.length - 1][0]);
-  var latestDateToInclude = firstRowDate; // Assume that "All " was selected but then check later and chagne if needed (less code this way)
-  var earliestDateToInclude = lastRowDate; // Assume that "All " was selected but then check later and chagne if needed (less code this way)
+  var latestDateToQuery = firstRowDate; // Assume that "All " was selected but check afterwards and change if needed (less code this way)
+  var earliestDateToQuery = lastRowDate; // Assume that "All " was selected but check afterwards and change if needed (less code this way)
   var month_year_arr = [];
 
   // If selected year is "All" then query all the sheet, otherwise, set the days according to the year selected
@@ -335,20 +335,20 @@ function retrieveDataForSummaryByMonthTable(selectedYear, selectedLocation) {
   } else {
     // Else set the dates for that given year, but not beyond the dates in the sheet
     if (new Date("12/31/" + selectedYear) < firstRowDate) {
-      latestDateToInclude = new Date("12/31/" + selectedYear);
+      latestDateToQuery = new Date("12/31/" + selectedYear);
     }
     
     if (new Date("1/1/" + selectedYear) > lastRowDate) {
-      earliestDateToInclude = new Date("1/1/" + selectedYear);
+      earliestDateToQuery = new Date("1/1/" + selectedYear);
     }
     
   }
 
   // Iterate over the datasheet to build the month/year array
-  while (new Date(latestDateToInclude.getFullYear(), latestDateToInclude.getMonth()) >= new Date(earliestDateToInclude.getFullYear(), earliestDateToInclude.getMonth())) {
-    var month_year = (latestDateToInclude.getMonth()+1).toString() +"/" + latestDateToInclude.getFullYear().toString(); //Adding 1 to month as it starts from 0 rather than 1
+  while (new Date(latestDateToQuery.getFullYear(), latestDateToQuery.getMonth()) >= new Date(earliestDateToQuery.getFullYear(), earliestDateToQuery.getMonth())) {
+    var month_year = (latestDateToQuery.getMonth()+1).toString() +"/" + latestDateToQuery.getFullYear().toString(); //Adding 1 to month as it starts from 0 rather than 1
     month_year_arr.push(month_year);
-    latestDateToInclude.setMonth(latestDateToInclude.getMonth() - 1); // subtract 1 month from the date in order to keep looping
+    latestDateToQuery.setMonth(latestDateToQuery.getMonth() - 1); // subtract 1 month from the date in order to keep looping
   }
 
   if (selectedLocation.includes("All ")) { 
