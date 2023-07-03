@@ -335,7 +335,7 @@ function retrieveDataForSummaryByMonthTable(selectedYear, selectedLocation) {
   } else {
     // Else set the dates for that given year, but not beyond the dates in the sheet
     if (new Date("12/31/" + selectedYear) < firstRowDate) {
-      latestDateToQuery = new Date("12/31/" + selectedYear);
+      latestDateToQuery = new Date("12/30/" + selectedYear); // Set last date to 12/30 instaed of 12/31 due to bug where December appears twice in month_year_arr (the month minus 1 somehow remains in December)
     }
     
     if (new Date("1/1/" + selectedYear) > lastRowDate) {
@@ -355,9 +355,9 @@ function retrieveDataForSummaryByMonthTable(selectedYear, selectedLocation) {
     selectedLocation = ""; 
   }
 
-  // Build the dictionary for the count of each tag in each month (dictionary of a dictionary)
+  // Build the dictionary for the count of each tag in each month (dictionary of a dictionaries)
   // Ex: countByMonth["#Workout"]["1/2023"] = 0; 
-  var tagsToQuery = ["#Workout", "#Jog", "#Tennis", "#Gathering", "#Met", "#Date", "Travel", "#Orgasm", "#Pay", "#Session"]
+  var tagsToQuery = ["#Workout", "#Jog", "#Tennis", "#Gathering", "#Met", "#Date", "#Travel", "#Orgasm", "#Pay", "#Session"]
   var countByMonth = {};
   for (let tagToQuery of tagsToQuery) {
     countByMonth[tagToQuery] = {};
@@ -385,6 +385,19 @@ function retrieveDataForSummaryByMonthTable(selectedYear, selectedLocation) {
         }
       }
     }
+  }
+
+  // Update the column names to include the count in them so they can appear in the table header
+  tagsToQuery = []; // Clear old names of array in order to put new names afterwards
+  for (let k1 in countByMonth) {
+    let totalCount = 0;
+    for (let k2 in countByMonth[k1]) {
+      totalCount += countByMonth[k1][k2];
+    }  
+    let new_k1 = k1 + "(" + totalCount.toString() + ")";
+    tagsToQuery.push(new_k1);
+    countByMonth[new_k1] = countByMonth[k1]; // Rename the dictionary key as well so that the function in data display file can find the values 
+    delete countByMonth[k1];
   }
 
   // Build the dictionary for holding other data from each month, like pay amount, etc.
@@ -432,11 +445,22 @@ function retrieveDataForSummaryByMonthTable(selectedYear, selectedLocation) {
     }
   }
 
+    // Update the column names to include the sum in them so they can appear in the table header
+    tagsToQueryWithin = []; // Clear old names of array in order to put new names afterwards
+    for (let k1 in sumByMonth) {
+      let totalSum = 0;
+      for (let k2 in sumByMonth[k1]) {
+        totalSum += sumByMonth[k1][k2];
+      }  
+      let new_k1 = k1 + "($" + totalSum.toString() + ")";
+      tagsToQueryWithin.push(new_k1);
+      sumByMonth[new_k1] = sumByMonth[k1]; // Rename the dictionary key as well so that the function in data display file can find the values 
+      delete sumByMonth[k1];
+    }
+
   // Create the column names for use when displaying the data
-  var countColumnNames = tagsToQuery.slice();
-  countColumnNames.unshift("Month");
-  var queryWithinColumnNames = ["Paid ($)"];
-  columnNames = countColumnNames.concat(queryWithinColumnNames);
+  var columnNames = ["Month"].concat(tagsToQuery).concat(tagsToQueryWithin);
+
 
   // Send data to display
   displaySummaryByMonthTable(columnNames, month_year_arr, countByMonth, sumByMonth);
