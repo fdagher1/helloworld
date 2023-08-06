@@ -174,7 +174,8 @@ function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, 
   }
 
   // Provide proper column names for table to display data then call function to do so
-  let thirdColumnTitle = selectedYear + ", " + chosenLocation + ", " + chosenEvent;
+  //let thirdColumnTitle = selectedYear + ", " + chosenLocation + ", " + chosenEvent;
+  let thirdColumnTitle = "";
   var columnNames = ["Date", "Location", thirdColumnTitle];
   displayDataInTable(columnNames, dataSetToDisplay);
 }
