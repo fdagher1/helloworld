@@ -108,7 +108,7 @@ function retrieveDataForTopPane() {
   eventList.pop(); // Remove the last line as it is blank
 }
 
-function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, chosenEvent, groupBy, searchWord) {
+function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, chosenEvent, selectedRadioButton, searchWord) {
   // Set the below to blank for ease of querying and for displaying column header
   if (selectedYear.includes("All ")) { 
     selectedYear = ""; 
@@ -123,9 +123,9 @@ function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, 
     // Set it to blank for better layout in the event column title
     chosenEvent = "";
     // All events were selected, and so either display all the lines, or only those with events, depending on what the user chose
-    if (groupBy == "nogrp-showalllines") {
+    if (selectedRadioButton == "ShowAllLines") {
       eventsToList.push(""); 
-    } else if (groupBy == "nogrp-showeventonly") {
+    } else if (selectedRadioButton == "ShowEventOnly") {
       // If user chose to show events then build the array to contain all the event names
       for (var event of eventList) {
         eventsToList.push("#" + event.split("-")[1]);
@@ -141,11 +141,11 @@ function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, 
   for (var i = 0; i < datasetToQuery.length; i++) {
     if (helperCompareDates(datasetToQuery[i][0], selectedYear)) {
       if (datasetToQuery[i][1].includes(chosenLocation)) {
-        if (groupBy == "nogrp-showalllines") {
+        if (selectedRadioButton == "ShowAllLines") {
           if (datasetToQuery[i][2].includes(eventsToList)) {
             tempDataSet.push([datasetToQuery[i][0], datasetToQuery[i][1], datasetToQuery[i][2]]);
           }
-        } else if (groupBy == "nogrp-showeventonly") {
+        } else if (selectedRadioButton == "ShowEventOnly") {
           var eventLine = ""; // will hold all the events of that line
           for (var event of eventsToList) {
             if (datasetToQuery[i][2].includes(event)) {
@@ -180,7 +180,7 @@ function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, 
   displayDataInTable(columnNames, dataSetToDisplay);
 }
   
-function retrieveDataforGroupTable(selectedYear, selectedLocation, selectedEvent, groupBy) {
+function retrieveDataforGroupByLocationTable(selectedYear, selectedLocation, selectedEvent) {
   // Define variables needed for the queries
   var queryYear;
   var queryLocation;
@@ -219,107 +219,37 @@ function retrieveDataforGroupTable(selectedYear, selectedLocation, selectedEvent
     }
   }
 
-  // If group by Location then define the names to group by
-  if (groupBy == "location") {
-    switch(selectedLocation) {
-      case "All countries":
-        var queryLocation = countryList;
-        break;
+  switch(selectedLocation) {
+    case "All countries":
+      var queryLocation = countryList;
+      break;
 
-      case "All cities":
-        var queryLocation = cityList;
-        break;
+    case "All cities":
+      var queryLocation = cityList;
+      break;
 
-      default:
-        var queryLocation =[selectedLocation];
-        break;
-    }
-    
-    // Iterate over content of newly defined location array in order to query it for matches
-    for (var location of queryLocation) {
-      for (i = 0; i < filteredDataSet.length; i++) {
-        if (filteredDataSet[i][1].includes(location) && !filteredDataSet[i][1].includes("(" + location) && !filteredDataSet[i][1].includes(location + ")")) {
-          helperIncrementCount(location, groupbyDataToDisplay);
-        }
+    default:
+      var queryLocation =[selectedLocation];
+      break;
+  }
+  
+  // Iterate over content of newly defined location array in order to query it for matches
+  for (var location of queryLocation) {
+    for (i = 0; i < filteredDataSet.length; i++) {
+      if (filteredDataSet[i][1].includes(location) && !filteredDataSet[i][1].includes("(" + location) && !filteredDataSet[i][1].includes(location + ")")) {
+        helperIncrementCount(location, groupbyDataToDisplay);
       }
     }
-    
-    // Sort the array to have the countries with highest count first
-    groupbyDataToDisplay = helperSortDictionaryIntoArray(groupbyDataToDisplay); 
-    
-    // Set the columnNames for use when displaying the table
-    columnNames = ["Locations", "Count"]; 
-  // If Event radio is selected
-  } else if (groupBy == "event") {
-
-    // If group by event, then define the names to group by
-    if (selectedEvent.includes("All ")) {
-      queryEvent = eventList.slice(0);
-    } else {
-      queryEvent = [selectedEvent];
-    }
-
-    // Iterate over each name in the query array in order to query it
-    for (var event of queryEvent) {
-      // Remove category prefix from the event name
-      if (event.includes("-")) {
-        event = event.split("-")[1];
-      }
-      tagName = "#" + event;
-      // Iterate over each table row 
-      for (i = 0; i < filteredDataSet.length; i++) {
-        if (filteredDataSet[i][2].includes(tagName)){
-          helperIncrementCount(event, groupbyDataToDisplay);
-        }
-      }
-    }
-
-    // Convert dict to array as the display functions assume input is array not dict
-    groupbyDataToDisplay = Object.entries(groupbyDataToDisplay); 
-    
-    // Add the months column
-    for (let i = 0; i < groupbyDataToDisplay.length; i++) { groupbyDataToDisplay[i].push("Months"); } 
-    
-    // Set the columnNames for use when displaying the table
-    columnNames = ["Events", "Count", "Months"]; 
-  } 
+  }
+  
+  // Sort the array to have the countries with highest count first
+  groupbyDataToDisplay = helperSortDictionaryIntoArray(groupbyDataToDisplay); 
+  
+  // Set the columnNames for use when displaying the table
+  columnNames = ["Locations", "Count"]; 
 
   // Display the group table
-  displayGroupTable(groupbyDataToDisplay, columnNames, selectedYear, selectedLocation, selectedEvent, groupBy);
-}
-  
-function retrieveDataforMonthsTable(selectedYear, selectedLocation, clickedEvent) {
-  // Define the needed arrays for output
-  var countSelectionOccurance_ByMonth = {};
-  hashtag = "#" + clickedEvent;
-
-  // Set year and location query words to "" if All was selected to allow making them a non criteria
-  if (selectedYear.includes("All ")) { 
-    selectedYear = ""; 
-  }
-  if (selectedLocation.includes("All ")) { 
-    selectedLocation = ""; 
-  }
-
-  // Iterate over each table row and when there's a hit, increment occurance array for month-year combo
-  for (i = 0; i < importedDataSet.length; i++) {
-    if (importedDataSet[i][0].includes(selectedYear) && importedDataSet[i][1].includes(selectedLocation) && importedDataSet[i][2].includes(hashtag)){
-      // Get the month and year from the date
-      //let date = importedDataSet[i][0];
-      //let mm = date.slice(date.indexOf(" ")+1, date.indexOf("/"));
-      //let yyyy = date.substring(date.length - 4); 
-      let date = new Date(importedDataSet[i][0]); // Get corresponding date
-      let mm = (date.getMonth()+1).toString();
-      let yyyy = date.getFullYear().toString();
-      // Increment count for that particular mm/yyyy string
-      helperIncrementCount(mm + "/" + yyyy, countSelectionOccurance_ByMonth);
-    }
-  }
-
-  // Convert the dictionary to an array for consistency (since the dicionary sorting helper function I have converts the dict to an array as well)
-  countSelectionOccurance_ByMonth = Object.entries(countSelectionOccurance_ByMonth);
-
-  displayMonthsTable(countSelectionOccurance_ByMonth, clickedEvent);
+  displayDataInTable(columnNames, groupbyDataToDisplay);
 }
 
 function retrieveDataForSummaryByMonthTable(selectedYear, selectedLocation) {
