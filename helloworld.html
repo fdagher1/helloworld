@@ -24,26 +24,35 @@
       <select id="select-date" class="lightclass" disabled>
         <option value="All Years" selected>All Years</option>
       </select>
-      <input type="button" id="button-summary-bymonth" class="lightclass" value="Summary-ByMonth" onclick="eventSummaryByMonthButtonClicked()" disabled>
       <br/>
       
       <select id="select-location" class="lightclass" disabled>
         <option value="All Countries" selected>All Countries</option>
       </select>
-      <input type="radio" id="radiobutton-groupbylocation" name="filterby" disabled>
-      <label>Group by Loc.</label><br>
+      <input type="button" id="button-displaytable" class="lightclass" value="Display" onclick="eventDisplayButtonClicked()" disabled>
+      <br>
       
       <select id="select-event" class="lightclass" disabled>
         <option value="All Social Events">All Social Events</option>
       </select>
-      <input type="radio" id="radiobutton-showeventonly" name="filterby" disabled>
-      <label>Show Event Only</label><br>
-
-      <input type="button" id="button-displaytable" class="lightclass" value="Display" onclick="eventDisplayButtonClicked()" disabled>
-      <input type="radio" id="radiobutton-showalllines" name="filterby" disabled>
-      <label>Show All Lines</label><br>
-
       <input id="textbox-keyword" type="text" oninput="eventKeywordEntered()" disabled>
+      <br>
+
+      <input type="radio" id="radiobutton-groupbylocation" name="filterby" disabled>
+      <label>Group by Loc.</label><br>
+      <input type="radio" id="radiobutton-showalllines" name="filterby" disabled>
+      <label>Show All Lines</label>
+      <input type="radio" id="radiobutton-showeventonly" name="filterby" disabled>
+      <label>Show Ev. Only</label><br>
+      <input type="radio" id="radiobutton-summarisebyeventgroup1" name="filterby" disabled>
+      <label>Summarise 1st Grp</label>
+      <input type="radio" id="radiobutton-summarisebyeventgroup2" name="filterby" disabled>
+      <label>Summarise 2st Grp</label><br>
+      <input type="radio" id="radiobutton-summarisebyeventgroup3" name="filterby" disabled>
+      <label>Summarise 3rd Grp</label>
+      <input type="radio" id="radiobutton-summarisebyeventgroup4" name="filterby" disabled>
+      <label>Summarise 4th Grp</label><br>
+
     </div>
 
     <div>
