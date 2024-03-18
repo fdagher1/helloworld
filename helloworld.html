@@ -24,18 +24,18 @@
       <select id="select-date" class="lightclass" disabled>
         <option value="All Years" selected>All Years</option>
       </select>
+      <input type="button" id="button-displaytable" class="lightclass" value="Display" onclick="eventDisplayButtonClicked()" disabled>
       <br/>
       
       <select id="select-location" class="lightclass" disabled>
         <option value="All Countries" selected>All Countries</option>
       </select>
-      <input type="button" id="button-displaytable" class="lightclass" value="Display" onclick="eventDisplayButtonClicked()" disabled>
+      <input id="textbox-keyword" type="text" oninput="eventKeywordEntered()" disabled>
       <br>
       
       <select id="select-event" class="lightclass" disabled>
         <option value="All Social Events">All Social Events</option>
       </select>
-      <input id="textbox-keyword" type="text" oninput="eventKeywordEntered()" disabled>
       <br>
 
       <input type="radio" id="radiobutton-groupbylocation" name="filterby" disabled>
