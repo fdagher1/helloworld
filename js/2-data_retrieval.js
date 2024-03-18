@@ -34,7 +34,7 @@ function validateFileFormatAndData(){
 
     // CHECK IF THERE ARE CELL TAGS THAT ARE NOT IN THE EVENT LIST ALREADY
     // Retrieve the events list from the bottom cell
-    eventList = importedDataSet[importedDataSet.length-1][3].split(";"); 
+    eventsListedInEventsDropdown = importedDataSet[importedDataSet.length-1][3].split(";"); 
     // Check if there are any tags in the event cell that are missing from the list
     while (event_cell.includes("#")) { // Iterate over all the # entries in the same cell
       let new_event_cell = event_cell.slice(event_cell.indexOf("#")); // Remove anything before the first # in the cell
@@ -50,8 +50,8 @@ function validateFileFormatAndData(){
 
       // Check if event name is not in the provided event list
       var event_is_in_list = false;
-      for (let j = 0; j < eventList.length; j++) {
-        if (eventList[j].includes("-"+eventName)) {
+      for (let j = 0; j < eventsListedInEventsDropdown.length; j++) {
+        if (eventsListedInEventsDropdown[j].includes("-"+eventName)) {
           event_is_in_list = true;
           break;
         }
@@ -70,9 +70,9 @@ function validateFileFormatAndData(){
 function retrieveDataForTopPane() {
   // retrieve the years list
   var currentYear = new Date().getFullYear();
-  yearList.push("All years");
+  yearsListedInYearsDropdown.push("All years");
   for (var year = currentYear; year >= 1984; year--) {
-    yearList.push(year);
+    yearsListedInYearsDropdown.push(year);
   }
 
   // retrieve the locations list
@@ -88,99 +88,49 @@ function retrieveDataForTopPane() {
 
       // Add city name to array
       let cityName = cityCountrySplitArray[0].trim();
-      if (!cityName.includes("(") && !cityList.includes(cityName)) { 
-          cityList.push(cityName); 
+      if (!cityName.includes("(") && !citiesListedInLocationDropdown.includes(cityName)) { 
+          citiesListedInLocationDropdown.push(cityName); 
       }
 
       // Add country name to array
       let countryName = cityCountrySplitArray[1].trim();
-      if (!countryName.includes(")") && !countryList.includes(countryName)) {
-          countryList.push(countryName);
+      if (!countryName.includes(")") && !countriesListedInLocationDropdown.includes(countryName)) {
+          countriesListedInLocationDropdown.push(countryName);
       }
     }
   }
-  countryList.sort().unshift("All countries");
-  cityList.sort().unshift("All cities");
+  countriesListedInLocationDropdown.sort().unshift("All countries");
+  citiesListedInLocationDropdown.sort().unshift("All cities");
 
   // retrieve the events list
-  eventList = importedDataSet[importedDataSet.length-1][3].split(";"); // First populate it from the provided list
-  eventList.unshift("All events-All events"); // Then add the all events to it
-  eventList.pop(); // Remove the last line as it is blank
+  eventsListedInEventsDropdown = importedDataSet[importedDataSet.length-1][3].split(";"); // First populate it from the provided list
+  eventsListedInEventsDropdown.unshift("All events-All events"); // Then add the all events to it
+  eventsListedInEventsDropdown.pop(); // Remove the last line as it is blank
 }
 
-function retrieveDataforListTable(datasetToQuery, selectedYear, chosenLocation, chosenEvent, selectedRadioButton, searchWord) {
-  // Set the below to blank for ease of querying and for displaying column header
-  if (selectedYear.includes("All ")) { 
-    selectedYear = ""; 
+function retrieveDateFromTopPane() {
+  selectedYear = document.getElementById("select-date").value;
+  selectedLocation = document.getElementById("select-location").value;
+  selectedEvent = document.getElementById("select-event").value.split("-")[1]; // Remove the prefix from the event name
+  selectedRadioButton;
+  if (document.getElementById("radiobutton-groupbylocation").checked) {
+    selectedRadioButton = "GroupByLocation";
+  } else if (document.getElementById("radiobutton-showeventonly").checked) {
+    selectedRadioButton = "ShowEventOnly";
+  } else if (document.getElementById("radiobutton-showalllines").checked) {
+    selectedRadioButton = "ShowAllLines";
+  } else if (document.getElementById("radiobutton-summarisebyeventgroup1").checked) {
+    selectedRadioButton = "SummarizeByEventGroup1";
+  } else if (document.getElementById("radiobutton-summarisebyeventgroup2").checked) {
+    selectedRadioButton = "SummarizeByEventGroup2";
+  } else if (document.getElementById("radiobutton-summarisebyeventgroup3").checked) {
+    selectedRadioButton = "SummarizeByEventGroup3";
+  } else if (document.getElementById("radiobutton-summarisebyeventgroup4").checked) {
+    selectedRadioButton = "SummarizeByEventGroup4";
   }
-  if (chosenLocation.includes("All ")) { 
-    chosenLocation = ""; 
-  } 
-
-  // Define an array for all the event names you want to query for, as they may be 1 or many, or all 
-  var eventsToList = [];
-  if (chosenEvent.includes("All ")) { 
-    // Set it to blank for better layout in the event column title
-    chosenEvent = "";
-    // All events were selected, and so either display all the lines, or only those with events, depending on what the user chose
-    if (selectedRadioButton == "ShowAllLines") {
-      eventsToList.push(""); 
-    } else if (selectedRadioButton == "ShowEventOnly") {
-      // If user chose to show events then build the array to contain all the event names
-      for (var event of eventList) {
-        eventsToList.push("#" + event.split("-")[1]);
-      }
-    }
-  } else {
-    // Since only one event was selected then put it in the array as a single entry
-    eventsToList.push("#" + chosenEvent)
-  }
-
-  // Iterate over each row to find a match based on the 3 dropdowns
-  var tempDataSet = [];
-  for (var i = 0; i < datasetToQuery.length; i++) {
-    if (helperCompareDates(datasetToQuery[i][0], selectedYear)) {
-      if (datasetToQuery[i][1].includes(chosenLocation)) {
-        if (selectedRadioButton == "ShowAllLines") {
-          if (datasetToQuery[i][2].includes(eventsToList)) {
-            tempDataSet.push([datasetToQuery[i][0], datasetToQuery[i][1], datasetToQuery[i][2]]);
-          }
-        } else if (selectedRadioButton == "ShowEventOnly") {
-          var eventLine = ""; // will hold all the events of that line
-          for (var event of eventsToList) {
-            if (datasetToQuery[i][2].includes(event)) {
-              let tempEventLine = ""; // will only hold one event in the line 
-              tempEventLine = datasetToQuery[i][2].slice(datasetToQuery[i][2].indexOf(event));
-              eventLine += tempEventLine.slice(0, tempEventLine.indexOf("<br>")) + "<br><br>";
-            }
-          }
-          if (eventLine != "") {
-            tempDataSet.push([datasetToQuery[i][0], datasetToQuery[i][1], eventLine]);
-          }
-        }
-      }
-    }
-  }
-
-  // Setting the content of lastDisplayedDataSet here rather than towards the end, as it should be done before the textbox content change (otherwise backspace wouldn't do anything)
-  lastDisplayedDataSet = tempDataSet.slice(0);
-
-  // Iterate over each row to find a match based on the keyword, if any
-  var dataSetToDisplay = [];
-  for (const line of tempDataSet) {
-    if (line[0].toLowerCase().includes(searchWord.toLowerCase()) || line[1].toLowerCase().includes(searchWord.toLowerCase()) || line[2].toLowerCase().includes(searchWord.toLowerCase())) {
-      dataSetToDisplay.push(line);
-    }
-  }
-
-  // Provide proper column names for table to display data then call function to do so
-  //let thirdColumnTitle = selectedYear + ", " + chosenLocation + ", " + chosenEvent;
-  let thirdColumnTitle = "";
-  var columnNames = ["Date", "Location", thirdColumnTitle];
-  displayDataInTable(columnNames, dataSetToDisplay);
 }
-  
-function retrieveDataforGroupByLocationTable(selectedYear, selectedLocation, selectedEvent) {
+
+function retrieveDataforGroupByLocationTable() {
   // Define variables needed for the queries
   var queryYear;
   var queryLocation;
@@ -221,11 +171,11 @@ function retrieveDataforGroupByLocationTable(selectedYear, selectedLocation, sel
 
   switch(selectedLocation) {
     case "All countries":
-      var queryLocation = countryList;
+      var queryLocation = countriesListedInLocationDropdown;
       break;
 
     case "All cities":
-      var queryLocation = cityList;
+      var queryLocation = citiesListedInLocationDropdown;
       break;
 
     default:
@@ -252,7 +202,80 @@ function retrieveDataforGroupByLocationTable(selectedYear, selectedLocation, sel
   displayDataInTable(columnNames, groupbyDataToDisplay);
 }
 
-function retrieveDataForSummaryByMonthTable(selectedYear, selectedLocation) {
+function retrieveDataforListTable(datasetToQuery, searchWord) {
+  // Set the below to blank for ease of querying and for displaying column header
+  if (selectedYear.includes("All ")) { 
+    selectedYear = ""; 
+  }
+  if (selectedLocation.includes("All ")) { 
+    selectedLocation = ""; 
+  } 
+
+  // Define an array for all the event names you want to query for, as they may be 1 or many, or all 
+  var eventsToList = [];
+  if (selectedEvent.includes("All ")) { 
+    // Set it to blank for better layout in the event column title
+    selectedEvent = "";
+    // All events were selected, and so either display all the lines, or only those with events, depending on what the user chose
+    if (selectedRadioButton == "ShowAllLines") {
+      eventsToList.push(""); 
+    } else if (selectedRadioButton == "ShowEventOnly") {
+      // If user chose to show events then build the array to contain all the event names
+      for (var event of eventsListedInEventsDropdown) {
+        eventsToList.push("#" + event.split("-")[1]);
+      }
+    }
+  } else {
+    // Since only one event was selected then put it in the array as a single entry
+    eventsToList.push("#" + selectedEvent)
+  }
+
+  // Iterate over each row to find a match based on the 3 selected dropdown values
+  var tempDataSet = [];
+  for (var i = 0; i < datasetToQuery.length; i++) {
+    if (helperCompareDates(datasetToQuery[i][0], selectedYear)) {
+      if (datasetToQuery[i][1].includes(selectedLocation)) {
+        if (selectedRadioButton == "ShowAllLines") {
+          if (datasetToQuery[i][2].includes(eventsToList)) {
+            tempDataSet.push([datasetToQuery[i][0], datasetToQuery[i][1], datasetToQuery[i][2]]);
+          }
+        } else if (selectedRadioButton == "ShowEventOnly") {
+          var eventLine = ""; // will hold all the events of that line
+          for (var event of eventsToList) {
+            if (datasetToQuery[i][2].includes(event)) {
+              let tempEventLine = ""; // will only hold one event in the line 
+              tempEventLine = datasetToQuery[i][2].slice(datasetToQuery[i][2].indexOf(event));
+              eventLine += tempEventLine.slice(0, tempEventLine.indexOf("<br>")) + "<br><br>";
+            }
+          }
+          if (eventLine != "") {
+            tempDataSet.push([datasetToQuery[i][0], datasetToQuery[i][1], eventLine]);
+          }
+        }
+      }
+    }
+  }
+
+  // Set the content of lastDisplayedDataSet here rather than towards the end, 
+  // as it should be done before the textbox content change (otherwise backspace wouldn't do anything)
+  lastDisplayedDataSet = tempDataSet.slice(0);
+
+  // Iterate over each row to find a match based on the keyword, if any
+  var dataSetToDisplay = [];
+  for (const line of tempDataSet) {
+    if (line[0].toLowerCase().includes(searchWord.toLowerCase()) || line[1].toLowerCase().includes(searchWord.toLowerCase()) || line[2].toLowerCase().includes(searchWord.toLowerCase())) {
+      dataSetToDisplay.push(line);
+    }
+  }
+
+  // Provide proper column names for table to display data then call function to do so
+  // let thirdColumnTitle = selectedYear + ", " + selectedLocation + ", " + selectedEvent;
+  let thirdColumnTitle = "";
+  var columnNames = ["Date", "Location", thirdColumnTitle];
+  displayDataInTable(columnNames, dataSetToDisplay);
+}
+
+function retrieveDataforSummaryTable() {
   // Set some variables first  
   var firstRowDate = new Date(importedDataSet[0][0]);
   var lastRowDate = new Date(importedDataSet[importedDataSet.length - 1][0]);
@@ -272,7 +295,6 @@ function retrieveDataForSummaryByMonthTable(selectedYear, selectedLocation) {
     if (new Date("1/1/" + selectedYear) > lastRowDate) {
       earliestDateToQuery = new Date("1/1/" + selectedYear);
     }
-    
   }
 
   // Iterate over the datasheet to build the month/year array
@@ -286,9 +308,19 @@ function retrieveDataForSummaryByMonthTable(selectedYear, selectedLocation) {
     selectedLocation = ""; 
   }
 
+  // Define the items to query
+  if (selectedRadioButton == "SummarizeByEventGroup1") {
+    var tagsToQuery = ["#Careerevent", "#Lifestylechange", "#Meditate", "#Orgasm", "#Pay", "#Session", "#Smoke"];
+  } else if (selectedRadioButton == "SummarizeByEventGroup2") {
+    var tagsToQuery = ["#Angry", "#Cry", "#Desire", "#Emotional", "#Happy", "#Healthnote", "#Sad", "Trigger", "Worldevent"];
+  } else if (selectedRadioButton == "SummarizeByEventGroup3") {
+    var tagsToQuery = ["#Bike", "#Golf", "#Hike", "#Jog", "#Ski", "#Skydive", "#Tennis", "Watersport", "Workout"];
+  } else if (selectedRadioButton == "SummarizeByEventGroup4") {
+    var tagsToQuery = ["#Date", "#Gathering", "#Hotel", "#Met", "#Restaurant", "#Show", "#Travel", "Visit"];
+  }
+  
   // Build the dictionary for the count of each tag in each month (dictionary of a dictionaries)
   // Ex: countByMonth["#Workout"]["1/2023"] = 0; 
-  var tagsToQuery = ["#Workout", "#Jog", "#Tennis", "#Gathering", "#Met", "#Date", "#Travel", "#Orgasm", "#Pay", "#Session"]
   var countByMonth = {};
   for (let tagToQuery of tagsToQuery) {
     countByMonth[tagToQuery] = {};
@@ -331,50 +363,53 @@ function retrieveDataForSummaryByMonthTable(selectedYear, selectedLocation) {
     delete countByMonth[k1];
   }
 
-  // Build the dictionary for holding other data from each month, like pay amount, etc.
-  var tagsToQueryWithin = ["#Pay"]
-  var sumByMonth = {};
-  for (let tagToQuery of tagsToQueryWithin) {
-    sumByMonth[tagToQuery] = {};
-    for (let month_year of month_year_arr) {
-      let temp_month_year_dict = {};
-      temp_month_year_dict[month_year] = 0;
-      sumByMonth[tagToQuery] = Object.assign(sumByMonth[tagToQuery], temp_month_year_dict);
-      // The above is needed as sumByMonth[tagsToQueryWithin] = {month_year: 0}; results in month_year used as value 
+  // Define the items to query
+  if (selectedRadioButton == "SummarizeByEventGroup1") {
+    
+    // Build the dictionary for holding other data from each month, like pay amount, etc.
+    var tagsToQueryWithin = ["#Pay"]
+    var sumByMonth = {};
+    for (let tagToQuery of tagsToQueryWithin) {
+      sumByMonth[tagToQuery] = {};
+      for (let month_year of month_year_arr) {
+        let temp_month_year_dict = {};
+        temp_month_year_dict[month_year] = 0;
+        sumByMonth[tagToQuery] = Object.assign(sumByMonth[tagToQuery], temp_month_year_dict);
+        // The above is needed as sumByMonth[tagsToQueryWithin] = {month_year: 0}; results in month_year used as value 
+      }
     }
-  }
 
-  // Iterate over the datasheet for other data
-  for (i = 0; i < importedDataSet.length; i++) {
-    for (let tagToQueryWithin of tagsToQueryWithin) {
-      if (importedDataSet[i][0].includes(selectedYear)) {
-        if (importedDataSet[i][1].includes(selectedLocation)) {
-          switch (tagToQueryWithin) {
-            case "#Pay":
-              if (importedDataSet[i][2].includes(tagToQueryWithin)) {
-                // Get the #Pay line from that cell
-                let payLine = importedDataSet[i][2].slice(importedDataSet[i][2].indexOf(tagToQueryWithin));
-                payLine = payLine.slice(0, payLine.indexOf("<br>")); // THIS CAN POSSIBLY BE MERGED WITH THE TOP LINE AT SOME POINT
+    // Iterate over the datasheet for other data
+    for (i = 0; i < importedDataSet.length; i++) {
+      for (let tagToQueryWithin of tagsToQueryWithin) {
+        if (importedDataSet[i][0].includes(selectedYear)) {
+          if (importedDataSet[i][1].includes(selectedLocation)) {
+            switch (tagToQueryWithin) {
+              case "#Pay":
+                if (importedDataSet[i][2].includes(tagToQueryWithin)) {
+                  // Get the #Pay line from that cell
+                  let payLine = importedDataSet[i][2].slice(importedDataSet[i][2].indexOf(tagToQueryWithin));
+                  payLine = payLine.slice(0, payLine.indexOf("<br>")); // THIS CAN POSSIBLY BE MERGED WITH THE TOP LINE AT SOME POINT
 
-                // Get the pay amount from that cell
-                var paySumTotal = helperGetTotalAmountFromLine(payLine);
+                  // Get the pay amount from that cell
+                  var paySumTotal = helperGetTotalAmountFromLine(payLine);
 
-                // Get the date
-                var cell_date = new Date(importedDataSet[i][0]); // Get corresponding date
-                var month_year = (cell_date.getMonth()+1).toString() +"/" + cell_date.getFullYear().toString();
-                
-                // Add data to dictionary
-                sumByMonth[tagToQueryWithin][month_year] += paySumTotal
-              }
-              break;
+                  // Get the date
+                  var cell_date = new Date(importedDataSet[i][0]); // Get corresponding date
+                  var month_year = (cell_date.getMonth()+1).toString() +"/" + cell_date.getFullYear().toString();
+                  
+                  // Add data to dictionary
+                  sumByMonth[tagToQueryWithin][month_year] += paySumTotal
+                }
+                break;
 
-            case "Desire":
-              break;
+              case "Desire":
+                break;
+            }
           }
         }
       }
     }
-  }
 
     // Update the column names to include the sum in them so they can appear in the table header
     tagsToQueryWithin = []; // Clear old names of array in order to put new names afterwards
@@ -389,9 +424,13 @@ function retrieveDataForSummaryByMonthTable(selectedYear, selectedLocation) {
       delete sumByMonth[k1];
     }
 
-  // Create the column names for use when displaying the data
-  var columnNames = ["Month"].concat(tagsToQuery).concat(tagsToQueryWithin);
+    // Create the column names for use when displaying the data
+    var columnNames = ["Month"].concat(tagsToQuery).concat(tagsToQueryWithin);
 
+  } else {
+    // Create the column names for use when displaying the data
+    var columnNames = ["Month"].concat(tagsToQuery);
+  }
 
   // Send data to display
   displaySummaryByMonthTable(columnNames, month_year_arr, countByMonth, sumByMonth);

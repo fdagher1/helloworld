@@ -19,7 +19,7 @@ body {
     width: 180px;
   }
 
-  #button-darktoggle, #button-summary-bymonth {
+  #button-darktoggle, #button-summary-bymonth, #button-displaytable, #textbox-keyword {
     float: right;
   }
 

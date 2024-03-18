@@ -1,10 +1,14 @@
 // Define global variables
 var importedDataSet; // Data from excel file, program never changes it
 var lastDisplayedDataSet; // Data displayed in the output table
-var yearList = [];
-var countryList = [];
-var cityList = [];
-var eventList = [];
+var selectedYear // Value of the user selected year
+var selectedLocation // Value of the user selected location
+var selectedEvent // Value of the user selected event
+var selectedRadioButton // Value of the user selected radio button
+var yearsListedInYearsDropdown = []; // All values in the Years dropdown
+var countriesListedInLocationDropdown = []; // All country names in the Location dropdown
+var citiesListedInLocationDropdown = []; // All city names in the Location dropdown
+var eventsListedInEventsDropdown = []; // All events in the Events dropdown
 
 function eventUploadButtonClicked(event) {
   var reader = new FileReader();
@@ -37,7 +41,6 @@ function eventUploadButtonClicked(event) {
   // Make available the HTML controls 
   // Buttons
   document.getElementById("button-displaytable").removeAttribute("disabled");
-  document.getElementById("button-summary-bymonth").removeAttribute("disabled");
  
   // Dropdowns
   document.getElementById("select-date").removeAttribute("disabled");
@@ -48,6 +51,10 @@ function eventUploadButtonClicked(event) {
   document.getElementById("radiobutton-groupbylocation").removeAttribute("disabled");
   document.getElementById("radiobutton-showeventonly").removeAttribute("disabled");
   document.getElementById("radiobutton-showalllines").removeAttribute("disabled");
+  document.getElementById("radiobutton-summarisebyeventgroup1").removeAttribute("disabled");
+  document.getElementById("radiobutton-summarisebyeventgroup2").removeAttribute("disabled");
+  document.getElementById("radiobutton-summarisebyeventgroup3").removeAttribute("disabled");
+  document.getElementById("radiobutton-summarisebyeventgroup4").removeAttribute("disabled");
 
   // Search box
   document.getElementById("textbox-keyword").removeAttribute("disabled");
@@ -57,25 +64,15 @@ function eventUploadButtonClicked(event) {
 
   // Clear content of arrays
   dataSet = [];
-  yearList = [];
-  countryList = [];
-  cityList = [];
-  eventList = [];
+  yearsListedInYearsDropdown = [];
+  countriesListedInLocationDropdown = [];
+  citiesListedInLocationDropdown = [];
+  eventsListedInEventsDropdown = [];
 }
 
 function eventDisplayButtonClicked() {
-  // Gather input values from the dropdowns and radio button 
-  var selectedYear = document.getElementById("select-date").value;
-  var selectedLocation = document.getElementById("select-location").value;
-  var selectedEvent = document.getElementById("select-event").value.split("-")[1]; // Remove the prefix from the event name
-  var selectedRadioButton;
-  if (document.getElementById("radiobutton-groupbylocation").checked) {
-    selectedRadioButton = "GroupByLocation";
-  } else if (document.getElementById("radiobutton-showeventonly").checked) {
-    selectedRadioButton = "ShowEventOnly";
-  } else if (document.getElementById("radiobutton-showalllines").checked) {
-    selectedRadioButton = "ShowAllLines";
-  }
+  // Gather input values from the dropdowns and radio buttons 
+  retrieveDateFromTopPane();
 
   // Clear out the text box content
   document.getElementById("textbox-keyword").value = "";
@@ -83,32 +80,24 @@ function eventDisplayButtonClicked() {
   // If user chose to group by location then call the group function
   if (selectedRadioButton == "GroupByLocation") {
     document.getElementById("textbox-keyword").setAttribute("disabled", ""); // Disable keyword seach since not needed here
-    retrieveDataforGroupByLocationTable(selectedYear, selectedLocation, selectedEvent);
+    retrieveDataforGroupByLocationTable();
   // otherwise call the list function
-  } else {
+  } else if (selectedRadioButton.includes("Show")) {
     document.getElementById("textbox-keyword").removeAttribute("disabled"); // Enable keyword seach in case it was disabled
     let searchWord = "";
-    retrieveDataforListTable(importedDataSet, selectedYear, selectedLocation, selectedEvent, selectedRadioButton, searchWord);
-  }
+    retrieveDataforListTable(importedDataSet, searchWord);
+  } else if (selectedRadioButton.includes("Summarize")) {
+    retrieveDataforSummaryTable();
+  } 
 }
 
 function eventKeywordEntered() {
   let searchWord = document.getElementById("textbox-keyword").value;
 
-  // Gather input values from the dropdowns and radio button 
-  var selectedYear = document.getElementById("select-date").value;
-  var selectedLocation = document.getElementById("select-location").value;
-  var selectedEvent = document.getElementById("select-event").value.split("-")[1]; // Remove the prefix from the event name
-  var selectedRadioButton;
-  if (document.getElementById("radiobutton-groupbylocation").checked) {
-    selectedRadioButton = "GroupByLocation";
-  } else if (document.getElementById("radiobutton-showeventonly").checked) {
-    selectedRadioButton = "ShowEventOnly";
-  } else if (document.getElementById("radiobutton-showalllines").checked) {
-    selectedRadioButton = "ShowAllLines";
-  }
+  // Gather input values from the dropdowns and radio buttons 
+  retrieveDateFromTopPane();
 
-  retrieveDataforListTable(lastDisplayedDataSet, selectedYear, selectedLocation, selectedEvent, selectedRadioButton, searchWord);
+  retrieveDataforListTable(lastDisplayedDataSet, searchWord);
 }
 
 function eventDarkModeButtonClicked() {
@@ -135,12 +124,4 @@ function eventDarkModeButtonClicked() {
     document.getElementById("select-event").classList.remove("darkclass");
     document.getElementById("textbox-keyword").classList.remove("darkclass");
   }
-}
-
-function eventSummaryByMonthButtonClicked() {
-    // Gather inputs from panel
-    var selectedYear = document.getElementById("select-date").value;
-    var selectedLocation = document.getElementById("select-location").value;
-  
-  retrieveDataForSummaryByMonthTable(selectedYear, selectedLocation);
 }

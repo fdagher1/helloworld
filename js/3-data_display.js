@@ -10,7 +10,7 @@ function displayDataInTopPane() {
   // Populate the time dropdown
   var selectYearElement = document.getElementById("select-date");
   selectYearElement.replaceChildren(); // Clear what's already there
-  for (var year of yearList) {
+  for (var year of yearsListedInYearsDropdown) {
     var optionElement = document.createElement("option");
     optionElement.value = year;
     optionElement.text = year;
@@ -18,7 +18,7 @@ function displayDataInTopPane() {
   }
   
   // Populate the location dropdown
-  var locationList = countryList.concat(cityList); // Merge both asrray
+  var locationList = countriesListedInLocationDropdown.concat(citiesListedInLocationDropdown); // Merge both asrray
   var selectLocationElement = document.getElementById("select-location");
   selectLocationElement.replaceChildren(); // Clear what's already there
   for (var location of locationList) {
@@ -36,7 +36,7 @@ function displayDataInTopPane() {
   // Populate the events dropdown
   var selectEventElement = document.getElementById("select-event");
   selectEventElement.replaceChildren(); // Clear what's already there
-  for (var event of eventList) {
+  for (var event of eventsListedInEventsDropdown) {
     var optionElement = document.createElement("option");
     optionElement.value = event;
     optionElement.text = event;
@@ -81,11 +81,6 @@ function displayDataInTable(columnNames, dataSetToDisplay) {
       cell.innerHTML = dataSetToDisplay[i][j];
     }
   }
-}
-  
-function displayGroupByLocationTable(groupbyDataToDisplay, columnNames, selectedYear, selectedLocation, selectedEvent) {
-  // Display the data in the table before adding the hyperlinks to some of the columns
-  displayDataInTable(columnNames, groupbyDataToDisplay);
 }
   
 function displaySummaryByMonthTable(columnNames, month_year_arr, countByMonth, sumByMonth) {
