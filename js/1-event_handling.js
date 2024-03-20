@@ -72,7 +72,7 @@ function eventDisplayButtonClicked() {
     document.getElementById("textbox-keyword").setAttribute("disabled", ""); // Disable keyword seach since not needed here
     retrieveDataforGroupByLocationTable();
   // otherwise call the list function
-  } else if (selectedDisplayOption.includes("Show")) {
+  } else if (selectedDisplayOption.includes("List")) {
     document.getElementById("textbox-keyword").removeAttribute("disabled"); // Enable keyword seach in case it was disabled
     let searchWord = "";
     retrieveDataforListTable(importedDataSet, searchWord);
