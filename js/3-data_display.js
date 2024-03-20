@@ -42,6 +42,16 @@ function displayDataInTopPane() {
     optionElement.text = event;
     selectEventElement.appendChild(optionElement);
   }
+
+  // Populate the events dropdown
+  var selectDisplayOptionElement = document.getElementById("select-displayoption");
+  selectDisplayOptionElement.replaceChildren(); // Clear what's already there
+  for (var displayoption of displayOptionsListedInDisplayOptionsDropdown) {
+    var optionElement = document.createElement("option");
+    optionElement.value = displayoption;
+    optionElement.text = displayoption;
+    selectDisplayOptionElement.appendChild(optionElement);
+  }
 }
 
 function displayDataInTable(columnNames, dataSetToDisplay) {

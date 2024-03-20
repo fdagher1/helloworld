@@ -4,8 +4,18 @@ body {
   }
 
   .div-top-panel {
-    border: 1px solid #1c87c9;
     padding: 5px;
+    display: grid;
+    grid-template-columns: auto;
+    column-gap: 5px;
+    row-gap: 5px;
+    padding: 10px;
+  }
+
+  .grid-container > div {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 30px;
   }
 
   td {
@@ -14,16 +24,12 @@ body {
     vertical-align: top;
   }
 
-  #button-upload, #select-date, #select-location, #select-event, #button-displaytable {
+  #button-upload, #select-date, #select-location, #select-event, #select-displayoption, #button-displaytable {
     border: 1px solid #1c87c9;
     width: 180px;
   }
 
-  #button-darktoggle, #button-summary-bymonth, #button-displaytable, #textbox-keyword {
-    float: right;
-  }
-
-  #button-displaytable, #select-date, #select-location, #select-event {
+  #select-date, #select-location, #select-event, #select-displayoption, #button-displaytable {
     padding: 10px 10px;
   }
 

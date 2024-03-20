@@ -4,11 +4,12 @@ var lastDisplayedDataSet; // Data displayed in the output table
 var selectedYear // Value of the user selected year
 var selectedLocation // Value of the user selected location
 var selectedEvent // Value of the user selected event
-var selectedRadioButton // Value of the user selected radio button
+var selectedDisplayOption // Value of the user selected radio button
 var yearsListedInYearsDropdown = []; // All values in the Years dropdown
 var countriesListedInLocationDropdown = []; // All country names in the Location dropdown
 var citiesListedInLocationDropdown = []; // All city names in the Location dropdown
 var eventsListedInEventsDropdown = []; // All events in the Events dropdown
+var displayOptionsListedInDisplayOptionsDropdown = []; // All Display Options in the Display Options dropdown
 
 function eventUploadButtonClicked(event) {
   var reader = new FileReader();
@@ -46,21 +47,10 @@ function eventUploadButtonClicked(event) {
   document.getElementById("select-date").removeAttribute("disabled");
   document.getElementById("select-location").removeAttribute("disabled");
   document.getElementById("select-event").removeAttribute("disabled");
-
-  // Radio button
-  document.getElementById("radiobutton-groupbylocation").removeAttribute("disabled");
-  document.getElementById("radiobutton-showeventonly").removeAttribute("disabled");
-  document.getElementById("radiobutton-showalllines").removeAttribute("disabled");
-  document.getElementById("radiobutton-summarisebyeventgroup1").removeAttribute("disabled");
-  document.getElementById("radiobutton-summarisebyeventgroup2").removeAttribute("disabled");
-  document.getElementById("radiobutton-summarisebyeventgroup3").removeAttribute("disabled");
-  document.getElementById("radiobutton-summarisebyeventgroup4").removeAttribute("disabled");
+  document.getElementById("select-displayoption").removeAttribute("disabled");
 
   // Search box
   document.getElementById("textbox-keyword").removeAttribute("disabled");
-
-  // Check the show all radio button by default
-  document.getElementById("radiobutton-showalllines").checked = true;
 
   // Clear content of arrays
   dataSet = [];
@@ -72,21 +62,21 @@ function eventUploadButtonClicked(event) {
 
 function eventDisplayButtonClicked() {
   // Gather input values from the dropdowns and radio buttons 
-  retrieveDateFromTopPane();
+  retrieveDataFromTopPane();
 
   // Clear out the text box content
   document.getElementById("textbox-keyword").value = "";
   
   // If user chose to group by location then call the group function
-  if (selectedRadioButton == "GroupByLocation") {
+  if (selectedDisplayOption == "Group By Location") {
     document.getElementById("textbox-keyword").setAttribute("disabled", ""); // Disable keyword seach since not needed here
     retrieveDataforGroupByLocationTable();
   // otherwise call the list function
-  } else if (selectedRadioButton.includes("Show")) {
+  } else if (selectedDisplayOption.includes("Show")) {
     document.getElementById("textbox-keyword").removeAttribute("disabled"); // Enable keyword seach in case it was disabled
     let searchWord = "";
     retrieveDataforListTable(importedDataSet, searchWord);
-  } else if (selectedRadioButton.includes("Summarize")) {
+  } else if (selectedDisplayOption.includes("Summarize")) {
     retrieveDataforSummaryTable();
   } 
 }
@@ -95,7 +85,7 @@ function eventKeywordEntered() {
   let searchWord = document.getElementById("textbox-keyword").value;
 
   // Gather input values from the dropdowns and radio buttons 
-  retrieveDateFromTopPane();
+  retrieveDataFromTopPane();
 
   retrieveDataforListTable(lastDisplayedDataSet, searchWord);
 }
@@ -104,24 +94,26 @@ function eventDarkModeButtonClicked() {
   // If dark mode was not set, then set it
   if (darkModeBtnValue = document.getElementById("button-darktoggle").value == "Dark Mode: Off") {
     document.getElementById("button-darktoggle").value = "Dark Mode: On";
-    document.getElementById("body").classList.add("darkclass");
+    document.getElementById("button-darktoggle").classList.add("darkclass");
     document.getElementById("button-upload").classList.add("darkclass");
-    document.getElementById("button-displaytable").classList.add("darkclass");
     document.getElementById("select-date").classList.add("darkclass");
     document.getElementById("select-location").classList.add("darkclass");
     document.getElementById("select-event").classList.add("darkclass");
+    document.getElementById("select-displayoption").classList.add("darkclass");
+    document.getElementById("button-displaytable").classList.add("darkclass");
     document.getElementById("textbox-keyword").classList.add("darkclass");
-
-    document.getElementById("button-darktoggle").classList.remove("lightclass");
+    document.getElementById("body").classList.add("darkclass");
   // otherwise, unset it
   } else {
     document.getElementById("button-darktoggle").value = "Dark Mode: Off";
-    document.getElementById("body").classList.remove("darkclass");
+    document.getElementById("button-darktoggle").classList.remove("darkclass");
     document.getElementById("button-upload").classList.remove("darkclass");
-    document.getElementById("button-displaytable").classList.remove("darkclass");
     document.getElementById("select-date").classList.remove("darkclass");
     document.getElementById("select-location").classList.remove("darkclass");
     document.getElementById("select-event").classList.remove("darkclass");
+    document.getElementById("select-displayoption").classList.add("darkclass");
+    document.getElementById("button-displaytable").classList.remove("darkclass");
     document.getElementById("textbox-keyword").classList.remove("darkclass");
+    document.getElementById("body").classList.remove("darkclass");
   }
 }

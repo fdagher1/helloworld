@@ -106,28 +106,16 @@ function retrieveDataForTopPane() {
   eventsListedInEventsDropdown = importedDataSet[importedDataSet.length-1][3].split(";"); // First populate it from the provided list
   eventsListedInEventsDropdown.unshift("All events-All events"); // Then add the all events to it
   eventsListedInEventsDropdown.pop(); // Remove the last line as it is blank
+
+  // Retrieve the Display Options list
+  displayOptionsListedInDisplayOptionsDropdown = ["Show All Lines", "Show Event Only", "Group By Location", "Summarize By Group 1", "Summarize By Group 2", "Summarize By Group 3", "Summarize By Group 4"];
 }
 
-function retrieveDateFromTopPane() {
+function retrieveDataFromTopPane() {
   selectedYear = document.getElementById("select-date").value;
   selectedLocation = document.getElementById("select-location").value;
   selectedEvent = document.getElementById("select-event").value.split("-")[1]; // Remove the prefix from the event name
-  selectedRadioButton;
-  if (document.getElementById("radiobutton-groupbylocation").checked) {
-    selectedRadioButton = "GroupByLocation";
-  } else if (document.getElementById("radiobutton-showeventonly").checked) {
-    selectedRadioButton = "ShowEventOnly";
-  } else if (document.getElementById("radiobutton-showalllines").checked) {
-    selectedRadioButton = "ShowAllLines";
-  } else if (document.getElementById("radiobutton-summarisebyeventgroup1").checked) {
-    selectedRadioButton = "SummarizeByEventGroup1";
-  } else if (document.getElementById("radiobutton-summarisebyeventgroup2").checked) {
-    selectedRadioButton = "SummarizeByEventGroup2";
-  } else if (document.getElementById("radiobutton-summarisebyeventgroup3").checked) {
-    selectedRadioButton = "SummarizeByEventGroup3";
-  } else if (document.getElementById("radiobutton-summarisebyeventgroup4").checked) {
-    selectedRadioButton = "SummarizeByEventGroup4";
-  }
+  selectedDisplayOption = document.getElementById("select-displayoption").value;
 }
 
 function retrieveDataforGroupByLocationTable() {
@@ -217,9 +205,9 @@ function retrieveDataforListTable(datasetToQuery, searchWord) {
     // Set it to blank for better layout in the event column title
     selectedEvent = "";
     // All events were selected, and so either display all the lines, or only those with events, depending on what the user chose
-    if (selectedRadioButton == "ShowAllLines") {
+    if (selectedDisplayOption == "Show All Lines") {
       eventsToList.push(""); 
-    } else if (selectedRadioButton == "ShowEventOnly") {
+    } else if (selectedDisplayOption == "Show Event Only") {
       // If user chose to show events then build the array to contain all the event names
       for (var event of eventsListedInEventsDropdown) {
         eventsToList.push("#" + event.split("-")[1]);
@@ -235,11 +223,11 @@ function retrieveDataforListTable(datasetToQuery, searchWord) {
   for (var i = 0; i < datasetToQuery.length; i++) {
     if (helperCompareDates(datasetToQuery[i][0], selectedYear)) {
       if (datasetToQuery[i][1].includes(selectedLocation)) {
-        if (selectedRadioButton == "ShowAllLines") {
+        if (selectedDisplayOption == "Show All Lines") {
           if (datasetToQuery[i][2].includes(eventsToList)) {
             tempDataSet.push([datasetToQuery[i][0], datasetToQuery[i][1], datasetToQuery[i][2]]);
           }
-        } else if (selectedRadioButton == "ShowEventOnly") {
+        } else if (selectedDisplayOption == "Show Event Only") {
           var eventLine = ""; // will hold all the events of that line
           for (var event of eventsToList) {
             if (datasetToQuery[i][2].includes(event)) {
@@ -309,14 +297,22 @@ function retrieveDataforSummaryTable() {
   }
 
   // Define the items to query
-  if (selectedRadioButton == "SummarizeByEventGroup1") {
-    var tagsToQuery = ["#Careerevent", "#Lifestylechange", "#Meditate", "#Orgasm", "#Pay", "#Session", "#Smoke"];
-  } else if (selectedRadioButton == "SummarizeByEventGroup2") {
-    var tagsToQuery = ["#Angry", "#Cry", "#Desire", "#Emotional", "#Happy", "#Healthnote", "#Sad", "Trigger", "Worldevent"];
-  } else if (selectedRadioButton == "SummarizeByEventGroup3") {
-    var tagsToQuery = ["#Bike", "#Golf", "#Hike", "#Jog", "#Ski", "#Skydive", "#Tennis", "Watersport", "Workout"];
-  } else if (selectedRadioButton == "SummarizeByEventGroup4") {
-    var tagsToQuery = ["#Date", "#Gathering", "#Hotel", "#Met", "#Restaurant", "#Show", "#Travel", "Visit"];
+  switch (selectedDisplayOption) {
+    case "Summarize By Group 1":
+      var tagsToQuery = ["#Careerevent", "#Lifestylechange", "#Meditate", "#Orgasm", "#Pay", "#Session", "#Smoke"];
+      break;
+
+    case "Summarize By Group 2":
+      var tagsToQuery = ["#Angry", "#Cry", "#Desire", "#Emotional", "#Happy", "#Healthnote", "#Sad", "Trigger", "Worldevent"];
+      break;
+
+    case "Summarize By Group 3":
+      var tagsToQuery = ["#Bike", "#Golf", "#Hike", "#Jog", "#Ski", "#Skydive", "#Tennis", "Watersport", "Workout"];
+      break;
+
+    case "Summarize By Group 4":
+      var tagsToQuery = ["#Date", "#Gathering", "#Hotel", "#Met", "#Restaurant", "#Show", "#Travel", "Visit"];
+      break;
   }
   
   // Build the dictionary for the count of each tag in each month (dictionary of a dictionaries)
@@ -364,7 +360,7 @@ function retrieveDataforSummaryTable() {
   }
 
   // Define the items to query
-  if (selectedRadioButton == "SummarizeByEventGroup1") {
+  if (selectedDisplayOption == "Summarize By Group 1") {
     
     // Build the dictionary for holding other data from each month, like pay amount, etc.
     var tagsToQueryWithin = ["#Pay"]
