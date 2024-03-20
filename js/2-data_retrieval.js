@@ -108,7 +108,7 @@ function retrieveDataForTopPane() {
   eventsListedInEventsDropdown.pop(); // Remove the last line as it is blank
 
   // Retrieve the Display Options list
-  displayOptionsListedInDisplayOptionsDropdown = ["Show All Lines", "Show Event Only", "Group By Location", "Summarize By Group 1", "Summarize By Group 2", "Summarize By Group 3", "Summarize By Group 4"];
+  displayOptionsListedInDisplayOptionsDropdown = ["List All Lines", "List Event Only", "Group By Location", "Summarize By Group 1", "Summarize By Group 2", "Summarize By Group 3", "Summarize By Group 4"];
 }
 
 function retrieveDataFromTopPane() {
@@ -205,10 +205,10 @@ function retrieveDataforListTable(datasetToQuery, searchWord) {
     // Set it to blank for better layout in the event column title
     selectedEvent = "";
     // All events were selected, and so either display all the lines, or only those with events, depending on what the user chose
-    if (selectedDisplayOption == "Show All Lines") {
+    if (selectedDisplayOption == "List All Lines") {
       eventsToList.push(""); 
-    } else if (selectedDisplayOption == "Show Event Only") {
-      // If user chose to show events then build the array to contain all the event names
+    } else if (selectedDisplayOption == "List Event Only") {
+      // If user chose to only list events then build the array to contain all the event names
       for (var event of eventsListedInEventsDropdown) {
         eventsToList.push("#" + event.split("-")[1]);
       }
@@ -223,11 +223,11 @@ function retrieveDataforListTable(datasetToQuery, searchWord) {
   for (var i = 0; i < datasetToQuery.length; i++) {
     if (helperCompareDates(datasetToQuery[i][0], selectedYear)) {
       if (datasetToQuery[i][1].includes(selectedLocation)) {
-        if (selectedDisplayOption == "Show All Lines") {
+        if (selectedDisplayOption == "List All Lines") {
           if (datasetToQuery[i][2].includes(eventsToList)) {
             tempDataSet.push([datasetToQuery[i][0], datasetToQuery[i][1], datasetToQuery[i][2]]);
           }
-        } else if (selectedDisplayOption == "Show Event Only") {
+        } else if (selectedDisplayOption == "List Event Only") {
           var eventLine = ""; // will hold all the events of that line
           for (var event of eventsToList) {
             if (datasetToQuery[i][2].includes(event)) {
