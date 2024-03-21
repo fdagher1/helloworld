@@ -77,6 +77,7 @@ function eventDisplayButtonClicked() {
     let searchWord = "";
     retrieveDataforListTable(importedDataSet, searchWord);
   } else if (selectedDisplayOption.includes("Summarize")) {
+    document.getElementById("textbox-keyword").setAttribute("disabled", ""); // Disable keyword seach since not needed here
     retrieveDataforSummaryTable();
   } 
 }
@@ -111,7 +112,7 @@ function eventDarkModeButtonClicked() {
     document.getElementById("select-date").classList.remove("darkclass");
     document.getElementById("select-location").classList.remove("darkclass");
     document.getElementById("select-event").classList.remove("darkclass");
-    document.getElementById("select-displayoption").classList.add("darkclass");
+    document.getElementById("select-displayoption").classList.remove("darkclass");
     document.getElementById("button-displaytable").classList.remove("darkclass");
     document.getElementById("textbox-keyword").classList.remove("darkclass");
     document.getElementById("body").classList.remove("darkclass");
