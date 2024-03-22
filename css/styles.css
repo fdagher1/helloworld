@@ -6,17 +6,17 @@ body {
   .div-top-panel {
     padding: 5px;
     display: grid;
-    grid-template-columns: 150px 150px;
+    grid-template-columns: 180px 180px;
     column-gap: 5px;
     row-gap: 5px;
     padding: 10px;
     float: left;
   }
 
-  #button-upload, #button-darktoggle, #button-displaytable, #select-date, #select-location, #select-event, #select-displayoption, #textbox-keyword  {
+  #button-upload, #button-darktoggle, #button-displaytable, #textbox-keyword, #select-date, #select-location, #select-event, #select-displayoption  {
     border: 1px solid #1c87c9;
-    width: 150px;
-    padding: 10px 10px;
+    border-radius: 15px;
+    width: 175px;
   }
 
   .lightclass {
