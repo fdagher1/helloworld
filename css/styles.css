@@ -15,8 +15,14 @@ body {
 
   #button-upload, #button-darktoggle, #button-displaytable, #textbox-keyword, #select-date, #select-location, #select-event, #select-displayoption  {
     border: 1px solid #1c87c9;
-    border-radius: 15px;
+    border-radius: 10px;
     width: 175px;
+    height: 26px;
+  }
+
+  #textbox-keyword { /*styling this seperately as its dimensions dont seem to be the same as the other elements*/
+    width: 170px;
+    height: 23px;
   }
 
   .lightclass {
