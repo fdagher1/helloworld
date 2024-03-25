@@ -51,13 +51,6 @@ function eventUploadButtonClicked(event) {
 
   // Search box
   document.getElementById("textbox-keyword").removeAttribute("disabled");
-
-  // Clear content of arrays
-  dataSet = [];
-  yearsListedInYearsDropdown = [];
-  countriesListedInLocationDropdown = [];
-  citiesListedInLocationDropdown = [];
-  eventsListedInEventsDropdown = [];
 }
 
 function eventDisplayButtonClicked() {
