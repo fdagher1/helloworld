@@ -63,14 +63,17 @@ function displayDataInTable(columnNames, dataSetToDisplay) {
   // Iterate over the column names array, creating a header for each, with proper styling
   for (var i = 0; i < columnNames.length; i++) {
     let cell = row.insertCell(i);
+
+    // Set column name value
+    cell.innerHTML = columnNames[i];
+
+    // Set column styling
     cell.style.fontWeight = "bold";
     cell.style.verticalAlign = "top";
-    // If this is not the last column then set width to fixed, else, display table length
-    if ( i != columnNames.length - 1) {
-      cell.innerHTML = columnNames[i];
+
+    // If column name is "Date" or "Location" set width to 150px
+    if (cell.innerHTML == "Date" || cell.innerHTML == "Location") {
       cell.style.width = "150px";
-    } else {
-      cell.innerHTML = columnNames[i] + " (" + dataSetToDisplay.length + " rows)";
     }
   }
 
@@ -91,41 +94,4 @@ function displayDataInTable(columnNames, dataSetToDisplay) {
       cell.innerHTML = dataSetToDisplay[i][j];
     }
   }
-}
-  
-function displaySummaryByMonthTable(columnNames, month_year_arr, countByMonth, sumByMonth) {
-  // Clear table header element then add new row to it
-  const thead_HTML_Element = document.getElementById("thead");
-  thead_HTML_Element.replaceChildren();
-  let row = thead_HTML_Element.insertRow();
-
-  // Iterate over the column names array, creating a header for each, with proper styling
-  for (var i = 0; i < columnNames.length; i++) {
-    let cell = row.insertCell(i);
-    cell.style.fontWeight = "bold";
-    cell.style.verticalAlign = "top";
-    cell.innerHTML = columnNames[i].replace('#',""); // Remove the hash from the column name 
-    cell.style.width = "80px";
-  }
-
-  // Clear table body element
-  const new_tbody_HTML_Element = document.getElementById("tbody"); // Get tbody HTML element
-  new_tbody_HTML_Element.replaceChildren() // Clear content
-  
-  // Then iterate over each array line to first add a new row, then new cells within that row 
-  for (var month_year of month_year_arr) {
-    let row = new_tbody_HTML_Element.insertRow();
-    var cell_number = 0;
-    let cell = row.insertCell(cell_number);
-    cell.innerHTML = month_year;
-    for (var tag_key in countByMonth) {
-      let cell = row.insertCell(++cell_number);
-      cell.innerHTML = countByMonth[tag_key][month_year];
-    }
-    for (var tag_key in sumByMonth) {
-      let cell = row.insertCell(++cell_number);
-      cell.innerHTML = sumByMonth[tag_key][month_year];
-    }
-  }
-
 }
