@@ -302,7 +302,9 @@ function retrieveDataforSummaryTable() {
   eventsListFromFile.pop(); // Remove the last line as it is blank
   // Remove the <br> from each line that has it (i.e. second and up)
   for (index in eventsListFromFile) {
-    if (index != 0) {
+    if (index == 0) {
+      eventsListFromFile[index] = eventsListFromFile[index];
+    } else {
       eventsListFromFile[index] = eventsListFromFile[index].slice(4);
     }
   }
@@ -317,7 +319,7 @@ function retrieveDataforSummaryTable() {
   // Create the list to query based on user selection
   var tagsToQuery = [];
   for (line of eventsListFromFile) {
-    if (line.includes(eventCategories[selectedDisplayOption[19]])) {
+    if (line.includes(eventCategories[selectedDisplayOption[19]-1])) {
       tagsToQuery.push(line.split("_")[1]);
     }
   }
