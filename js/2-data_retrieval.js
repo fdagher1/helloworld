@@ -346,7 +346,7 @@ function retrieveDataforSummaryTable() {
           var cell_date = new Date(importedDataSet[i][0]);
           var month_year = (cell_date.getMonth()+1).toString() +"/" + cell_date.getFullYear().toString();
           // Check if the tag matches. First remove the suffix, such as the -Sum from #Pay-Sum
-          if (importedDataSet[i][2].includes(tagToQuery.split("-")[0]))  {
+          if (importedDataSet[i][2].includes("#" + tagToQuery.split("-")[0]))  {
             // Check that the tag is not for Sum
             if (!tagToQuery.includes("-Sum")) {
               // Increment count in dictionary
@@ -355,7 +355,7 @@ function retrieveDataforSummaryTable() {
             } else {
               // Sum the amount but only when prefixed by "$"
               // Get the #Pay line from that cell
-              let payLine = importedDataSet[i][2].slice(importedDataSet[i][2].indexOf(tagToQuery.split("-")[0]));
+              let payLine = importedDataSet[i][2].slice(importedDataSet[i][2].indexOf("#" + tagToQuery.split("-")[0]));
               payLine = payLine.slice(0, payLine.indexOf("<br>")); // THIS CAN POSSIBLY BE MERGED WITH THE TOP LINE AT SOME POINT
               // Get the pay amount from that cell
               var paySumTotal = helperGetTotalAmountFromLine(payLine);
