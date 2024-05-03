@@ -3,8 +3,9 @@
   
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="apple-touch-icon" href="https://fdagher1.github.io/helloworld/apple-touch-icon.png">
+    <link rel="apple-touch-icon" href="https://fdagher1.github.io/helloworld/icon.png">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="manifest" href="manifest.json">
 
     <!--async tag helps scripts are executed asynchronously and without blocking the browser-->
     <script src="js/xslx-0.8.0/jszip.js" async></script>
@@ -13,6 +14,17 @@
     <script src="js/2-data_retrieval.js"></script>
     <script src="js/3-data_display.js"></script>
     <script src="js/4-helper_functions.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registered with scope:', registration.scope);
+          })
+          .catch(error => {
+            console.error('Service Worker registration failed:', error);
+          });
+      }
+    </script>
   </head>
 
   <body id="body">
