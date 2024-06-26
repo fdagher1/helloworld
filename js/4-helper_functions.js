@@ -1,3 +1,4 @@
+// Checks if eventName is already present as a key countOfOccurances dictionary, and if so, it increments its value, otherwise it creates one with value 1
 function helperIncrementCount(eventName, countOfOccurances) {
   if (eventName in countOfOccurances) {
     countOfOccurances[eventName] += 1;
@@ -86,4 +87,53 @@ function helperGetTotalAmountFromLine(line) {
   }
 
   return total;
+}
+
+// This function returns an array containing rows from dataset that match the criteria selectedTime, selectedLocations, selectedEvents,
+function helperReturnRowsThatMatchDropdowns(dataset, selectedTime, selectedLocations, selectedEvents) {
+  // Loop over the array to find matches
+  var filteredDataSet = []; // Array to hold rows that match the chosen criteria in the 3 dropdowns
+  for (i = 0; i < dataset.length; i++) {
+    var lineAdded = false; // Used to jump out of for loops when match is found
+    if (selectedTime.includes(new Date (dataset[i][0]).getFullYear().toString())) { // Check if row date is among the selected dates
+      for (const country of selectedLocations ) {
+        if (lineAdded == true) {break;} // If this line has already been added, then get out of this location for loop
+        if (dataset[i][1].includes(country)) {
+          for (const event of selectedEvents) { // Iterate over the selected events to see if any of them match
+            if (lineAdded == true) {break;} // If this line has already been added, then get out of this event for loop
+            if (dataset[i][2].includes("#" + event)) { // Check if event criteria matches
+              filteredDataSet.push(dataset[i]);
+              lineAdded = true;
+            }
+          }
+        }
+      }
+    }
+  }
+  return filteredDataSet;
+}
+
+// This function returns an array containing rows from dataset that match the criteria searchWord
+function helperReturnRowsThatMatchSearchWord(dataset, searchWord) { 
+  // Now loop over the array to find matches
+  var filteredDataSet = []; // Array to hold rows that match the chosen criteria in the 3 dropdowns
+  for (const row of dataset) {
+    if (row[0].toLowerCase().includes(searchWord.toLowerCase()) || row[1].toLowerCase().includes(searchWord.toLowerCase()) || row[2].toLowerCase().includes(searchWord.toLowerCase())) {
+      filteredDataSet.push(row);
+    }
+  }
+  return filteredDataSet;
+}
+
+// This function returns an erray of indices from wholeStr where the searchStr exists in it 
+function getIndicesOf(searchStr, wholeStr) {
+  const searchStrLen = searchStr.length;
+  let startIndex = 0;
+  let index;
+  const indices = [];
+  while ((index = wholeStr.indexOf(searchStr, startIndex)) > -1) {
+      indices.push(index + searchStrLen);
+      startIndex = index + searchStrLen;
+  }
+  return indices;
 }

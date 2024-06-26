@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" href="https://fdagher1.github.io/helloworld/icon.png">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dropdown-styles.css">
     <link rel="manifest" href="manifest.json">
 
     <!--async tag helps scripts are executed asynchronously and without blocking the browser-->
@@ -27,22 +28,52 @@
     </script>
   </head>
 
-  <body id="body">
+  <body id="body" class="lightclass">
     <div class="div-top-panel">     
+      
       <div><input type=file id="button-upload" name="files[]" class="lightclass" title="your text" onchange="eventUploadButtonClicked(event)"></div>
-      <div><select id="select-date" class="lightclass" disabled><option value="All Years" selected>All Years</option></select></div>
+      
       <div><input type="button" id="button-darktoggle" class="lightclass" value="Dark Mode: Off" onclick="eventDarkModeButtonClicked()"></div>
-      <div><select id="select-location" class="lightclass" disabled><option value="All Countries" selected>All Countries</option></select></div>
-      <div><input id="textbox-keyword" type="text" oninput="eventKeywordEntered()" disabled></div>
-      <div><select id="select-event" class="lightclass" disabled><option value="All Social Events">All Social Events</option></select></div>
-      <div><input type="button" id="button-displaytable" class="lightclass" value="Display" onclick="eventDisplayButtonClicked()" disabled></div>
+
+      <div id="timeDropdownDiv" class="dropdown-criteria-list lightclass" onclick="criteriaDropdownClicked(event)">
+        <span class="anchor ">Select Time(s)</span>
+        <ul class="items" id="timeItems">
+          <li><input type="checkbox" />Place Holder </li>
+        </ul>
+      </div>
+
+      <div id="locationDropdownDiv" class="dropdown-criteria-list lightclass" onclick="criteriaDropdownClicked(event)">
+        <span class="anchor">Select Location(s)</span>
+        <ul class="items" id="locationItems">
+          <li><input type="checkbox" />Place Holder </li>
+        </ul>
+      </div>
+
+      <div id="eventDropdownDiv" class="dropdown-criteria-list lightclass" onclick="criteriaDropdownClicked(event)">
+        <span class="anchor">Select Event(s)</span>
+        <ul class="items" id="eventItems">
+          <li><input type="checkbox" />Place Holder </li>
+        </ul>
+      </div>
+
       <div><select id="select-displayoption" class="lightclass" disabled><option value="Show All Lines">Show All Lines</option></select></div>
-    </div>
+      
+      <div><input id="textbox-keyword" type="text" oninput="eventKeywordEntered()" disabled></div>
+
+      <div><input type="button" id="button-displaytable" class="lightclass" value="Display" onclick="eventDisplayButtonClicked()" disabled></div>
+
+    </div> 
 
     <div>
       <table>
-        <thead id="thead"></thead>
-        <tbody id="tbody"></tbody>
+        <thead id="thead">
+          <tr>
+            <th style="font-weight:bold; color:red">Please upload your file!</th>
+          </tr>
+      </thead>
+        <tbody id="tbody">
+
+        </tbody>
       </table>
     </div>
   </body>
