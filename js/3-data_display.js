@@ -7,43 +7,31 @@ function displayFileValidityError(error_message){
 }
 
 function displayDataInTopPane() {
-  // Populate the time dropdown
-  var selectYearElement = document.getElementById("select-date");
-  selectYearElement.replaceChildren(); // Clear what's already there
-  for (var year of yearsListedInYearsDropdown) {
-    var optionElement = document.createElement("option");
-    optionElement.value = year;
-    optionElement.text = year;
-    selectYearElement.appendChild(optionElement);
-  }
+  let startTime = performance.now();
+  var elementIdsToFill = ["timeItems", "locationItems", "eventItems"];
+  var dataToFillElementsWith = [yearsListedInYearsDropdown, countriesListedInLocationDropdown, eventsListedInEventsDropdown];
   
-  // Populate the location dropdown
-  var locationList = countriesListedInLocationDropdown.concat(citiesListedInLocationDropdown); // Merge both asrray
-  var selectLocationElement = document.getElementById("select-location");
-  selectLocationElement.replaceChildren(); // Clear what's already there
-  for (var location of locationList) {
-    var optionElement = document.createElement("option");
-    optionElement.value = location;
-    if (location.includes("All ")) {
-      optionElement.text = location;
-    } else {
-      optionElement.text = "- " + location;
+  // Loop over the 3 criteria dropdowns to fill them with their corresponding data
+  for (let i=0; i < elementIdsToFill.length; i++) {
+    var htmlElement = document.getElementById(elementIdsToFill[i]);
+    htmlElement.replaceChildren(); // Clear what's already there
+    for (var dataValue of dataToFillElementsWith[i]) {
+      var labelElement = document.createElement("label");
+      labelElement.innerText = dataValue;
+
+      var inputElement = document.createElement("input");
+      inputElement.type = "checkbox";
+      inputElement.value = dataValue;
+
+      var liElement = document.createElement("li");
+      liElement.appendChild(inputElement);
+      liElement.appendChild(labelElement);
+
+      htmlElement.appendChild(liElement);
     }
-    
-    selectLocationElement.appendChild(optionElement);
-  }
-
-  // Populate the events dropdown
-  var selectEventElement = document.getElementById("select-event");
-  selectEventElement.replaceChildren(); // Clear what's already there
-  for (var event of eventsListedInEventsDropdown) {
-    var optionElement = document.createElement("option");
-    optionElement.value = event;
-    optionElement.text = event;
-    selectEventElement.appendChild(optionElement);
-  }
-
-  // Populate the events dropdown
+``}
+  
+  // Fill the Display Options dropdown with its options
   var selectDisplayOptionElement = document.getElementById("select-displayoption");
   selectDisplayOptionElement.replaceChildren(); // Clear what's already there
   for (var displayoption of displayOptionsListedInDisplayOptionsDropdown) {
@@ -52,9 +40,11 @@ function displayDataInTopPane() {
     optionElement.text = displayoption;
     selectDisplayOptionElement.appendChild(optionElement);
   }
+  console.log(`displayDataInTopPane executed in: ${performance.now() - startTime} milliseconds`);
 }
 
 function displayDataInTable(columnNames, dataSetToDisplay) {
+  let startTime = performance.now();
   // Clear table header element then add new row to it
   const thead_HTML_Element = document.getElementById("thead");
   thead_HTML_Element.replaceChildren();
@@ -94,4 +84,5 @@ function displayDataInTable(columnNames, dataSetToDisplay) {
       cell.innerHTML = dataSetToDisplay[i][j];
     }
   }
+  console.log(`displayDataInTable executed in: ${performance.now() - startTime} milliseconds`);
 }

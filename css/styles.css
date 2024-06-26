@@ -1,41 +1,36 @@
-body {
-    background-color: white;
-    color: mediumblue;
-  }
+.lightclass {
+  background-color: white;
+  color: mediumblue;
+}
 
-  .div-top-panel {
-    padding: 5px;
-    display: grid;
-    grid-template-columns: 180px 180px;
-    column-gap: 5px;
-    row-gap: 5px;
-    padding: 10px;
-    float: left;
-  }
+.darkclass {
+  background-color: #222;
+  color: Gainsboro;
+}
 
-  #button-upload, #button-darktoggle, #button-displaytable, #textbox-keyword, #select-date, #select-location, #select-event, #select-displayoption  {
-    border: 1px solid #1c87c9;
-    border-radius: 10px;
-    width: 175px;
-    height: 26px;
-  }
+.div-top-panel {
+  padding: 5px;
+  display: grid;
+  grid-template-columns: 180px 180px;
+  column-gap: 5px;
+  row-gap: 5px;
+  padding: 10px;
+}
 
-  #textbox-keyword { /*styling this seperately as its dimensions dont seem to be the same as the other elements*/
-    width: 170px;
-    height: 23px;
-  }
+#button-upload, #button-darktoggle, #button-displaytable, #textbox-keyword, #select-displayoption  {
+  border: 1px solid #1c87c9;
+  border-radius: 0px;
+  width: 175px;
+  height: 26px;
+}
 
-  .lightclass {
-    color: mediumblue;
-  }
+#textbox-keyword { /*styling this seperately as its dimensions dont seem to be the same as the other elements*/
+  width: 170px;
+  height: 23px;
+}
 
-  .darkclass {
-    background-color: #222;
-    color: Gainsboro;
-  }
-
-  td {
-    border: 1px solid #1c87c9;
-    padding: 5px;
-    vertical-align: top;
-  }
+td {
+  border: 1px solid #1c87c9;
+  padding: 5px;
+  vertical-align: top;
+}
