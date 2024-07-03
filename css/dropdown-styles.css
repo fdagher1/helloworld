@@ -7,7 +7,8 @@
   cursor: pointer;
   display: inline-block;
   padding: 5px 47px 5px 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #1c87c9;
+  width: 118px;
 }
 
 .dropdown-criteria-list .anchor:after {
@@ -41,10 +42,6 @@
 .dropdown-criteria-list ul.items li {
   list-style: none;
 }
-
-/*.dropdown-criteria-list.visible .anchor {
-  color: #0040ff;
-}*/
 
 .dropdown-criteria-list.visible .items {
   display: block;

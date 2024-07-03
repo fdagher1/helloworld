@@ -56,7 +56,7 @@ function validateFileFormatAndData(){
 
     // CHECK IF THERE ARE EVENT TAGS THAT ARE NOT IN THE EVENT LIST
     // Retrieve the events list from the bottom cell
-    eventsListedInEventsDropdown = datasetFromExcel[datasetFromExcel.length-1][3].split(";"); 
+    var eventsFromExcelFile = datasetFromExcel[datasetFromExcel.length-1][3].split(";"); 
     // Check if there are any tags in the event cell that are missing from the list
     while (event_cell.includes("#")) { // Iterate over all the # entries in the same cell
       let new_event_cell = event_cell.slice(event_cell.indexOf("#")); // Remove anything before the first # in the cell
@@ -72,8 +72,8 @@ function validateFileFormatAndData(){
 
       // Check if event name is not in the provided event list
       var event_is_in_list = false;
-      for (let j = 0; j < eventsListedInEventsDropdown.length; j++) {
-        if (eventsListedInEventsDropdown[j].split("_")[1] == eventName) {
+      for (let j = 0; j < eventsFromExcelFile.length; j++) {
+        if (eventsFromExcelFile[j].split("_")[1] == eventName) {
           event_is_in_list = true;
           break;
         }
@@ -100,7 +100,7 @@ function retrieveDataForTopPane() {
   // RETRIEVE THE YEARS LIST
   var currentYear = new Date().getFullYear();
   for (var year = currentYear; year >= 1984; year--) {
-    yearsListedInYearsDropdown.push(year);
+    allDropdownValues[0].push(year.toString());
   }
 
   // RETRIEVE THE LOCATIONS LIST
@@ -122,25 +122,25 @@ function retrieveDataForTopPane() {
 
       // Add country name to array
       let countryName = cityCountrySplitArray[1].trim();
-      if (!countryName.includes(")") && !countriesListedInLocationDropdown.includes(countryName)) {
-          countriesListedInLocationDropdown.push(countryName);
+      if (!countryName.includes(")") && !allDropdownValues[1].includes(countryName)) {
+        allDropdownValues[1].push(countryName);
       }
     }
   }
-  countriesListedInLocationDropdown.sort();
+  allDropdownValues[1].sort();
   citiesListedInLocationDropdown.sort();
 
   // RETRIEVE THE EVENTS LIST
-  eventsListedInEventsDropdown = datasetFromExcel[datasetFromExcel.length-1][3].split(";"); // First populate it from the provided list
-  eventsListedInEventsDropdown.pop(); // Then remove the last line as it is blank
-  for (let i=0; i < eventsListedInEventsDropdown.length; i++) {
-    if (eventsListedInEventsDropdown[i].includes("\r\n")) {
-      eventsListedInEventsDropdown[i] = eventsListedInEventsDropdown[i].split("\r\n")[1];
+  allDropdownValues[2] = datasetFromExcel[datasetFromExcel.length-1][3].split(";"); // First populate it from the provided list
+  allDropdownValues[2].pop(); // Then remove the last line as it is blank
+  for (let i=0; i < allDropdownValues[2].length; i++) {
+    if (allDropdownValues[2][i].includes("\r\n")) {
+      allDropdownValues[2][i] = allDropdownValues[2][i].split("\r\n")[1];
     }
   }
 
   // RETRIEVE THE DISPLAY OPTIONS LIST
-  displayOptionsListedInDisplayOptionsDropdown = ["List Excel File", "List All Lines", "List Event Lines", "Group By Location", "Summarize By Group 1", "Summarize By Group 2", "Summarize By Group 3", "Summarize By Group 4"];
+  allDisplayOptions = ["List Event Lines", "List All Lines", "List Excel File", "Group By Location", "Summarize By Group 1", "Summarize By Group 2", "Summarize By Group 3", "Summarize By Group 4"];
   console.log(`retrieveDataForTopPane executed in: ${performance.now() - startTime} milliseconds`);
   displayDataInTopPane();
 }
@@ -149,17 +149,12 @@ function retrieveDataFromTopPane() {
   let startTime = performance.now();
   // RETRIEVE SELECTED DATE(S), LOCATION(S), EVENT(S)
   // Clear content of the dropdown arrays before filling them again
-  yearsListedInYearsDropdown.length = 0;
-  countriesListedInLocationDropdown.length = 0;
-  eventsListedInEventsDropdown.length = 0;
-  selectedTime.length = 0;
-  selectedLocations.length = 0;
-  selectedEvents.length = 0;
+  selectedDropdownValues[0].length = 0;
+  selectedDropdownValues[1].length = 0;
+  selectedDropdownValues[2].length = 0;
 
   // Define new variables to use
   var elementIdsToGetDataFrom = ["timeItems", "locationItems", "eventItems"];
-  var dropdownAllValues = [[], [], []];
-  var dropdownSelectedValues = [[], [], []];
   
   // Loop over the 3 criteria dropdowns to get their corresponding: 1- values, and 2- select status (i.e., whether selected or not)
   for (let i=0; i < elementIdsToGetDataFrom.length; i++) {
@@ -168,39 +163,30 @@ function retrieveDataFromTopPane() {
     // Loop over each <li> entry to get its <input> child and then check if it's checked or unchecked
     for (const liElement of liElements) {
       var inputElement = liElement.children[0]; // the first child of the <li> element is the <input> element
-      dropdownAllValues[i].push(inputElement.value); // Fill the dropdownAllValues array with all values
       
-      // Fill the dropdownSelectedValues array with only selected values
+      // Fill the selectedDropdownValues array with only selected values
       if (inputElement.checked) {
         if (inputElement.value.includes("_")) { // i.e., events
-          dropdownSelectedValues[i].push(inputElement.value.split("_")[1]); 
+          selectedDropdownValues[i].push(inputElement.value.split("_")[1]); 
         } else { // i.e., times and locations 
-          dropdownSelectedValues[i].push(inputElement.value); 
+          selectedDropdownValues[i].push(inputElement.value); 
         }
       }
     }
 ``}
 
   // If any of the selections are blank then fill the array with all of options (as if they were all selected)
-  for (let i=0; i < dropdownSelectedValues.length; i++) {
-    if (dropdownSelectedValues[i].length == 0) { // Meaning no values were selected
+  for (let i=0; i < selectedDropdownValues.length; i++) {
+    if (selectedDropdownValues[i].length == 0) { // Meaning no values were selected
       if (i != 2) { // Meaning it's not events, then copy the data as is
-        dropdownSelectedValues[i] = dropdownAllValues[i];
+        selectedDropdownValues[i] = allDropdownValues[i].slice();
       } else { // Meaning it's events, then only display the part after the _ sign
-        for (j=0; j<dropdownAllValues[i].length; j++) {
-          dropdownSelectedValues[i].push(dropdownAllValues[i][j].split("_")[1]);
+        for (j=0; j<allDropdownValues[i].length; j++) {
+          selectedDropdownValues[i].push(allDropdownValues[i][j].split("_")[1]);
         }
       }
     }
   }
-
-  // Set the variables from the parent script since those are globally accessible
-  yearsListedInYearsDropdown = dropdownAllValues[0];
-  countriesListedInLocationDropdown = dropdownAllValues[1];
-  eventsListedInEventsDropdown = dropdownAllValues[2];
-  selectedTime = dropdownSelectedValues[0];
-  selectedLocations = dropdownSelectedValues[1];
-  selectedEvents = dropdownSelectedValues[2];
 
   // RETRIEVE SELECTED DISPLAY OPTIONS
   selectedDisplayOption = document.getElementById("select-displayoption").value;
@@ -229,10 +215,10 @@ function retrieveDataForLinesTable() {
   let startTime = performance.now();
   if (userAction == "Button Press") {   
     // Filter dataset to only include lines from the 3 dropdown criteria and 1 search word
-    datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetFromExcel, selectedTime, selectedLocations, selectedEvents); 
+    datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetFromExcel, selectedDropdownValues[0], selectedDropdownValues[1], selectedDropdownValues[2]); 
 
     if (!searchWord == "") {
-      datasetAfterKeywordFilter = helperReturnRowsThatMatchSearchWord(datasetBeforeKeywordFilter, searchWord).slice(0);
+      datasetAfterKeywordFilter = helperReturnRowsThatMatchSearchWord(datasetBeforeKeywordFilter, searchWord).slice();
     } else {
       datasetAfterKeywordFilter = datasetBeforeKeywordFilter.slice();
     }
@@ -245,7 +231,7 @@ function retrieveDataForLinesTable() {
         var brIndices = getIndicesOf("<br>", row[2]) // Get all the indices of <br> in that cell
         brIndices.unshift(0); // Add 0 to the beginning for ease of looping over each line in that cell
         for (var i = 0; i < brIndices.length ; i++) { // Loop over the different lines in that cell
-          for (var event of selectedEvents) { // Loop over every selected event to check if it's present in that line
+          for (var event of selectedDropdownValues[2]) { // Loop over every selected event to check if it's present in that line
             var line = row[2].substring(brIndices[i],brIndices[i+1]) + "<br>"; // Extract the line.
             if (line.includes("#" + event)) { // Now check if the line contains the event
               if (!eventLinesToAdd.includes(line)) { // If so then check if that line is not already there (useful for lines that have multiple tags)
@@ -287,7 +273,7 @@ function retrieveDataforGroupByLocationTable() {
   let startTime = performance.now();
 
   // Filter dataset to only include lines from the 3 dropdown criteria and 1 search word
-  datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetFromExcel, selectedTime, selectedLocations, selectedEvents); 
+  datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetFromExcel, selectedDropdownValues[0], selectedDropdownValues[1], selectedDropdownValues[2]); 
   if (!searchWord == "") {
     datasetAfterKeywordFilter = helperReturnRowsThatMatchSearchWord(datasetBeforeKeywordFilter, searchWord).slice(0);
   } else {
@@ -296,7 +282,7 @@ function retrieveDataforGroupByLocationTable() {
   
   // Iterate over content of newly defined location array in order to query it for matches
   var groupbyDataToDisplay = {}; // Dictionary that will have country names has keys, and number of occurences as values, to display in output
-  for (var location of selectedLocations) {
+  for (var location of selectedDropdownValues[1]) {
     for (i = 0; i < datasetAfterKeywordFilter.length; i++) {
       if (datasetAfterKeywordFilter[i][1].includes(location) && !datasetAfterKeywordFilter[i][1].includes("(" + location) && !datasetAfterKeywordFilter[i][1].includes(location + ")")) {
         helperIncrementCount(location, groupbyDataToDisplay);
@@ -318,28 +304,28 @@ function retrieveDataforGroupByLocationTable() {
 function retrieveDataforSummaryTable() {
   let startTime = performance.now();
   // IDENTIFY THE EVENTS TO QUERY DEPENDING ON THE SUMMARY OPTION THAT THE USER CHOSE
-  // retrieve the categories from the events list
+  // retrieve the event categories from the event names
   var eventCategories = [];
-  for (line of eventsListedInEventsDropdown) {
-    let eventCategory = line.split("_")[0];
+  for (eventName of allDropdownValues[2]) {
+    let eventCategory = eventName.split("_")[0];
     if (!eventCategories.includes(eventCategory)) {
       eventCategories.push(eventCategory);
     }
   }
-  // Create the list to query based on the Option number selected by the user
+  // Create the list of events to report on, based on the Option selected by the user 
   var eventsToQuery = [];
-  for (line of eventsListedInEventsDropdown) {
-    if (line.includes(eventCategories[selectedDisplayOption[19]-1])) {
-      eventsToQuery.push(line.split("_")[1]);
+  for (eventName of allDropdownValues[2]) {
+    if (eventName.includes(eventCategories[selectedDisplayOption[19]-1])) { // The nbre 19 is the location of the number in "Summarize by Group X"
+      eventsToQuery.push(eventName.split("_")[1]);
     }
   }
   
   // FILTER DATASET TO ONLY INCLUDE LINES FROM THE 3 DROPDOWN CRITERIA AND 1 SEARCH WORD
-  datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetFromExcel, selectedTime, selectedLocations, selectedEvents); 
-  if (!searchWord == "") {
-    datasetAfterKeywordFilter = helperReturnRowsThatMatchSearchWord(datasetBeforeKeywordFilter, searchWord).slice(0);
-  } else {
+  datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetFromExcel, selectedDropdownValues[0], selectedDropdownValues[1], selectedDropdownValues[2]); 
+  if (searchWord == "") {
     datasetAfterKeywordFilter = datasetBeforeKeywordFilter.slice();
+  } else {
+    datasetAfterKeywordFilter = helperReturnRowsThatMatchSearchWord(datasetBeforeKeywordFilter, searchWord).slice(0);
   }
  
   // ITERATE OVER THE DATASET TO FIND MATCHES
@@ -375,7 +361,7 @@ function retrieveDataforSummaryTable() {
           // Get the #Pay line from that cell
           let payLine = datasetAfterKeywordFilter[i][2].slice(datasetAfterKeywordFilter[i][2].indexOf("#" + eventToQuery.split("-")[0]));
           payLine = payLine.slice(0, payLine.indexOf("<br>")); // THIS CAN POSSIBLY BE MERGED WITH THE TOP LINE AT SOME POINT
-          var paySumTotal = helperGetTotalAmountFromLine(payLine); // Get the pay amount from that cell
+          var paySumTotal = helperGetTotalDollarAmountFromLine(payLine); // Get the pay amount from that cell
           countByMonth[month_year][eventToQuery] += paySumTotal; // Increment the count in dictionary
         }
       }
