@@ -9,7 +9,7 @@ function displayFileValidityError(error_message){
 function displayDataInTopPane() {
   let startTime = performance.now();
   var elementIdsToFill = ["timeItems", "locationItems", "eventItems"];
-  var dataToFillElementsWith = [yearsListedInYearsDropdown, countriesListedInLocationDropdown, eventsListedInEventsDropdown];
+  var dataToFillElementsWith = [allDropdownValues[0], allDropdownValues[1], allDropdownValues[2]];
   
   // Loop over the 3 criteria dropdowns to fill them with their corresponding data
   for (let i=0; i < elementIdsToFill.length; i++) {
@@ -22,7 +22,7 @@ function displayDataInTopPane() {
       var inputElement = document.createElement("input");
       inputElement.type = "checkbox";
       inputElement.value = dataValue;
-
+      inputElement.addEventListener("change", e => {eventCheckboxSelected(e);});
       var liElement = document.createElement("li");
       liElement.appendChild(inputElement);
       liElement.appendChild(labelElement);
@@ -34,7 +34,7 @@ function displayDataInTopPane() {
   // Fill the Display Options dropdown with its options
   var selectDisplayOptionElement = document.getElementById("select-displayoption");
   selectDisplayOptionElement.replaceChildren(); // Clear what's already there
-  for (var displayoption of displayOptionsListedInDisplayOptionsDropdown) {
+  for (var displayoption of allDisplayOptions) {
     var optionElement = document.createElement("option");
     optionElement.value = displayoption;
     optionElement.text = displayoption;

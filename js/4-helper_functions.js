@@ -58,7 +58,7 @@ function helperCompareDates(date1, date2) {
 
 }
 
-function helperGetTotalAmountFromLine(line) {
+function helperGetTotalDollarAmountFromLine(line) {
   var total = 0;
   var stringAmount = "";
   var dollarSignDetected = false;

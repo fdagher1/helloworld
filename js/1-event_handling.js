@@ -1,20 +1,20 @@
-// Define global variables
+// DEFINE GLOBAL VARIABLES
+
+// Input from excel file
 var datasetFromExcel = []; // Data from excel file, program never changes it
 var datasetBeforeKeywordFilter = []; // Holds the data to display in the output before the keyword filter is applied
 var datasetAfterKeywordFilter = []; // Holds the data to display in the output after the keyword filter is applied
-var yearsListedInYearsDropdown = []; // All values in the Years dropdown
-var countriesListedInLocationDropdown = []; // All country names in the Location dropdown
 var citiesListedInLocationDropdown = []; // All city names in the Location dropdown
-var eventsListedInEventsDropdown = []; // All events in the Events dropdown
-var displayOptionsListedInDisplayOptionsDropdown = []; // All Display Options in the Display Options dropdown
+var allDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
+var allDisplayOptions = []; // All Display Options in the Display Options dropdown
 
-// User input
-var selectedTime = []; // Value of the user selected year
-var selectedLocations = []; // Value of the user selected location
-var selectedEvents = []; // Value of the user selected event
-var searchWord = ""; // Value of the user entered keyword
+// Input from webpage
+var selectedDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
 var selectedDisplayOption; // Value of the user selected radio button
+var searchWord = ""; // Value of the user entered keyword
 var userAction = ""; // Value to hold what user did to trigger the output: "Textbox Change" or "Button Press"
+
+// DEFINE RESPONSE FUNCTIONS
 
 function eventUploadButtonClicked(event) {
   var reader = new FileReader();
@@ -46,7 +46,7 @@ function eventUploadButtonClicked(event) {
   document.getElementById("textbox-keyword").removeAttribute("disabled");
 }
 
-function criteriaDropdownClicked(event) {
+function eventCriteriaDropdownClicked(event) {
   if (datasetFromExcel.length > 0){ // That means the excel file has been uploaded
     if (event.target.parentNode.classList.contains('visible'))
       event.target.parentNode.classList.remove('visible');
@@ -116,4 +116,36 @@ function eventDarkModeButtonClicked() {
     document.getElementById("textbox-keyword").classList.remove("darkclass");
     document.getElementById("body").classList.remove("darkclass");
   }
+}
+
+function eventCheckboxSelected(event) {
+  // To simplify the code, I will retrieve the values from all checkboxes and even other inputs, rather than just the checkbox that the user checked
+  retrieveDataFromTopPane();
+
+  // Identify which dropdown the user is on and then pick the 
+  var innerTextOfDropdown = event.target.parentElement.parentElement.parentElement.firstElementChild.innerText; // Get display text of the checked dropdown
+  var dropdownNumber; // Used to either hold 0 (for Year), 1 (for Location), or 2 (for Event);
+  var unitToUse = ["Year", "Location", "Event"]; // Used when setting the dropdown text to remove reptitive code
+  if (innerTextOfDropdown.includes("Year")) {
+    dropdownNumber = 0;
+  } else if (innerTextOfDropdown.includes("Location")) {
+    dropdownNumber = 1;
+  } else if (innerTextOfDropdown.includes("Event")) {
+    dropdownNumber = 2;
+  }
+
+  // Check the number of selections made and then create the text to later add to the dropdown
+  var numberOfCheckedboxes = selectedDropdownValues[dropdownNumber].length; // Used to get the number of checked boxes
+  var totalNumberofCheckboxes = allDropdownValues[dropdownNumber].length; // Used to get the number of all checkboxes to determine if they are all selected or only some
+  var textToSetInDropdown = ""; // Used to change the dropdown text to
+  if (numberOfCheckedboxes == totalNumberofCheckboxes) { // Meaning all checkboxes are selected
+    textToSetInDropdown = "All " + unitToUse[dropdownNumber] + "s";
+  } else if (numberOfCheckedboxes == 1) {
+    textToSetInDropdown = "1 " + unitToUse[dropdownNumber];
+  } else {
+    textToSetInDropdown = "Multiple " + unitToUse[dropdownNumber] + "s";
+  }
+
+  // Update the dropdown value
+  event.target.parentElement.parentElement.parentElement.firstElementChild.innerText = textToSetInDropdown;
 }
