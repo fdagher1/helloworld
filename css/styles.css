@@ -1,3 +1,11 @@
+.top-grid {
+  display: grid;
+  grid-template-columns: 180px 180px;
+  column-gap: 5px;
+  row-gap: 5px;
+  padding: 10px;
+}
+
 .lightclass {
   background-color: white;
   color: mediumblue;
@@ -8,13 +16,14 @@
   color: Gainsboro;
 }
 
-.div-top-panel {
-  padding: 5px;
-  display: grid;
-  grid-template-columns: 180px 180px;
-  column-gap: 5px;
-  row-gap: 5px;
-  padding: 10px;
+.cellA1 {
+  grid-row: 1 / 2; /*sets on which columns the cell starts and ends*/
+  grid-column: 1 / 2; /*sets on which rows the cell starts and ends*/
+}
+
+.cellB1, .cellA2, .cellB2, .cellA3, .cellB3, .cellA4, .cellB4 {
+  grid-row: span 1; /*span means start where you left off, 1 means take 1 column*/
+  grid-column: span 1; /*span means start where you left off, 1 means take 1 row*/
 }
 
 #button-upload, #button-darktoggle, #button-displaytable, #textbox-keyword, #select-displayoption{
@@ -22,11 +31,7 @@
   border-radius: 0px;
   width: 175px;
   height: 26px;
-}
-
-#textbox-keyword { /*styling this seperately as its dimensions dont seem to be the same as the other elements*/
-  width: 170px;
-  height: 23px;
+  text-align: left;
 }
 
 td {

@@ -96,7 +96,7 @@ function eventDarkModeButtonClicked() {
     document.getElementById("button-darktoggle").value = "Dark Mode: On";
     document.getElementById("button-darktoggle").classList.add("darkclass");
     document.getElementById("button-upload").classList.add("darkclass");
-    document.getElementById("timeDropdownDiv").classList.add("darkclass");
+    document.getElementById("yearDropdownDiv").classList.add("darkclass");
     document.getElementById("locationDropdownDiv").classList.add("darkclass");
     document.getElementById("eventDropdownDiv").classList.add("darkclass");
     document.getElementById("select-displayoption").classList.add("darkclass");
@@ -108,7 +108,7 @@ function eventDarkModeButtonClicked() {
     document.getElementById("button-darktoggle").value = "Dark Mode: Off";
     document.getElementById("button-darktoggle").classList.remove("darkclass");
     document.getElementById("button-upload").classList.remove("darkclass");
-    document.getElementById("timeDropdownDiv").classList.remove("darkclass");
+    document.getElementById("yearDropdownDiv").classList.remove("darkclass");
     document.getElementById("locationDropdownDiv").classList.remove("darkclass");
     document.getElementById("eventDropdownDiv").classList.remove("darkclass");
     document.getElementById("select-displayoption").classList.remove("darkclass");
@@ -122,15 +122,15 @@ function eventCheckboxSelected(event) {
   // To simplify the code, I will retrieve the values from all checkboxes and even other inputs, rather than just the checkbox that the user checked
   retrieveDataFromTopPane();
 
-  // Identify which dropdown the user is on and then pick the 
-  var innerTextOfDropdown = event.target.parentElement.parentElement.parentElement.firstElementChild.innerText; // Get display text of the checked dropdown
+  // Identify which dropdown the user is on
+  var innerTextOfDropdown = event.target.parentElement.parentElement.parentElement.getAttribute("id"); // Get display text of the checked dropdown
   var dropdownNumber; // Used to either hold 0 (for Year), 1 (for Location), or 2 (for Event);
   var unitToUse = ["Year", "Location", "Event"]; // Used when setting the dropdown text to remove reptitive code
-  if (innerTextOfDropdown.includes("Year")) {
+  if (innerTextOfDropdown.includes("year")) {
     dropdownNumber = 0;
-  } else if (innerTextOfDropdown.includes("Location")) {
+  } else if (innerTextOfDropdown.includes("location")) {
     dropdownNumber = 1;
-  } else if (innerTextOfDropdown.includes("Event")) {
+  } else if (innerTextOfDropdown.includes("event")) {
     dropdownNumber = 2;
   }
 
@@ -138,10 +138,10 @@ function eventCheckboxSelected(event) {
   var numberOfCheckedboxes = selectedDropdownValues[dropdownNumber].length; // Used to get the number of checked boxes
   var totalNumberofCheckboxes = allDropdownValues[dropdownNumber].length; // Used to get the number of all checkboxes to determine if they are all selected or only some
   var textToSetInDropdown = ""; // Used to change the dropdown text to
-  if (numberOfCheckedboxes == totalNumberofCheckboxes) { // Meaning all checkboxes are selected
+  if (numberOfCheckedboxes == 1) { // Meaning only 1 checkbox was selected
+    textToSetInDropdown = selectedDropdownValues[dropdownNumber]; // Meaning enter the text from the selected checkbox
+  } else if (numberOfCheckedboxes == totalNumberofCheckboxes) { // Meaning all checkboxes are selected
     textToSetInDropdown = "All " + unitToUse[dropdownNumber] + "s";
-  } else if (numberOfCheckedboxes == 1) {
-    textToSetInDropdown = "1 " + unitToUse[dropdownNumber];
   } else {
     textToSetInDropdown = "Multiple " + unitToUse[dropdownNumber] + "s";
   }

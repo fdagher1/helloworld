@@ -29,38 +29,48 @@
   </head>
 
   <body id="body" class="darkclass">
-    <div class="div-top-panel">     
+    <div class="top-grid">     
       
-      <div><input type=file id="button-upload" name="files[]" class="darkclass" title="your text" onchange="eventUploadButtonClicked(event)"></div>
-      
-      <div><input type="button" id="button-darktoggle" class="darkclass" value="Dark Mode: On" onclick="eventDarkModeButtonClicked()"></div>
+      <div class="cellA1">
+        <input type=file id="button-upload" name="files[]" class="darkclass" title="your text" onchange="eventUploadButtonClicked(event)">
+      </div>
 
-      <div id="timeDropdownDiv" class="dropdown-criteria-list darkclass" onclick="eventCriteriaDropdownClicked(event)">
+      <div class="cellB1 dropdown-criteria-list darkclass" id="yearDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
         <span class="anchor ">All Years</span>
         <ul class="items" id="timeItems">
           <li><input type="checkbox" onchange="eventCheckboxSelected()" />Place Holder </li>
         </ul>
       </div>
 
-      <div id="locationDropdownDiv" class="dropdown-criteria-list darkclass" onclick="eventCriteriaDropdownClicked(event)">
+      <div class="cellA2">
+        <input type="button" id="button-darktoggle" class="darkclass" value="Dark Mode: On" onclick="eventDarkModeButtonClicked()">
+      </div>
+
+      <div class="cellB2 dropdown-criteria-list darkclass" id="locationDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
         <span class="anchor">All Locations</span>
         <ul class="items" id="locationItems">
           <li><input type="checkbox" onchange="eventCheckboxSelected()" />Place Holder </li>
         </ul>
       </div>
 
-      <div id="eventDropdownDiv" class="dropdown-criteria-list darkclass" onclick="eventCriteriaDropdownClicked(event)">
+      <div class="cellA3">
+        <select class="darkclass" id="select-displayoption" disabled><option value="Show All Lines">Show All Lines</option></select>
+      </div>
+
+      <div class="cellB3 dropdown-criteria-list darkclass" id="eventDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
         <span class="anchor">All Events</span>
         <ul class="items" id="eventItems">
           <li><input type="checkbox" onchange="eventCheckboxSelected(event)" />Place Holder </li>
         </ul>
       </div>
-
-      <div><select id="select-displayoption" class="darkclass" disabled><option value="Show All Lines">Show All Lines</option></select></div>
       
-      <div><input id="textbox-keyword" type="text" oninput="eventKeywordEntered()" disabled></div>
+      <div class="cellA4">
+        <input type="button" id="button-displaytable" class="darkclass" value="Display" onclick="eventDisplayButtonClicked()" disabled>
+      </div>
 
-      <div><input type="button" id="button-displaytable" class="darkclass" value="Display" onclick="eventDisplayButtonClicked()" disabled></div>
+      <div class="cellB4">
+        <input id="textbox-keyword" type="text" oninput="eventKeywordEntered()" disabled>
+      </div>
 
     </div> 
 
