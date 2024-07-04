@@ -1,8 +1,4 @@
-.dropdown-criteria-list {
-  display: inline-block;
-}
-  
-.dropdown-criteria-list .anchor {
+.anchor {
   position: relative;
   cursor: pointer;
   display: inline-block;
@@ -11,9 +7,9 @@
   width: 118px;
 }
 
-.dropdown-criteria-list .anchor:after {
-  position: absolute;
+.anchor::after {
   content: "";
+  position: absolute;
   border-left: 2px solid black;
   border-top: 2px solid black;
   padding: 5px;
@@ -26,12 +22,12 @@
   transform: rotate(-135deg);
 }
 
-.dropdown-criteria-list .anchor:active:after {
+.anchor:active::after {
   right: 8px;
   top: 21%;
 }
 
-.dropdown-criteria-list ul.items {
+ul.items {
   padding: 2px;
   display: none;
   margin: 0;
@@ -39,7 +35,7 @@
   border-top: none;
 }
 
-.dropdown-criteria-list ul.items li {
+li {
   list-style: none;
 }
 
