@@ -162,7 +162,7 @@ function retrieveDataForTopPane() {
   }
 
   // RETRIEVE THE DISPLAY OPTIONS LIST
-  var displayOptionsText = ["List All Lines", "List Event Lines", "List Excel File", "Group By Location"]; // This holds the options to display in the Display Options dropdown 
+  var displayOptionsText = ["List: All Lines", "List: Event Lines", "List: Excel File", "GroupBy: Location"]; // This holds the options to display in the Display Options dropdown 
   var eventCategories = []; // This will hold the variable event categories to be used in the display
   for (eventName of allDropdownValues[2]) {
     var eventCategory = eventName.split("_")[0];
