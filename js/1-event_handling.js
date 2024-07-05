@@ -39,15 +39,15 @@ function eventDisplayButtonClicked() {
   retrieveDataFromTopPane();
 
   // Check which display option user chose 
-  if (selectedDisplayOption == "List Excel File") {
+  if (selectedDisplayOption == "List: Excel File") {
     retrieveExcelFileTable();
-  } else if (selectedDisplayOption == "List All Lines") {
+  } else if (selectedDisplayOption == "List: All Lines") {
     retrieveDataForLinesTable();
-  } else if (selectedDisplayOption == "List Event Lines") {
+  } else if (selectedDisplayOption == "List: Event Lines") {
     retrieveDataForLinesTable();
-  } else if (selectedDisplayOption == "Group By Location") {
+  } else if (selectedDisplayOption == "GroupBy: Location") {
     retrieveDataforGroupByLocationTable();
-  } else if (selectedDisplayOption.includes("Summary")) {
+  } else if (selectedDisplayOption.includes("Summary:")) {
     retrieveDataforSummaryTable();
   }
 }
