@@ -4,9 +4,9 @@
 var datasetFromExcel = []; // Data from excel file, program never changes it
 var datasetBeforeKeywordFilter = []; // Holds the data to display in the output before the keyword filter is applied
 var datasetAfterKeywordFilter = []; // Holds the data to display in the output after the keyword filter is applied
-var citiesListedInLocationDropdown = []; // All city names in the Location dropdown
 var allDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
 var allDisplayOptions = []; // All Display Options in the Display Options dropdown
+var citiesListedInLocationDropdown = []; // All city names in the Location dropdown. Not used currently, and it can be integrated in the allDropdownValues at some point.
 
 // Input from webpage
 var selectedDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
@@ -47,7 +47,7 @@ function eventDisplayButtonClicked() {
     retrieveDataForLinesTable();
   } else if (selectedDisplayOption == "Group By Location") {
     retrieveDataforGroupByLocationTable();
-  } else if (selectedDisplayOption.includes("Summarize")) {
+  } else if (selectedDisplayOption.includes("Summary")) {
     retrieveDataforSummaryTable();
   }
 }

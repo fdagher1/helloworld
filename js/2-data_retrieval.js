@@ -162,7 +162,17 @@ function retrieveDataForTopPane() {
   }
 
   // RETRIEVE THE DISPLAY OPTIONS LIST
-  allDisplayOptions = ["List All Lines", "List Event Lines", "List Excel File", "Group By Location", "Summarize By Group 1", "Summarize By Group 2", "Summarize By Group 3", "Summarize By Group 4"];
+  var displayOptionsText = ["List All Lines", "List Event Lines", "List Excel File", "Group By Location"]; // This holds the options to display in the Display Options dropdown 
+  var eventCategories = []; // This will hold the variable event categories to be used in the display
+  for (eventName of allDropdownValues[2]) {
+    var eventCategory = eventName.split("_")[0];
+    if (!eventCategories.includes(eventCategory)) {
+      eventCategories.push(eventCategory);
+      displayOptionsText.push("Summary: " + eventCategory);
+    }
+  }
+  allDisplayOptions = displayOptionsText.slice();
+
   console.log(`retrieveDataForTopPane executed in: ${performance.now() - startTime} milliseconds`);
   displayDataInTopPane();
 }
@@ -310,19 +320,10 @@ function retrieveDataforGroupByLocationTable() {
 
 function retrieveDataforSummaryTable() {
   let startTime = performance.now();
-  // IDENTIFY THE EVENTS TO QUERY DEPENDING ON THE SUMMARY OPTION THAT THE USER CHOSE
-  // retrieve the event categories from the event names
-  var eventCategories = [];
-  for (eventName of allDropdownValues[2]) {
-    let eventCategory = eventName.split("_")[0];
-    if (!eventCategories.includes(eventCategory)) {
-      eventCategories.push(eventCategory);
-    }
-  }
   // Create the list of events to report on, based on the Option selected by the user 
   var eventsToQuery = [];
   for (eventName of allDropdownValues[2]) {
-    if (eventName.includes(eventCategories[selectedDisplayOption[19]-1])) { // The nbre 19 is the location of the number in "Summarize by Group X"
+    if (eventName.includes(selectedDisplayOption.split(" ")[1])) { // The nbre 19 is the location of the number in "Summarize by Group X"
       eventsToQuery.push(eventName.split("_")[1]);
     }
   }
