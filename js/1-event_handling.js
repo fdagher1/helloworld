@@ -12,35 +12,14 @@ var allDisplayOptions = []; // All Display Options in the Display Options dropdo
 var selectedDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
 var selectedDisplayOption; // Value of the user selected radio button
 var searchWord = ""; // Value of the user entered keyword
-var userAction = ""; // Value to hold what user did to trigger the output: "Textbox Change" or "Button Press"
 
 // DEFINE RESPONSE FUNCTIONS
 
 function eventUploadButtonClicked(event) {
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var data = new Uint8Array(e.target.result);
-    var workbook = XLSX.read(data, {type: 'array'});
-    var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-    datasetFromExcel = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }); // header: 1 instructs xlsx to create an 'array of arrays'
-    datasetFromExcel.shift(); // Remove the table header
-
-    // Validate the data imported from the XLSX file
-    var file_validity_message = validateFileFormatAndData();
-
-    // If file is valid then proceed with displaying the top pane otherwise advise user to look in the browser's console for errors
-    if (file_validity_message == "file is valid") {
-      // Display Data in Top Pane
-      retrieveDataForTopPane();
-
-      // Display Data in Table
-      retrieveExcelFileTable();
-    }
-  };
-  reader.readAsArrayBuffer(event.target.files[0]);
+  // Get file content
+  retrieveFileContent(event);
   
-  // Make available the HTML controls 
-  // Buttons
+  // Enable HTML elements again
   document.getElementById("button-displaytable").removeAttribute("disabled");
   document.getElementById("select-displayoption").removeAttribute("disabled");
   document.getElementById("textbox-keyword").removeAttribute("disabled");
@@ -56,9 +35,6 @@ function eventCriteriaDropdownClicked(event) {
 }
 
 function eventDisplayButtonClicked() {
-  // Set user action as it is used by the retrieveDataForLinesTable() function to determine what to do
-  userAction = "Button Press";
-
   // Gather user inputs
   retrieveDataFromTopPane();
 
@@ -77,9 +53,6 @@ function eventDisplayButtonClicked() {
 }
 
 function eventKeywordEntered() {
-  // Set user action as it is used by the retrieveDataForLinesTable() function to determine what to do
-  userAction = "Textbox Change";
-
   // Gather keyword
   retrieveDataFromTopPane();
 

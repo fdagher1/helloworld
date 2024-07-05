@@ -1,8 +1,30 @@
+function retrieveFileContent(event) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var data = new Uint8Array(e.target.result);
+    var workbook = XLSX.read(data, {type: 'array'});
+    var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+    datasetFromExcel = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }); // header: 1 instructs xlsx to create an 'array of arrays'
+    datasetFromExcel.shift(); // Remove the table header
+
+    // If file is valid then proceed with displaying the top pane otherwise advise user to look in the browser's console for errors
+    if (validateFileFormatAndData() == "file is valid") {
+      // Display Data in Top Pane
+      retrieveDataForTopPane();
+
+      // Display Data in Table
+      retrieveExcelFileTable();
+    }
+  };
+  reader.readAsArrayBuffer(event.target.files[0]);
+}
+
 function validateFileFormatAndData(){
   let startTime = performance.now();
-  let errorMessage = "No errors";
-  // VALIDATE EACH EVENT CELL
-  let previousCellDate = new Date(datasetFromExcel[0][0]);
+  let errorMessage = "No errors"; // Used further down by the validity check code 
+  let previousCellDate = new Date(datasetFromExcel[0][0]); // Used further down by the validity check code 
+  
+  // ITERATE OVER EVERY ROW TO INSPECT IT
   for (let i = 0; i < datasetFromExcel.length; i++) { 
     
     // CHECK THAT DATES ARE IN DESCENDING ORDER
@@ -140,7 +162,7 @@ function retrieveDataForTopPane() {
   }
 
   // RETRIEVE THE DISPLAY OPTIONS LIST
-  allDisplayOptions = ["List Event Lines", "List All Lines", "List Excel File", "Group By Location", "Summarize By Group 1", "Summarize By Group 2", "Summarize By Group 3", "Summarize By Group 4"];
+  allDisplayOptions = ["List All Lines", "List Event Lines", "List Excel File", "Group By Location", "Summarize By Group 1", "Summarize By Group 2", "Summarize By Group 3", "Summarize By Group 4"];
   console.log(`retrieveDataForTopPane executed in: ${performance.now() - startTime} milliseconds`);
   displayDataInTopPane();
 }
@@ -213,59 +235,44 @@ function retrieveExcelFileTable() {
 
 function retrieveDataForLinesTable() {
   let startTime = performance.now();
-  if (userAction == "Button Press") {   
-    // Filter dataset to only include lines from the 3 dropdown criteria and 1 search word
-    datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetFromExcel, selectedDropdownValues[0], selectedDropdownValues[1], selectedDropdownValues[2]); 
+  // Filter dataset to only include lines from the 3 dropdown criteria and 1 search word
+  datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetFromExcel, selectedDropdownValues[0], selectedDropdownValues[1], selectedDropdownValues[2]); 
 
-    if (!searchWord == "") {
-      datasetAfterKeywordFilter = helperReturnRowsThatMatchSearchWord(datasetBeforeKeywordFilter, searchWord).slice();
-    } else {
-      datasetAfterKeywordFilter = datasetBeforeKeywordFilter.slice();
-    }
-    
-    if (selectedDisplayOption == "List Event Lines") {
-      // Retrieve the selected events from the events fields 
-      var tempDataSet = []; // This will hold the data that will be displayed
-      for (var row of datasetAfterKeywordFilter) {
-        var eventLinesToAdd = ""; // will hold all the events of that cell
-        var brIndices = getIndicesOf("<br>", row[2]) // Get all the indices of <br> in that cell
-        brIndices.unshift(0); // Add 0 to the beginning for ease of looping over each line in that cell
-        for (var i = 0; i < brIndices.length ; i++) { // Loop over the different lines in that cell
-          for (var event of selectedDropdownValues[2]) { // Loop over every selected event to check if it's present in that line
-            var line = row[2].substring(brIndices[i],brIndices[i+1]) + "<br>"; // Extract the line.
-            if (line.includes("#" + event)) { // Now check if the line contains the event
-              if (!eventLinesToAdd.includes(line)) { // If so then check if that line is not already there (useful for lines that have multiple tags)
-                eventLinesToAdd += line; // If not then add it
-              }
+  if (!searchWord == "") {
+    datasetAfterKeywordFilter = helperReturnRowsThatMatchSearchWord(datasetBeforeKeywordFilter, searchWord).slice();
+  } else {
+    datasetAfterKeywordFilter = datasetBeforeKeywordFilter.slice();
+  }
+  
+  if (selectedDisplayOption == "List Event Lines") {
+    // Retrieve the selected events from the events fields 
+    var tempDataSet = []; // This will hold the data that will be displayed
+    for (var row of datasetAfterKeywordFilter) {
+      var eventLinesToAdd = ""; // will hold all the events of that cell
+      var brIndices = getIndicesOf("<br>", row[2]) // Get all the indices of <br> in that cell
+      brIndices.unshift(0); // Add 0 to the beginning for ease of looping over each line in that cell
+      for (var i = 0; i < brIndices.length ; i++) { // Loop over the different lines in that cell
+        for (var event of selectedDropdownValues[2]) { // Loop over every selected event to check if it's present in that line
+          var line = row[2].substring(brIndices[i],brIndices[i+1]) + "<br>"; // Extract the line.
+          if (line.includes("#" + event)) { // Now check if the line contains the event
+            if (!eventLinesToAdd.includes(line)) { // If so then check if that line is not already there (useful for lines that have multiple tags)
+              eventLinesToAdd += line; // If not then add it
             }
           }
         }
-        if (eventLinesToAdd != "") {
-          tempDataSet.push([row[0], row[1], eventLinesToAdd]);
-        }
       }
-      datasetAfterKeywordFilter = tempDataSet.slice(0);
+      if (eventLinesToAdd != "") {
+        tempDataSet.push([row[0], row[1], eventLinesToAdd]);
+      }
     }
-    // Provide the column names for table to display data: 1- "Data", 2- "Location", and 3- Number of rows
-    var columnNames = ["Date", "Location", "(" + datasetAfterKeywordFilter.length + " rows)"];
-
-    console.log(`retrieveDataForLinesTable executed in: ${performance.now() - startTime} milliseconds`);
-    // Display the data
-    displayDataInTable(columnNames, datasetAfterKeywordFilter);
-  } else if (userAction == "Textbox Change") {
-    if (!searchWord == "") { // To avoid unnecessary query
-      datasetAfterKeywordFilter = helperReturnRowsThatMatchSearchWord(datasetBeforeKeywordFilter, searchWord).slice();
-    } else {
-      datasetAfterKeywordFilter = datasetBeforeKeywordFilter.slice();
-    }
-
-    // Provide the column names for table to display data: 1- "Data", 2- "Location", and 3- Number of rows
-    var columnNames = ["Date", "Location", "(" + datasetAfterKeywordFilter.length + " rows)"];
-
-    console.log(`retrieveDataForLinesTable executed in: ${performance.now() - startTime} milliseconds`);
-    // Display the data
-    displayDataInTable(columnNames, datasetAfterKeywordFilter);
+    datasetAfterKeywordFilter = tempDataSet.slice(0);
   }
+  // Provide the column names for table to display data: 1- "Data", 2- "Location", and 3- Number of rows
+  var columnNames = ["Date", "Location", "(" + datasetAfterKeywordFilter.length + " rows)"];
+
+  console.log(`retrieveDataForLinesTable executed in: ${performance.now() - startTime} milliseconds`);
+  // Display the data
+  displayDataInTable(columnNames, datasetAfterKeywordFilter);
 
 }
 
