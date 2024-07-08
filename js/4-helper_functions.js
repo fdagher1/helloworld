@@ -102,7 +102,7 @@ function helperReturnRowsThatMatchDropdowns(dataset, selectedTime, selectedLocat
           for (const event of selectedEvents) { // Iterate over the selected events to see if any of them match
             if (lineAdded == true) {break;} // If this line has already been added, then get out of this event for loop
             if (dataset[i][2].includes("#" + event)) { // Check if event criteria matches
-              filteredDataSet.push(dataset[i]);
+              filteredDataSet.push([dataset[i][0], dataset[i][1], dataset[i][2]]); // I listed the 3 cells specifically instead of using dataset[i][0] in order to remove the 4th column from the output
               lineAdded = true;
             }
           }
@@ -125,7 +125,7 @@ function helperReturnRowsThatMatchSearchWord(dataset, searchWord) {
   return filteredDataSet;
 }
 
-// This function returns an erray of indices from wholeStr where the searchStr exists in it 
+// This function returns an array of indices for the location of searchStr in wholeStr 
 function getIndicesOf(searchStr, wholeStr) {
   const searchStrLen = searchStr.length;
   let startIndex = 0;

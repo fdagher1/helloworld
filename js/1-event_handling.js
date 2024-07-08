@@ -57,7 +57,7 @@ function eventKeywordEntered() {
   retrieveDataFromTopPane();
 
   // Retrieve data which then calls output display
-  if (selectedDisplayOption == "List Excel File" || selectedDisplayOption == "List All Lines" || selectedDisplayOption == "List Event Lines") {
+  if (selectedDisplayOption == "List: Excel File" || selectedDisplayOption == "List: All Lines" || selectedDisplayOption == "List: Event Lines") {
     retrieveDataForLinesTable();
   }
 
