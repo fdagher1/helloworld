@@ -254,7 +254,7 @@ function retrieveDataForLinesTable() {
     datasetAfterKeywordFilter = datasetBeforeKeywordFilter.slice();
   }
   
-  if (selectedDisplayOption == "List Event Lines") {
+  if (selectedDisplayOption == "List: Event Lines") {
     // Retrieve the selected events from the events fields 
     var tempDataSet = []; // This will hold the data that will be displayed
     for (var row of datasetAfterKeywordFilter) {
