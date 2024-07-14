@@ -42,9 +42,9 @@ function eventDisplayButtonClicked() {
   if (selectedDisplayOption == "List: Excel File") {
     retrieveExcelFileTable();
   } else if (selectedDisplayOption == "List: All Lines") {
-    retrieveDataForLinesTable();
+    retrieveDataForListTable();
   } else if (selectedDisplayOption == "List: Event Lines") {
-    retrieveDataForLinesTable();
+    retrieveDataForListTable();
   } else if (selectedDisplayOption == "GroupBy: Location") {
     retrieveDataforGroupByLocationTable();
   } else if (selectedDisplayOption.includes("Summary:")) {
@@ -58,7 +58,7 @@ function eventKeywordEntered() {
 
   // Retrieve data which then calls output display
   if (selectedDisplayOption == "List: Excel File" || selectedDisplayOption == "List: All Lines" || selectedDisplayOption == "List: Event Lines") {
-    retrieveDataForLinesTable();
+    retrieveDataForListTable();
   }
 
 }
