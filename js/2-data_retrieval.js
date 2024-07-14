@@ -243,11 +243,13 @@ function retrieveExcelFileTable() {
   datasetAfterKeywordFilter = datasetFromExcel.slice();
 }
 
-function retrieveDataForLinesTable() {
+function retrieveDataForListTable() {
   let startTime = performance.now();
-  // Filter dataset to only include lines from the 3 dropdown criteria and 1 search word
+  
+  // Filter dataset to only include lines from the 3 dropdown criteria 
   datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetFromExcel, selectedDropdownValues[0], selectedDropdownValues[1], selectedDropdownValues[2]); 
 
+  // Filter dataset to only include lines with the searchword
   if (!searchWord == "") {
     datasetAfterKeywordFilter = helperReturnRowsThatMatchSearchWord(datasetBeforeKeywordFilter, searchWord).slice();
   } else {
@@ -280,7 +282,7 @@ function retrieveDataForLinesTable() {
   // Provide the column names for table to display data: 1- "Data", 2- "Location", and 3- Number of rows
   var columnNames = ["Date", "Location", "(" + datasetAfterKeywordFilter.length + " rows)"];
 
-  console.log(`retrieveDataForLinesTable executed in: ${performance.now() - startTime} milliseconds`);
+  console.log(`retrieveDataForListTable executed in: ${performance.now() - startTime} milliseconds`);
   // Display the data
   displayDataInTable(columnNames, datasetAfterKeywordFilter);
 
@@ -323,7 +325,7 @@ function retrieveDataforSummaryTable() {
   // Create the list of events to report on, based on the Option selected by the user 
   var eventsToQuery = [];
   for (eventName of allDropdownValues[2]) {
-    if (eventName.includes(selectedDisplayOption.split(" ")[1])) { // The nbre 19 is the location of the number in "Summarize by Group X"
+    if (eventName.includes(selectedDisplayOption.split(" ")[1])) { // i.e., take after the word "Summary: "
       eventsToQuery.push(eventName.split("_")[1]);
     }
   }
@@ -358,7 +360,7 @@ function retrieveDataforSummaryTable() {
   // Iterate over the datasheet to count the hits for tags
   for (i = 0; i < datasetAfterKeywordFilter.length; i++) {
     for (const eventToQuery of eventsToQuery) {
-      // Get the date
+      // Get that row's date
       var cell_date = new Date(datasetAfterKeywordFilter[i][0]);
       var month_year = (cell_date.getMonth()+1).toString() +"/" + cell_date.getFullYear().toString();
       // Check if the tag matches. First remove the suffix, such as the -Sum from #Pay-Sum
