@@ -43,7 +43,7 @@ function displayDataInTopPane() {
   console.log(`displayDataInTopPane executed in: ${performance.now() - startTime} milliseconds`);
 }
 
-function displayDataInTable(columnNames, dataSetToDisplay) {
+function displayDataInTable(columnHeaders, dataSetToDisplay) {
   let startTime = performance.now();
   // Clear table header element then add new row to it
   const thead_HTML_Element = document.getElementById("thead");
@@ -51,11 +51,11 @@ function displayDataInTable(columnNames, dataSetToDisplay) {
   let row = thead_HTML_Element.insertRow();
 
   // Iterate over the column names array, creating a header for each, with proper styling
-  for (var i = 0; i < columnNames.length; i++) {
+  for (var i = 0; i < columnHeaders.length; i++) {
     let cell = row.insertCell(i);
 
     // Set column name value
-    cell.innerHTML = columnNames[i];
+    cell.innerHTML = columnHeaders[i];
 
     // Set column styling
     cell.style.fontWeight = "bold";

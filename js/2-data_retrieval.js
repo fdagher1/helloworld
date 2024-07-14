@@ -233,10 +233,10 @@ function retrieveDataFromTopPane() {
 
 function retrieveExcelFileTable() { 
   // Provide the column names for table to display data: 1- "Data", 2- "Location", and 3- Number of rows
-  var columnNames = ["Date", "Location", "(" + datasetFromExcel.length + " rows)"];
+  var columnHeaders = ["Date", "Location", "(" + datasetFromExcel.length + " rows)"];
 
   // Display the data
-  displayDataInTable(columnNames, datasetFromExcel);
+  displayDataInTable(columnHeaders, datasetFromExcel);
 
   // Set below datasets as they may be used in future user queries
   datasetBeforeKeywordFilter = datasetFromExcel.slice();
@@ -280,11 +280,11 @@ function retrieveDataForListTable() {
     datasetAfterKeywordFilter = tempDataSet.slice(0);
   }
   // Provide the column names for table to display data: 1- "Data", 2- "Location", and 3- Number of rows
-  var columnNames = ["Date", "Location", "(" + datasetAfterKeywordFilter.length + " rows)"];
+  var columnHeaders = ["Date", "Location", "(" + datasetAfterKeywordFilter.length + " rows)"];
 
   console.log(`retrieveDataForListTable executed in: ${performance.now() - startTime} milliseconds`);
   // Display the data
-  displayDataInTable(columnNames, datasetAfterKeywordFilter);
+  displayDataInTable(columnHeaders, datasetAfterKeywordFilter);
 
 }
 
@@ -312,24 +312,17 @@ function retrieveDataforGroupByLocationTable() {
   // Sort the array to have the countries with highest count first
   groupbyDataToDisplay = helperSortDictionaryIntoArray(groupbyDataToDisplay); 
   
-  // Set the columnNames for use when displaying the table
-  var columnNames = ["Locations", "Count"]; // To hold the column names for passing to the data display function
+  // Set the columnHeaders for use when displaying the table
+  var columnHeaders = ["Locations", "Count"]; // To hold the column names for passing to the data display function
 
   console.log(`retrieveDataforGroupByLocationTable executed in: ${performance.now() - startTime} milliseconds`);
   // Display the group table
-  displayDataInTable(columnNames, groupbyDataToDisplay);
+  displayDataInTable(columnHeaders, groupbyDataToDisplay);
 }
 
 function retrieveDataforSummaryTable() {
   let startTime = performance.now();
-  // Create the list of events to report on, based on the Option selected by the user 
-  var eventsToQuery = [];
-  for (eventName of allDropdownValues[2]) {
-    if (eventName.includes(selectedDisplayOption.split(" ")[1])) { // i.e., take after the word "Summary: "
-      eventsToQuery.push(eventName.split("_")[1]);
-    }
-  }
-  
+    
   // FILTER DATASET TO ONLY INCLUDE LINES FROM THE 3 DROPDOWN CRITERIA AND 1 SEARCH WORD
   datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetFromExcel, selectedDropdownValues[0], selectedDropdownValues[1], selectedDropdownValues[2]); 
   if (searchWord == "") {
@@ -338,7 +331,15 @@ function retrieveDataforSummaryTable() {
     datasetAfterKeywordFilter = helperReturnRowsThatMatchSearchWord(datasetBeforeKeywordFilter, searchWord).slice(0);
   }
  
-  // ITERATE OVER THE DATASET TO FIND MATCHES
+  // ITERATE OVER THE DATASET TO FIND MATCHES WITH THE EVENTS FROM THE USER'S SUMMARY OPTION
+  // Compile event list of interest based on the user's "Summary: " selection
+  var eventsToQuery = [];
+  for (eventName of allDropdownValues[2]) {
+    if (eventName.includes(selectedDisplayOption.split(" ")[1])) { // i.e., take after the word "Summary: "
+      eventsToQuery.push(eventName.split("_")[1]);
+    }
+  }
+
   // Compile the month/year array based on the dates in the dataset
   var month_year_arr = []; // holds the month/year array
   for (var row of datasetAfterKeywordFilter) { // Loop over the filtered datasheet to identify the different months needed to be covered
@@ -347,6 +348,7 @@ function retrieveDataforSummaryTable() {
       month_year_arr.push(month_year);
     }
   }
+  
   // Build the dictionary that will hold the count of each event in each month (dictionary of a dictionaries), Ex: countByMonth["1/2023"]["#Workout"] = 0; 
   var countByMonth = {};
   for (let month_year of month_year_arr) {
@@ -357,26 +359,34 @@ function retrieveDataforSummaryTable() {
       countByMonth[month_year] = Object.assign(countByMonth[month_year], temp_month_year_dict); // This is needed as countByMonth[eventToQuery] = {month_year: 0}; results in month_year used as value 
     }
   }
-  // Iterate over the datasheet to count the hits for tags
+  
+  // Iterate over the datasheet to count or sum the hits for each selected tag
   for (i = 0; i < datasetAfterKeywordFilter.length; i++) {
-    for (const eventToQuery of eventsToQuery) {
-      // Get that row's date
-      var cell_date = new Date(datasetAfterKeywordFilter[i][0]);
-      var month_year = (cell_date.getMonth()+1).toString() +"/" + cell_date.getFullYear().toString();
-      // Check if the tag matches. First remove the suffix, such as the -Sum from #Pay-Sum
-      if (datasetAfterKeywordFilter[i][2].includes("#" + eventToQuery.split("-")[0]))  {
-        if (!eventToQuery.includes("-Sum")) { // Check that the tag is not for Sum
-          countByMonth[month_year][eventToQuery] += 1 // Increment count in dictionary
-        } else { // Else assume it is for Sum and sum the numbers found but only when prefixed by "$"
-          // Get the #Pay line from that cell
-          let payLine = datasetAfterKeywordFilter[i][2].slice(datasetAfterKeywordFilter[i][2].indexOf("#" + eventToQuery.split("-")[0]));
-          payLine = payLine.slice(0, payLine.indexOf("<br>")); // THIS CAN POSSIBLY BE MERGED WITH THE TOP LINE AT SOME POINT
-          var paySumTotal = helperGetTotalDollarAmountFromLine(payLine); // Get the pay amount from that cell
-          countByMonth[month_year][eventToQuery] += paySumTotal; // Increment the count in dictionary
+    
+    // Get that row's date
+    var cell_date = new Date(datasetAfterKeywordFilter[i][0]);
+    var month_year = (cell_date.getMonth()+1).toString() +"/" + cell_date.getFullYear().toString();
+    
+    // Iterate over each line in the row's event cell 
+    var rowsFromEventsCell = datasetAfterKeywordFilter[i][2].split("<br>");
+    for (rowFromEventsCell of rowsFromEventsCell) {
+      // Check if line has hashtag sign first to save time from iterating for each selected event later
+      if (rowFromEventsCell.includes("#")) {
+        for (const eventToQuery of eventsToQuery) { // Iterate over every selected event to check for matches 
+          if (rowFromEventsCell.includes("#" + eventToQuery.split("-")[0]))  { // I removed the suffix, such as -Sum, from the event name since the event name doesn't actually contain it
+            if (eventToQuery.includes("-Sum")) { // If event ends with sum then sum the figures 
+              countByMonth[month_year][eventToQuery] += helperGetTotalFigureAmountFromLine(rowFromEventsCell); // Get the figures from that cell and add them
+            } else { // Then treat event as a normal tag
+              countByMonth[month_year][eventToQuery] += 1 // Increment count in dictionary
+            }  
+          }
         }
       }
     }
   }
+  
+  // PREPARE DATA FOR OUTPUT
+  
   // Convert the countByMonth dictionary of dictionaries to an array of arrays for use in the display data function
   var summaryDataset = [];
   for (let monthYearDictionaryKey in countByMonth) {
@@ -390,8 +400,8 @@ function retrieveDataforSummaryTable() {
     summaryDataset.push(rowToAdd);
   }
 
-  // Update the column names to include the count in them so they can appear in the table header
-  var columnHeaderNames = [];
+  // Create the table header and include the total from each column in the header
+  var columnHeaders = ["Month"];
   for (tag of eventsToQuery) { // Iterate over every column (i.e. tag) 
     // Iterate over every row (i.e. month) in this column in order to sum the total to later display it in the header
     let totalCount = 0;
@@ -399,22 +409,12 @@ function retrieveDataforSummaryTable() {
       totalCount += countByMonth[monthYearDictionaryKey][tag];
     }
 
-    // Compile the column name
-    let columnHeaderName;
-    if (!tag.includes("-Sum")) {
-      columnHeaderName = tag + "(" + totalCount.toString() + ")";
-    } else {
-      columnHeaderName = tag + "($" + totalCount.toString() + ")";
-    }
-
     // Add the new column name to the column names array
-    columnHeaderNames.push(columnHeaderName);
+    columnHeaders.push(tag + "(" + totalCount.toString() + ")");
   }
 
-  // Create the column names for use when displaying the data
-  var columnNames = ["Month"].concat(columnHeaderNames);
-
   console.log(`retrieveDataforSummaryTable executed in: ${performance.now() - startTime} milliseconds`);
-  // Display the data
-  displayDataInTable(columnNames, summaryDataset);
+  
+  // DISPLAY THE DATA
+  displayDataInTable(columnHeaders, summaryDataset);
 }
