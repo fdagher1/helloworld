@@ -21,22 +21,38 @@ function helperSortDictionaryIntoArray(dict) {
   return items;
 }
 
+function helperSumNumbersFromString(inputString) {
+  const numbers = inputString.match(/\d+/g); // match(/\d+/g) returns an array containing all the numbers found in the string 
+  if (!numbers) return 0;
+  return numbers.reduce((sum, num) => sum + Number(num), 0);
+}
+
+function helperSumDollarNumbersFromString(inputString) {
+  const dollarNumbers = inputString.match(/\$\d+(\.\d+)?/g);
+  if (!dollarNumbers) return 0;
+  const sum = dollarNumbers.reduce((total, dollarValue) => {
+      const numericValue = parseFloat(dollarValue.slice(1));
+      return total + numericValue;
+  }, 0);
+  return sum; 
+}
+
 function helperGetTotalFigureAmountFromLine(line) {
   var total = 0;
   var stringAmount = "";
   var dollarSignDetected = false;
-  var skipDollarCheck = false;
+  var performDollarCheck = true;
   for (var i = 0; i < line.length; i++) { // iterate over every character and only add when the beginning is a $ sign      
     if (dollarSignDetected) {
       if (line.charAt(i) >= '0' && line.charAt(i) <= "9") {
         stringAmount = stringAmount + line.charAt(i);
-        skipDollarCheck = true;
+        performDollarCheck = false;
       } else {
-        skipDollarCheck = false;
+        performDollarCheck = true;
       }
     }
     
-    if (!skipDollarCheck) {
+    if (performDollarCheck) {
       if (line.charAt(i) == "$") {
         dollarSignDetected = true;
       } else {
