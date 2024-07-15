@@ -153,11 +153,29 @@ function retrieveDataForTopPane() {
   citiesListedInLocationDropdown.sort();
 
   // RETRIEVE THE EVENTS LIST
-  allDropdownValues[2] = datasetFromExcel[datasetFromExcel.length-1][3].split(";"); // First populate it from the provided list
-  allDropdownValues[2].pop(); // Then remove the last line as it is blank
-  for (let i=0; i < allDropdownValues[2].length; i++) {
+  // First populate it from the provided list
+  allDropdownValues[2] = datasetFromExcel[datasetFromExcel.length-1][3].split(";"); 
+  
+  // Then remove the last line as it is blank
+  allDropdownValues[2].pop(); 
+  
+  // Then remove the lines that end with -Sum or -DSum since we don't need to display them
+  for (dropdownValue of allDropdownValues[2]) {
+    if (dropdownValue.includes("-Sum") || dropdownValue.includes("-DSum")) {
+      allDropdownValues[2].pop
+    }
+  }
+
+  // Then remove the breakline characters at the end of each entry as well as the events with -Sum or -DSum since we don't need to display them
+  var indexToRemove = [];
+  var currentArrayLength = allDropdownValues[2].length; // This is needed as the array may shrink down in size during cleanup
+  for (let i=0; i < currentArrayLength; i++) {
     if (allDropdownValues[2][i].includes("\r\n")) {
       allDropdownValues[2][i] = allDropdownValues[2][i].split("\r\n")[1];
+    }
+    if (allDropdownValues[2][i].includes("-Sum") || allDropdownValues[2][i].includes("-DSum")) {
+      //allDropdownValues[2].splice(i, 1);
+      //currentArrayLength--;
     }
   }
 
@@ -374,8 +392,10 @@ function retrieveDataforSummaryTable() {
       if (rowFromEventsCell.includes("#")) {
         for (const eventToQuery of eventsToQuery) { // Iterate over every selected event to check for matches 
           if (rowFromEventsCell.includes("#" + eventToQuery.split("-")[0]))  { // I removed the suffix, such as -Sum, from the event name since the event name doesn't actually contain it
-            if (eventToQuery.includes("-Sum")) { // If event ends with sum then sum the figures 
-              countByMonth[month_year][eventToQuery] += helperGetTotalFigureAmountFromLine(rowFromEventsCell); // Get the figures from that cell and add them
+            if (eventToQuery.includes("-DSum")) { // If event ends with sum then sum the figures 
+              countByMonth[month_year][eventToQuery] += helperSumDollarNumbersFromString(rowFromEventsCell); // Get the figures from that cell and add them
+            } else if (eventToQuery.includes("-Sum")) { // If event ends with sum then sum the figures 
+              countByMonth[month_year][eventToQuery] += helperSumNumbersFromString(rowFromEventsCell); // Get the figures from that cell and add them
             } else { // Then treat event as a normal tag
               countByMonth[month_year][eventToQuery] += 1 // Increment count in dictionary
             }  
