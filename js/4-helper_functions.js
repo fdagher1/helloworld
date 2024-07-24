@@ -27,7 +27,7 @@ function helperSumNumbersFromString(inputString) {
   return numbers.reduce((sum, num) => sum + Number(num), 0);
 }
 
-function helperSumDollarNumbersFromString(inputString) {
+function helperSumDNumbersFromString(inputString) {
   const dollarNumbers = inputString.match(/\$\d+(\.\d+)?/g);
   if (!dollarNumbers) return 0;
   const sum = dollarNumbers.reduce((total, dollarValue) => {
@@ -35,37 +35,6 @@ function helperSumDollarNumbersFromString(inputString) {
       return total + numericValue;
   }, 0);
   return sum; 
-}
-
-function helperGetTotalFigureAmountFromLine(line) {
-  var total = 0;
-  var stringAmount = "";
-  var dollarSignDetected = false;
-  var performDollarCheck = true;
-  for (var i = 0; i < line.length; i++) { // iterate over every character and only add when the beginning is a $ sign      
-    if (dollarSignDetected) {
-      if (line.charAt(i) >= '0' && line.charAt(i) <= "9") {
-        stringAmount = stringAmount + line.charAt(i);
-        performDollarCheck = false;
-      } else {
-        performDollarCheck = true;
-      }
-    }
-    
-    if (performDollarCheck) {
-      if (line.charAt(i) == "$") {
-        dollarSignDetected = true;
-      } else {
-        dollarSignDetected = false;
-        if (stringAmount != "") {
-          total += parseInt(stringAmount);
-          stringAmount = "";
-        }
-      }
-    }
-  }
-
-  return total;
 }
 
 // This function returns an array containing rows from dataset that match the criteria selectedTime, selectedLocations, selectedEvents,

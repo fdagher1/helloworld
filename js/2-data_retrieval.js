@@ -158,13 +158,6 @@ function retrieveDataForTopPane() {
   
   // Then remove the last line as it is blank
   allDropdownValues[2].pop(); 
-  
-  // Then remove the lines that end with -Sum or -DSum since we don't need to display them
-  for (dropdownValue of allDropdownValues[2]) {
-    if (dropdownValue.includes("-Sum") || dropdownValue.includes("-DSum")) {
-      allDropdownValues[2].pop
-    }
-  }
 
   // Then remove the breakline characters at the end of each entry as well as the events with -Sum or -DSum since we don't need to display them
   var indexToRemove = [];
@@ -173,12 +166,18 @@ function retrieveDataForTopPane() {
     if (allDropdownValues[2][i].includes("\r\n")) {
       allDropdownValues[2][i] = allDropdownValues[2][i].split("\r\n")[1];
     }
-    if (allDropdownValues[2][i].includes("-Sum") || allDropdownValues[2][i].includes("-DSum")) {
-      //allDropdownValues[2].splice(i, 1);
-      //currentArrayLength--;
-    }
   }
-
+  // Then remove the events with -Sum and -DSum in their name since we dont need to display them. 
+  // Commenting this out for now as the Summary view picks its columns from these same dropdown values, 
+  // and so by removing these from here they are being removed from the Summary view, which defeats their purpose
+  // one solution is to have another variable holding these values and which the Summary section references 
+  /*for (let i=0; i < currentArrayLength; i++) {
+    if (allDropdownValues[2][i].includes("-Sum") || allDropdownValues[2][i].includes("-DSum")) {
+      allDropdownValues[2].splice(i, 1);
+      currentArrayLength--;
+    }
+  }*/
+  
   // RETRIEVE THE DISPLAY OPTIONS LIST
   var displayOptionsText = ["List: All Lines", "List: Event Lines", "List: Excel File", "GroupBy: Location"]; // This holds the options to display in the Display Options dropdown 
   var eventCategories = []; // This will hold the variable event categories to be used in the display
@@ -393,7 +392,7 @@ function retrieveDataforSummaryTable() {
         for (const eventToQuery of eventsToQuery) { // Iterate over every selected event to check for matches 
           if (rowFromEventsCell.includes("#" + eventToQuery.split("-")[0]))  { // I removed the suffix, such as -Sum, from the event name since the event name doesn't actually contain it
             if (eventToQuery.includes("-DSum")) { // If event ends with sum then sum the figures 
-              countByMonth[month_year][eventToQuery] += helperSumDollarNumbersFromString(rowFromEventsCell); // Get the figures from that cell and add them
+              countByMonth[month_year][eventToQuery] += helperSumDNumbersFromString(rowFromEventsCell); // Get the figures from that cell and add them
             } else if (eventToQuery.includes("-Sum")) { // If event ends with sum then sum the figures 
               countByMonth[month_year][eventToQuery] += helperSumNumbersFromString(rowFromEventsCell); // Get the figures from that cell and add them
             } else { // Then treat event as a normal tag
