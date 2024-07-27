@@ -75,11 +75,6 @@ function displayDataInTable(columnHeaders, dataSetToDisplay) {
   for (var i = 0; i < dataSetToDisplay.length; i++) {
     let row = new_tbody_HTML_Element.insertRow();
     for (var j = 0; j < dataSetToDisplay[i].length; j++) {
-      // Replace the entries \r\n with actual line breaks, checking first if the line is of type string 
-      // (ex: not number for), as it could be of type number when using groupby, in which case code would fail
-      if (typeof dataSetToDisplay[i][j] === 'string') {
-        dataSetToDisplay[i][j] = dataSetToDisplay[i][j].replace(/\r\n/g, "<br>");
-      }
       let cell = row.insertCell(j);
       cell.innerHTML = dataSetToDisplay[i][j];
     }
