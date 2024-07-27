@@ -1,11 +1,14 @@
 function retrieveFileContent(event) {
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var data = new Uint8Array(e.target.result);
-    var workbook = XLSX.read(data, {type: 'array'});
-    var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-    datasetFromExcel = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }); // header: 1 instructs xlsx to create an 'array of arrays'
-    datasetFromExcel.shift(); // Remove the table header
+  const file = event.target.files[0];
+  const reader = new FileReader();
+  var csvData;
+  reader.onload = () => {
+      csvData = reader.result; // The CSV data as a string
+  };
+  reader.readAsText(file);
+
+  setTimeout(() => { 
+    datasetFromExcel = csvToArray(csvData);
 
     // If file is valid then proceed with displaying the top pane otherwise advise user to look in the browser's console for errors
     if (validateFileFormatAndData() == "file is valid") {
@@ -15,8 +18,8 @@ function retrieveFileContent(event) {
       // Display Data in Table
       retrieveExcelFileTable();
     }
-  };
-  reader.readAsArrayBuffer(event.target.files[0]);
+
+  }, 1000);
 }
 
 function validateFileFormatAndData(){
@@ -32,7 +35,7 @@ function validateFileFormatAndData(){
     if (i == 0){ 
       // Do nothing as that means we're still in the first row and it's too early to check
     } else if (currentCellDate > previousCellDate) {
-      errorMessage = "The dates in row number " + ++i + " should be in a descending order from the previous row.";
+      errorMessage = "The dates in row number " + (i+2) + " should be in a descending order from the previous row.";
       break;
     }
     previousCellDate = currentCellDate;
@@ -45,7 +48,7 @@ function validateFileFormatAndData(){
       if (errorFound == false) {
         var cityCountrySplitArray = rowLocationValueArray[j].split("_"); // Split city_country into an array
         if (cityCountrySplitArray.length != 2) {
-          errorMessage = "The location provided in row number " + ++i + " is missing an underscore.";
+          errorMessage = "The location provided in row number " + (i+2) + " is missing an underscore.";
           errorFound = true;
         }
       }
@@ -58,21 +61,21 @@ function validateFileFormatAndData(){
     // CHECK EVENT ENTRY VALIDITY
     var event_cell = datasetFromExcel[i][2];
     
-    // CHECK IF CELL IS BLANK
+    // CHECK IF EVENT CELL IS BLANK
     if (typeof event_cell === 'undefined') {
-      errorMessage = "The event cell in row number " + ++i + " is blank.";
+      errorMessage = "The event cell in row number " + (i+2) + " is blank.";
       break;
     }
 
-    // CHECK IF CELL DOES NOT END WITH A BREAK LINE
-    if (event_cell.charAt(event_cell.length-1) != "\n") { // I found it odd that \n is treated as 1 character
-      errorMessage = "The event cell in row " + ++i + " does not end with a line break.";
+    // CHECK IF EVENT CELL DOES NOT END WITH A BREAK LINE
+    if (event_cell.slice(-4) != "<br>") {
+      errorMessage = "The event cell in row " + (i+2) + " does not end with a line break.";
       break;
     }
 
-    // CHECK IF CELL HAS NO HASHTAGS
+    // CHECK IF EVENT CELL HAS NO HASHTAGS
     if (!event_cell.includes("#")) {
-      errorMessage = "The event cell in row " + ++i + " does not have any events. It should have at least one.";
+      errorMessage = "The event cell in row " + (i+2) + " does not have any events. It should have at least one.";
       break;
     }
 
@@ -102,7 +105,7 @@ function validateFileFormatAndData(){
       }
       if (event_is_in_list == false){
         // Since the loop over the event list completed with no breaks, then the event name is missing
-        errorMessage = "The event " + eventName + " found in row " + ++i + " is missing from the list.";
+        errorMessage = "The event " + eventName + " found in row " + (i+2) + " is missing from the list.";
         break;
       }
     }
@@ -163,8 +166,8 @@ function retrieveDataForTopPane() {
   var indexToRemove = [];
   var currentArrayLength = allDropdownValues[2].length; // This is needed as the array may shrink down in size during cleanup
   for (let i=0; i < currentArrayLength; i++) {
-    if (allDropdownValues[2][i].includes("\r\n")) {
-      allDropdownValues[2][i] = allDropdownValues[2][i].split("\r\n")[1];
+    if (allDropdownValues[2][i].includes("<br>")) {
+      allDropdownValues[2][i] = allDropdownValues[2][i].split("<br>")[1];
     }
   }
   // Then remove the events with -Sum and -DSum in their name since we dont need to display them. 
@@ -327,7 +330,7 @@ function retrieveDataforGroupByLocationTable() {
   }
   
   // Sort the array to have the countries with highest count first
-  groupbyDataToDisplay = helperSortDictionaryIntoArray(groupbyDataToDisplay); 
+  groupbyDataToDisplay = helperReturnSortedArrayFromDictionary(groupbyDataToDisplay); 
   
   // Set the columnHeaders for use when displaying the table
   var columnHeaders = ["Locations", "Count"]; // To hold the column names for passing to the data display function
@@ -392,9 +395,9 @@ function retrieveDataforSummaryTable() {
         for (const eventToQuery of eventsToQuery) { // Iterate over every selected event to check for matches 
           if (rowFromEventsCell.includes("#" + eventToQuery.split("-")[0]))  { // I removed the suffix, such as -Sum, from the event name since the event name doesn't actually contain it
             if (eventToQuery.includes("-DSum")) { // If event ends with sum then sum the figures 
-              countByMonth[month_year][eventToQuery] += helperSumDNumbersFromString(rowFromEventsCell); // Get the figures from that cell and add them
+              countByMonth[month_year][eventToQuery] += helperReturnDSumFromString(rowFromEventsCell); // Get the figures from that cell and add them
             } else if (eventToQuery.includes("-Sum")) { // If event ends with sum then sum the figures 
-              countByMonth[month_year][eventToQuery] += helperSumNumbersFromString(rowFromEventsCell); // Get the figures from that cell and add them
+              countByMonth[month_year][eventToQuery] += helperReturnSumFromString(rowFromEventsCell); // Get the figures from that cell and add them
             } else { // Then treat event as a normal tag
               countByMonth[month_year][eventToQuery] += 1 // Increment count in dictionary
             }  

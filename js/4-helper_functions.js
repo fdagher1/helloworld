@@ -1,3 +1,44 @@
+// Parses through a string that has a CSV format, and converts it to a 2D array as follows: Each new line in that string is a new row in the array, and each attribute within the line is a column in the array
+function csvToArray(csvString) {
+  const rows = [];
+  let currentRow = [];
+  let currentField = '';
+  let insideQuotes = false;
+
+  for (let i = 0; i < csvString.length; i++) {
+      const char = csvString[i];
+      const nextChar = csvString[i + 1];
+      if (char === '"' && insideQuotes && nextChar === '"') { // Handle escaped quotes
+          currentField += '"';
+          i++; // Skip the next quote
+      } else if (char === '"') { // Toggle the insideQuotes flag
+          insideQuotes = !insideQuotes;
+      } else if (char === ',' && !insideQuotes) { // End of a field
+          currentRow.push(currentField);
+          currentField = '';
+      } else if (char === '\n' && !insideQuotes) { // End of a row
+          currentRow.push(currentField);
+          rows.push(currentRow);
+          currentRow = [];
+          currentField = '';
+      } else { // Regular character
+          if (char === '\n') { // Replace any \n, present at the end of each break line within a cell, with <br>, to remain compliant with my other code
+            currentField += '<br>';
+          } else if (char === '\r') { // Ignore any \r, present at the end of each cell in the 4th column, as it's not needed
+            // Don't do anything
+          } else {
+            currentField += char;
+          }
+      }
+  }
+
+  // Add the last field and row, and remove the very first row as it only has the table headers
+  //currentRow.push(currentField);
+  //rows.push(currentRow);
+  rows.shift();
+  return rows;
+}
+
 // Checks if eventName is already present as a key countOfOccurances dictionary, and if so, it increments its value, otherwise it creates one with value 1
 function helperIncrementCount(eventName, countOfOccurances) {
   if (eventName in countOfOccurances) {
@@ -6,14 +47,15 @@ function helperIncrementCount(eventName, countOfOccurances) {
     countOfOccurances[eventName] = 1;
   }
 }
-  
-function helperSortDictionaryIntoArray(dict) {
-  // Create array
+
+// Function takes in a dictionary, converts it to a 2d array, then sorts the array based on the values in the second column
+function helperReturnSortedArrayFromDictionary(dict) {
+  // Create array from dictionary
   var items = Object.keys(dict).map(function(key) {
     return [key, dict[key]];
   });
 
-  // Sort the array based on the second element
+  // Sort the array based on the second column, which is a count of countries
   items.sort(function(first, second) {
     return second[1] - first[1];
   });
@@ -21,13 +63,15 @@ function helperSortDictionaryIntoArray(dict) {
   return items;
 }
 
-function helperSumNumbersFromString(inputString) {
+// Function that returns a sum of all the numbers found in a string 
+function helperReturnSumFromString(inputString) {
   const numbers = inputString.match(/\d+/g); // match(/\d+/g) returns an array containing all the numbers found in the string 
   if (!numbers) return 0;
   return numbers.reduce((sum, num) => sum + Number(num), 0);
 }
 
-function helperSumDNumbersFromString(inputString) {
+// Function that returns a sum of all the D numbers found in a string 
+function helperReturnDSumFromString(inputString) {
   const dollarNumbers = inputString.match(/\$\d+(\.\d+)?/g);
   if (!dollarNumbers) return 0;
   const sum = dollarNumbers.reduce((total, dollarValue) => {
