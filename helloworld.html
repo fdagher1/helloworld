@@ -7,9 +7,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="manifest" href="manifest.json">
 
-    <!--async tag helps scripts are executed asynchronously and without blocking the browser-->
-    <script src="js/xslx-0.8.0/jszip.js"></script>
-    <script src="js/xslx-0.8.0/xlsx.js"></script>
+    <!--adding an async tag can help the browser load without waiting for each script to finish execution first-->
     <script src="js/1-event_handling.js"></script>
     <script src="js/2-data_retrieval.js"></script>
     <script src="js/3-data_display.js"></script>
@@ -28,52 +26,50 @@
   </head>
 
   <body id="body" class="darkclass">
-    <div class="top-grid">     
-      
-      <div class="cellA1">
-        <input type=file id="button-upload" name="files[]" class="darkclass" title="your text" onchange="eventUploadButtonClicked(event)">
+    
+    <div id="top-grid">   
+      <div>
+        <input type=file id="button-upload" name="files[]" class="darkclass" accept=".csv" onchange="eventUploadButtonClicked(event)">
       </div>
+      <div>
+        <input type="button" id="button-darktoggle" class="darkclass" value="Dark Mode: On" onclick="eventDarkModeButtonClicked()">
+      </div>
+      <div>
+        <input type="button" id="button-modetoggle" class="darkclass" value="Mode: Read" onclick="eventAppModeButtonClicked()">
+      </div>
+    </div><br/>
 
-      <div class="cellB1 dropdown-criteria-list darkclass" id="yearDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
+    <div id="filter-grid" style="display: none;">
+      <div>
+        <select id="select-displayoption" class="darkclass"><option value="Show All Lines">Show All Lines</option></select>
+      </div>
+      <div class="dropdown-criteria-list darkclass" id="yearDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
         <span class="anchor ">All Years</span>
         <ul class="items" id="timeItems">
           <li><input type="checkbox" onchange="eventCheckboxSelected()" />Place Holder </li>
         </ul>
       </div>
-
-      <div class="cellA2">
-        <input type="button" id="button-darktoggle" class="darkclass" value="Dark Mode: On" onclick="eventDarkModeButtonClicked()">
-      </div>
-
-      <div class="cellB2 dropdown-criteria-list darkclass" id="locationDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
+      <div class="dropdown-criteria-list darkclass" id="locationDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
         <span class="anchor">All Locations</span>
         <ul class="items" id="locationItems">
           <li><input type="checkbox" onchange="eventCheckboxSelected()" />Place Holder </li>
         </ul>
       </div>
-
-      <div class="cellA3">
-        <select class="darkclass" id="select-displayoption" disabled><option value="Show All Lines">Show All Lines</option></select>
-      </div>
-
-      <div class="cellB3 dropdown-criteria-list darkclass" id="eventDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
+      <div class="dropdown-criteria-list darkclass" id="eventDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
         <span class="anchor">All Events</span>
         <ul class="items" id="eventItems">
           <li><input type="checkbox" onchange="eventCheckboxSelected(event)" />Place Holder </li>
         </ul>
       </div>
-      
-      <div class="cellA4">
-        <input type="button" id="button-displaytable" class="darkclass" value="Display" onclick="eventDisplayButtonClicked()" disabled>
+      <div>
+        <input id="textbox-keyword" type="text" class="darkclass" oninput="eventKeywordEntered()">
       </div>
-
-      <div class="cellB4">
-        <input id="textbox-keyword" type="text" oninput="eventKeywordEntered()" disabled>
+      <div>
+        <input type="button" id="button-displaytable" class="darkclass" value="Display" onclick="eventDisplayButtonClicked()">
       </div>
+    </div><br/>
 
-    </div> 
-
-    <div>
+    <div id="output-table" style="display: none;">
       <table>
         <thead id="thead">
           <tr>
@@ -81,10 +77,34 @@
           </tr>
       </thead>
         <tbody id="tbody">
-
         </tbody>
       </table>
     </div>
+
+    <div id="input-grid" style="display: none;">
+      <div>
+        <div>
+          <input id="input-date" type="date" class="darkclass">
+        </div>
+        <div>
+          <input id="input-location" type="text" class="darkclass">
+        </div>
+        <div>
+          <textarea id="input-events" rows="8" class="darkclass"></textarea>
+        </div>
+      </div>
+      <div>
+        <input type="button" id="button-submit" class="darkclass" value="Submit" onclick="eventSubmitButtonClicked()">
+      </div>
+    </div>
+    
+    <div>
+      <table>
+        <tbody id="errorcontent">
+        </tbody>
+      </table>
+    </div>
+
   </body>
 
 </html>
