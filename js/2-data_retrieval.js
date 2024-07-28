@@ -1,4 +1,4 @@
-function retrieveFileContent(event) {
+function readContentFromFile(event) {
   const file = event.target.files[0];
   const reader = new FileReader();
   var csvData;
@@ -8,115 +8,120 @@ function retrieveFileContent(event) {
   reader.readAsText(file);
 
   setTimeout(() => { 
-    datasetFromExcel = csvToArray(csvData);
+    datasetFromExcel = helperCsvToArray(csvData);
 
     // If file is valid then proceed with displaying the top pane otherwise advise user to look in the browser's console for errors
-    if (validateFileFormatAndData() == "file is valid") {
+    var validationResult = validateFileFormatAndData();
+    if (validationResult == "No errors found.") {
       // Display Data in Top Pane
       retrieveDataForTopPane();
 
       // Display Data in Table
       retrieveExcelFileTable();
-    }
 
+      // Clear validity errors if any
+      clearFileValidityError();
+    } else {
+      displayFileValidityError(validationResult);
+    }
   }, 1000);
 }
 
 function validateFileFormatAndData(){
   let startTime = performance.now();
-  let errorMessage = "No errors"; // Used further down by the validity check code 
-  let previousCellDate = new Date(datasetFromExcel[0][0]); // Used further down by the validity check code 
+  let validationResult = "No errors found."; 
+  var previousCellDate = new Date(datasetFromExcel[0][0]); // Used further down by the validity check code 
   
   // ITERATE OVER EVERY ROW TO INSPECT IT
   for (let i = 0; i < datasetFromExcel.length; i++) { 
     
     // CHECK THAT DATES ARE IN DESCENDING ORDER
-    let currentCellDate = new Date(datasetFromExcel[i][0]); 
+    var currentCellDate = new Date(datasetFromExcel[i][0]); 
     if (i == 0){ 
       // Do nothing as that means we're still in the first row and it's too early to check
-    } else if (currentCellDate > previousCellDate) {
-      errorMessage = "The dates in row number " + (i+2) + " should be in a descending order from the previous row.";
-      break;
+    } else {
+      validationResult = helperValidateDate(currentCellDate.toString(), previousCellDate.toString());
+      if (validationResult != "No errors found.") {
+        validationResult = validationResult + " Row: " + ++i;
+        break;
+      }
     }
     previousCellDate = currentCellDate;
 
-    // CHECK THAT LOCATIONS ALL HAVE UNDERSCORES IN THEM
-    let rowLocationValueArray = datasetFromExcel[i][1].split(","); // Get the city_country values in an array
-    let errorFound = false;
-    // Iterate over every city_country that day
-    for (let j = 0; j < rowLocationValueArray.length; j++) {
-      if (errorFound == false) {
-        var cityCountrySplitArray = rowLocationValueArray[j].split("_"); // Split city_country into an array
-        if (cityCountrySplitArray.length != 2) {
-          errorMessage = "The location provided in row number " + (i+2) + " is missing an underscore.";
-          errorFound = true;
-        }
-      }
-    }
-    if (errorFound == true) {
+    // CHECK THAT LOCATIONS HAVE UNDERSCORES IN THEM
+    validationResult = helperValidateLocation(datasetFromExcel[i][1]);
+    if (validationResult != "No errors found.") {
+      validationResult = validationResult + " Row: " + ++i;
       break;
     }
     
-    
-    // CHECK EVENT ENTRY VALIDITY
-    var event_cell = datasetFromExcel[i][2];
-    
-    // CHECK IF EVENT CELL IS BLANK
-    if (typeof event_cell === 'undefined') {
-      errorMessage = "The event cell in row number " + (i+2) + " is blank.";
+    // CHECK EVENT ENTRY VALIDITY: 
+    // 1- is not blank, 
+    // 2- ends with a break line,
+    // 3- has at least 1 hashtag, and
+    // 4- all its hashtags are in the list
+    validationResult = helperValidateEvent(datasetFromExcel[i][2], datasetFromExcel);
+    if (validationResult != "No errors found.") {
+      validationResult = validationResult + " Row: " + ++i;
       break;
-    }
-
-    // CHECK IF EVENT CELL DOES NOT END WITH A BREAK LINE
-    if (event_cell.slice(-4) != "<br>") {
-      errorMessage = "The event cell in row " + (i+2) + " does not end with a line break.";
-      break;
-    }
-
-    // CHECK IF EVENT CELL HAS NO HASHTAGS
-    if (!event_cell.includes("#")) {
-      errorMessage = "The event cell in row " + (i+2) + " does not have any events. It should have at least one.";
-      break;
-    }
-
-    // CHECK IF THERE ARE EVENT TAGS THAT ARE NOT IN THE EVENT LIST
-    // Retrieve the events list from the bottom cell
-    var eventsFromExcelFile = datasetFromExcel[datasetFromExcel.length-1][3].split(";"); 
-    // Check if there are any tags in the event cell that are missing from the list
-    while (event_cell.includes("#")) { // Iterate over all the # entries in the same cell
-      let new_event_cell = event_cell.slice(event_cell.indexOf("#")); // Remove anything before the first # in the cell
-      event_cell = new_event_cell.slice(new_event_cell.indexOf(" ")); // Place anything after the first space from the tag in a new cell to iterate over once this is done 
-      let eventName = new_event_cell.slice(1,new_event_cell.indexOf(" ")); // Get the tag name
-      if (eventName.includes(".")) { 
-        eventName = eventName.slice(0, eventName.indexOf(".")); // Remove the "." from the tag name if it happens to be linked to it. 
-      }
-      if (eventName.includes(",")) { 
-        eventName = eventName.slice(0, eventName.indexOf(",")); // Remove the "," from the tag name if it happens to be linked to it. 
-      }
-      // Should we handle other cases than . and , like <br> perhaps?
-
-      // Check if event name is not in the provided event list
-      var event_is_in_list = false;
-      for (let j = 0; j < eventsFromExcelFile.length; j++) {
-        if (eventsFromExcelFile[j].split("_")[1] == eventName) {
-          event_is_in_list = true;
-          break;
-        }
-      }
-      if (event_is_in_list == false){
-        // Since the loop over the event list completed with no breaks, then the event name is missing
-        errorMessage = "The event " + eventName + " found in row " + (i+2) + " is missing from the list.";
-        break;
-      }
     }
   }
 
   console.log(`validateFileFormatAndData executed in: ${performance.now() - startTime} milliseconds`);
-  // If no errors, then return, otherwise, display error message
-  if (errorMessage == "No errors") {
-    return "file is valid"
+  return validationResult;
+}
+
+function validateUserInputFormatAndData(userInput) {
+  var validationResult = "No errors found.";
+
+  // CHECK THAT THE DATE IS IN INCREMENTAL ORDER
+  var latestDateInFile = new Date(datasetFromExcel[0][0]);
+  var dateFromUserInput = new Date(userInput[0]);
+  validationResult = helperValidateDate(latestDateInFile, dateFromUserInput);
+  if (validationResult != "No errors found.") {
+    return validationResult;
+  }
+
+  // CHECK THAT LOCATIONS ALL HAVE UNDERSCORES IN THEM
+  var locationFromUserInput = userInput[1];
+  validationResult = helperValidateLocation(locationFromUserInput);
+  if (validationResult != "No errors found.") {
+    return validationResult;
+  }
+
+  // CHECK THAT EVENT FORMAT IS CORRECT
+  var eventsFromUserInput = userInput[2];
+  validationResult = helperValidateEvent(eventsFromUserInput, datasetFromExcel);
+  if (validationResult != "No errors found.") {
+    return validationResult;
+  }
+
+  return validationResult;
+}
+
+function saveContentToFile() {
+  // GATHER USER INPUT
+  // Get date
+  var enteredDate = document.getElementById("input-date").valueAsDate; // Read date
+  enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
+
+  // Get Location
+  var enteredLocation = document.getElementById("input-location").value;
+  
+  // Get events
+  var enteredEvents = document.getElementById("input-events").value;
+  enteredEvents = helperSetBeaklineCharacter(enteredEvents); // Replace all \n with <br> as the code currently depends on that
+
+  // CREATE ARRAY FROM INPUT
+  var userInput = [enteredDate, enteredLocation, enteredEvents];
+
+  // VALIDATE USER INPUT AND SAVE TO FILE
+  var validationResult = validateUserInputFormatAndData(userInput);
+  if (validationResult == "No errors found.") {
+    console.log(userInput);
+    clearFileValidityError();
   } else {
-    displayFileValidityError(errorMessage);
+    displayFileValidityError(validationResult);
   }
 }
 

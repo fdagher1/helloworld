@@ -1,5 +1,5 @@
 // Parses through a string that has a CSV format, and converts it to a 2D array as follows: Each new line in that string is a new row in the array, and each attribute within the line is a column in the array
-function csvToArray(csvString) {
+function helperCsvToArray(csvString) {
   const rows = [];
   let currentRow = [];
   let currentField = '';
@@ -128,4 +128,99 @@ function getIndicesOf(searchStr, wholeStr) {
       startIndex = index + searchStrLen;
   }
   return indices;
+}
+
+function helperValidateDate(date1, date2) { 
+  date1 = new Date(date1);
+  if (date2.toString() !== new Date(date1.setDate((new Date(date1)).getDate() + 1)).toString()) {
+    return "The dates are not in descending order.";
+  } else {
+    return "No errors found.";
+  }
+}
+
+function helperValidateLocation(locationString) {
+  let rowLocationValueArray = locationString.split(","); // Get the city_country values in an array
+  for (let j = 0; j < rowLocationValueArray.length; j++) { // Iterate over every city_country that day
+    var cityCountrySplitArray = rowLocationValueArray[j].split("_"); // Split city_country into an array
+    if (cityCountrySplitArray.length != 2) {
+      return "The location provided is missing an underscore.";
+    }
+  }
+  return "No errors found.";
+}
+
+function helperValidateEvent(eventCell, datasetFromExcel) {
+  // CHECK IF EVENT CELL IS BLANK
+  if (eventCell === '') {
+    return "The event cell is blank.";
+  } 
+
+  // CHECK IF EVENT CELL DOES NOT END WITH A BREAK LINE
+  if (eventCell.slice(-4) != "<br>") {
+    return "The event cell does not end with a line break.";
+  }
+
+  // CHECK IF EVENT CELL HAS NO HASHTAGS
+  if (!eventCell.includes("#")) {
+    return "The event cell does not have any events. It should have at least one.";
+  }
+
+  // CHECK IF THERE ARE EVENT TAGS THAT ARE NOT IN THE EVENT LIST
+  var eventsFromExcelFile = datasetFromExcel[datasetFromExcel.length-1][3].split(";"); // Retrieve the events list from the bottom cell
+  // Check if there are any tags in the event cell that are missing from the list
+  while (eventCell.includes("#")) { // Iterate over all the # entries in the same cell
+    let new_eventCell = eventCell.slice(eventCell.indexOf("#")); // Remove anything before the first # in the cell
+    eventCell = new_eventCell.slice(new_eventCell.indexOf(" ")); // Place anything after the first space from the tag in a new cell to iterate over once this is done 
+    let eventName = new_eventCell.slice(1,new_eventCell.indexOf(" ")); // Get the tag name
+    if (eventName.includes(".")) { 
+      eventName = eventName.slice(0, eventName.indexOf(".")); // Remove the "." from the tag name if it happens to be linked to it. 
+    }
+    if (eventName.includes(",")) { 
+      eventName = eventName.slice(0, eventName.indexOf(",")); // Remove the "," from the tag name if it happens to be linked to it. 
+    }
+    // Should we handle other cases than . and , like <br> perhaps?
+
+    // Check if event name is not in the provided event list
+    var event_is_in_list = false;
+    for (let j = 0; j < eventsFromExcelFile.length; j++) {
+      if (eventsFromExcelFile[j].split("_")[1] == eventName) {
+        event_is_in_list = true;
+        break;
+      }
+    }
+    if (event_is_in_list == false){
+      // Since the loop over the event list completed with no breaks, then the event name is missing
+      return "The event " + eventName + " is not a valid event.";
+    }
+  }
+
+  return "No errors found.";
+}
+
+// Function that takes a Date input and returns a string in the format of: Mon, 12/1/2024
+function helperSetDateFormat(enteredDate) {
+  enteredDate = new Date(enteredDate.getTime(enteredDate) + 5 * 60 * 60 * 1000); // Add 5 hours as for some reason it thinks it's reading GMT even though the date entered doesn't say that
+  const dayOfWeek = enteredDate.getDay(); // Returns a number (0 to 6)
+  const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  function formatDate(date) {
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  }
+  return weekdays[dayOfWeek].slice(0,3) + ", " + formatDate(enteredDate);
+}
+
+// Function replace all the \n characters with <br> as the code is currently looking for that instead 
+function helperSetBeaklineCharacter(enteredEvents) {
+  var newEnteredEvents = "";
+  for (let i = 0; i < enteredEvents.length; i++) {
+    if (enteredEvents[i] === '\n') {
+      newEnteredEvents += "<br>";
+    } else {
+      newEnteredEvents += enteredEvents[i];
+    }
+  }
+  return newEnteredEvents;
 }

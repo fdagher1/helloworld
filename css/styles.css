@@ -1,9 +1,26 @@
-.top-grid {
-  display: grid;
-  grid-template-columns: 180px 180px;
-  column-gap: 5px;
-  row-gap: 5px;
-  padding: 5px;
+#top-grid, #filter-grid {
+  grid-template-columns: 360px;
+  row-gap: 1px;
+}
+
+#button-upload, #button-darktoggle, #button-modetoggle, #select-displayoption, #textbox-keyword, #button-displaytable, #input-date, #input-location, #input-events, #button-submit {
+  position: relative;
+  cursor: pointer;
+  display: inline-grid;
+  border: 1px solid #1c87c9;
+  border-radius: 0px;
+  height: 33px;
+  text-align: left;
+  font-size: 16px;
+
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+#input-events {
+  height: 200px;
 }
 
 .lightclass {
@@ -14,42 +31,6 @@
 .darkclass {
   background-color: #222;
   color: Gainsboro;
-}
-
-.cellA1 {
-  grid-row: 1 / 2; /*sets on which columns the cell starts and ends*/
-  grid-column: 1 / 2; /*sets on which rows the cell starts and ends*/
-}
-
-.cellB1, .cellA2, .cellB2, .cellA3, .cellB3, .cellA4, .cellB4 {
-  grid-row: span 1; /*span means start where you left off, 1 means take 1 column*/
-  grid-column: span 1; /*span means start where you left off, 1 means take 1 row*/
-}
-
-#button-darktoggle, #button-displaytable, #select-displayoption {
-  position: relative;
-  cursor: pointer;
-  display: inline-grid;
-  border: 1px solid #1c87c9;
-  border-radius: 0px;
-  width: 175px;
-  height: 30px;
-  text-align: left;
-  padding: 5px;
-  font-size: 16px;
-}
-
-#button-upload {
-  border: 1px solid #1c87c9;
-  border-radius: 0px;
-  height: 29px;
-  width: 172px;
-}
-
-#textbox-keyword { /*seperated it otherwise it's bigger than the other elements*/
-  width: 170px;
-  height: 25px;
-  cursor: pointer;
 }
 
 td {
@@ -64,10 +45,13 @@ td {
   position: relative;
   cursor: pointer;
   display: inline-grid;
-  padding: 5px 47px 5px 10px;
+  padding: 5px;
   border: 1px solid #1c87c9;
-  width: 118px;
+  width: 100%;
   font-size: 17px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .anchor::after {
