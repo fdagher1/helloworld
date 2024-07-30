@@ -29,13 +29,14 @@
     
     <div id="top-grid">   
       <div>
-        <input type=file id="button-upload" name="files[]" class="darkclass" accept=".csv" onchange="eventUploadButtonClicked(event)">
+        <label for="button-upload" id="label-button-upload" class="darkclass">Upload File</label>
+        <input type=file name="files[]" id="button-upload" class="darkclass" accept=".csv" onchange="eventUploadButtonClicked(event)">
       </div>
       <div>
         <input type="button" id="button-darktoggle" class="darkclass" value="Dark Mode: On" onclick="eventDarkModeButtonClicked()">
       </div>
       <div>
-        <input type="button" id="button-modetoggle" class="darkclass" value="Mode: Read" onclick="eventAppModeButtonClicked()">
+        <input type="button" id="button-modetoggle" class="darkclass" value="Mode: Read" disabled onclick="eventAppModeButtonClicked()">
       </div>
     </div><br/>
 
@@ -43,26 +44,26 @@
       <div>
         <select id="select-displayoption" class="darkclass"><option value="Show All Lines">Show All Lines</option></select>
       </div>
-      <div class="dropdown-criteria-list darkclass" id="yearDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
-        <span class="anchor ">All Years</span>
+      <div class="dropdown-criteria-list" id="yearDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
+        <span class="anchor">All Years</span>
         <ul class="items" id="timeItems">
           <li><input type="checkbox" onchange="eventCheckboxSelected()" />Place Holder </li>
         </ul>
       </div>
-      <div class="dropdown-criteria-list darkclass" id="locationDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
+      <div class="dropdown-criteria-list" id="locationDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
         <span class="anchor">All Locations</span>
         <ul class="items" id="locationItems">
           <li><input type="checkbox" onchange="eventCheckboxSelected()" />Place Holder </li>
         </ul>
       </div>
-      <div class="dropdown-criteria-list darkclass" id="eventDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
+      <div class="dropdown-criteria-list" id="eventDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
         <span class="anchor">All Events</span>
         <ul class="items" id="eventItems">
           <li><input type="checkbox" onchange="eventCheckboxSelected(event)" />Place Holder </li>
         </ul>
       </div>
       <div>
-        <input id="textbox-keyword" type="text" class="darkclass" oninput="eventKeywordEntered()">
+        <input type="text" id="textbox-keyword" class="darkclass" placeholder="(Search Criteria)" oninput="eventKeywordEntered()">
       </div>
       <div>
         <input type="button" id="button-displaytable" class="darkclass" value="Display" onclick="eventDisplayButtonClicked()">
