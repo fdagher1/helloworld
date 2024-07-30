@@ -28,7 +28,7 @@ function eventUploadButtonClicked(event) {
 function eventDarkModeButtonClicked() {
   // If dark mode was not set, then set it
   if (darkModeBtnValue = document.getElementById("button-darktoggle").value == "Dark Mode: Off") {
-    document.getElementById("button-upload").classList.add("darkclass");
+    document.getElementById("label-button-upload").classList.add("darkclass");
     document.getElementById("button-darktoggle").value = "Dark Mode: On";
     document.getElementById("button-darktoggle").classList.add("darkclass");
     document.getElementById("button-modetoggle").classList.add("darkclass");
@@ -45,7 +45,7 @@ function eventDarkModeButtonClicked() {
     document.getElementById("body").classList.add("darkclass");
   // otherwise, unset it
   } else {
-    document.getElementById("button-upload").classList.remove("darkclass");
+    document.getElementById("label-button-upload").classList.remove("darkclass");
     document.getElementById("button-darktoggle").value = "Dark Mode: Off";
     document.getElementById("button-darktoggle").classList.remove("darkclass");
     document.getElementById("button-modetoggle").classList.remove("darkclass");
