@@ -26,6 +26,8 @@ function helperCsvToArray(csvString) {
             currentField += '<br>';
           } else if (char === '\r') { // Ignore any \r, present at the end of each cell in the 4th column, as it's not needed
             // Don't do anything
+          } else if (char === '�') {
+            currentField += "'";
           } else {
             currentField += char;
           }
@@ -37,6 +39,20 @@ function helperCsvToArray(csvString) {
   //rows.push(currentRow);
   rows.shift();
   return rows;
+}
+
+function helperArrayToCSV(datasetArray) {
+  var datasetCSV = "";
+  for (const row of datasetArray) {
+    for (const cell of row) {
+      datasetCSV += "\"" + cell + "\"" + ",";
+    }
+    datasetCSV += "\n";
+  }
+  datasetCSV = datasetCSV.substring(0, datasetCSV.length - 2); // Remove the last command breakline
+  datasetCSV = datasetCSV + "\n"; // Add a breakline to match the current file structure
+  datasetCSV = datasetCSV.replace(/<br>/g, "\n"); // Replace all <br> entries with \n instead
+  return datasetCSV;
 }
 
 // Checks if eventName is already present as a key countOfOccurances dictionary, and if so, it increments its value, otherwise it creates one with value 1
@@ -150,7 +166,7 @@ function helperValidateLocation(locationString) {
   return "No errors found.";
 }
 
-function helperValidateEvent(eventCell, datasetFromExcel) {
+function helperValidateEvent(eventCell, datasetArray) {
   // CHECK IF EVENT CELL IS BLANK
   if (eventCell === '') {
     return "The event cell is blank.";
@@ -167,7 +183,7 @@ function helperValidateEvent(eventCell, datasetFromExcel) {
   }
 
   // CHECK IF THERE ARE EVENT TAGS THAT ARE NOT IN THE EVENT LIST
-  var eventsFromExcelFile = datasetFromExcel[datasetFromExcel.length-1][3].split(";"); // Retrieve the events list from the bottom cell
+  var eventsFromExcelFile = datasetArray[datasetArray.length-1][3].split(";"); // Retrieve the events list from the bottom cell
   // Check if there are any tags in the event cell that are missing from the list
   while (eventCell.includes("#")) { // Iterate over all the # entries in the same cell
     let new_eventCell = eventCell.slice(eventCell.indexOf("#")); // Remove anything before the first # in the cell
@@ -196,6 +212,78 @@ function helperValidateEvent(eventCell, datasetFromExcel) {
   }
 
   return "No errors found.";
+}
+
+function validateFileFormatAndData(datasetArray){
+  let startTime = performance.now();
+  let validationResult = "No errors found."; 
+  var previousCellDate = new Date(datasetArray[0][0]); // Used further down by the validity check code 
+  
+  // ITERATE OVER EVERY ROW TO INSPECT IT
+  for (let i = 0; i < datasetArray.length; i++) { 
+    
+    // CHECK THAT DATES ARE IN DESCENDING ORDER
+    var currentCellDate = new Date(datasetArray[i][0]); 
+    if (i == 0){ 
+      // Do nothing as that means we're still in the first row and it's too early to check
+    } else {
+      validationResult = helperValidateDate(currentCellDate.toString(), previousCellDate.toString());
+      if (validationResult != "No errors found.") {
+        validationResult = validationResult + " Row: " + ++i;
+        break;
+      }
+    }
+    previousCellDate = currentCellDate;
+
+    // CHECK THAT LOCATIONS HAVE UNDERSCORES IN THEM
+    validationResult = helperValidateLocation(datasetArray[i][1]);
+    if (validationResult != "No errors found.") {
+      validationResult = validationResult + " Row: " + ++i;
+      break;
+    }
+    
+    // CHECK EVENT ENTRY VALIDITY: 
+    // 1- is not blank, 
+    // 2- ends with a break line,
+    // 3- has at least 1 hashtag, and
+    // 4- all its hashtags are in the list
+    validationResult = helperValidateEvent(datasetArray[i][2], datasetArray);
+    if (validationResult != "No errors found.") {
+      validationResult = validationResult + " Row: " + ++i;
+      break;
+    }
+  }
+
+  console.log(`validateFileFormatAndData executed in: ${performance.now() - startTime} milliseconds`);
+  return validationResult;
+}
+
+function validateUserInputFormatAndData(datasetArray, userInput) {
+  var validationResult = "No errors found.";
+
+  // CHECK THAT THE DATE IS IN INCREMENTAL ORDER
+  var latestDateInFile = new Date(datasetArray[0][0]);
+  var dateFromUserInput = new Date(userInput[0]);
+  validationResult = helperValidateDate(latestDateInFile, dateFromUserInput);
+  if (validationResult != "No errors found.") {
+    return validationResult;
+  }
+
+  // CHECK THAT LOCATIONS ALL HAVE UNDERSCORES IN THEM
+  var locationFromUserInput = userInput[1];
+  validationResult = helperValidateLocation(locationFromUserInput);
+  if (validationResult != "No errors found.") {
+    return validationResult;
+  }
+
+  // CHECK THAT EVENT FORMAT IS CORRECT
+  var eventsFromUserInput = userInput[2];
+  validationResult = helperValidateEvent(eventsFromUserInput, datasetArray);
+  if (validationResult != "No errors found.") {
+    return validationResult;
+  }
+
+  return validationResult;
 }
 
 // Function that takes a Date input and returns a string in the format of: Mon, 12/1/2024

@@ -8,16 +8,16 @@ function readContentFromFile(event) {
   reader.readAsText(file);
 
   setTimeout(() => { 
-    datasetFromExcel = helperCsvToArray(csvData);
+    datasetArray = helperCsvToArray(csvData);
 
     // If file is valid then proceed with displaying the top pane otherwise advise user to look in the browser's console for errors
-    var validationResult = validateFileFormatAndData();
+    var validationResult = validateFileFormatAndData(datasetArray);
     if (validationResult == "No errors found.") {
       // Display Data in Top Pane
       retrieveDataForTopPane();
 
       // Display Data in Table
-      retrieveExcelFileTable();
+      retrieveDataForUploadedFile();
 
       // Clear validity errors if any
       clearFileValidityError();
@@ -25,78 +25,6 @@ function readContentFromFile(event) {
       displayFileValidityError(validationResult);
     }
   }, 1000);
-}
-
-function validateFileFormatAndData(){
-  let startTime = performance.now();
-  let validationResult = "No errors found."; 
-  var previousCellDate = new Date(datasetFromExcel[0][0]); // Used further down by the validity check code 
-  
-  // ITERATE OVER EVERY ROW TO INSPECT IT
-  for (let i = 0; i < datasetFromExcel.length; i++) { 
-    
-    // CHECK THAT DATES ARE IN DESCENDING ORDER
-    var currentCellDate = new Date(datasetFromExcel[i][0]); 
-    if (i == 0){ 
-      // Do nothing as that means we're still in the first row and it's too early to check
-    } else {
-      validationResult = helperValidateDate(currentCellDate.toString(), previousCellDate.toString());
-      if (validationResult != "No errors found.") {
-        validationResult = validationResult + " Row: " + ++i;
-        break;
-      }
-    }
-    previousCellDate = currentCellDate;
-
-    // CHECK THAT LOCATIONS HAVE UNDERSCORES IN THEM
-    validationResult = helperValidateLocation(datasetFromExcel[i][1]);
-    if (validationResult != "No errors found.") {
-      validationResult = validationResult + " Row: " + ++i;
-      break;
-    }
-    
-    // CHECK EVENT ENTRY VALIDITY: 
-    // 1- is not blank, 
-    // 2- ends with a break line,
-    // 3- has at least 1 hashtag, and
-    // 4- all its hashtags are in the list
-    validationResult = helperValidateEvent(datasetFromExcel[i][2], datasetFromExcel);
-    if (validationResult != "No errors found.") {
-      validationResult = validationResult + " Row: " + ++i;
-      break;
-    }
-  }
-
-  console.log(`validateFileFormatAndData executed in: ${performance.now() - startTime} milliseconds`);
-  return validationResult;
-}
-
-function validateUserInputFormatAndData(userInput) {
-  var validationResult = "No errors found.";
-
-  // CHECK THAT THE DATE IS IN INCREMENTAL ORDER
-  var latestDateInFile = new Date(datasetFromExcel[0][0]);
-  var dateFromUserInput = new Date(userInput[0]);
-  validationResult = helperValidateDate(latestDateInFile, dateFromUserInput);
-  if (validationResult != "No errors found.") {
-    return validationResult;
-  }
-
-  // CHECK THAT LOCATIONS ALL HAVE UNDERSCORES IN THEM
-  var locationFromUserInput = userInput[1];
-  validationResult = helperValidateLocation(locationFromUserInput);
-  if (validationResult != "No errors found.") {
-    return validationResult;
-  }
-
-  // CHECK THAT EVENT FORMAT IS CORRECT
-  var eventsFromUserInput = userInput[2];
-  validationResult = helperValidateEvent(eventsFromUserInput, datasetFromExcel);
-  if (validationResult != "No errors found.") {
-    return validationResult;
-  }
-
-  return validationResult;
 }
 
 function saveContentToFile() {
@@ -113,13 +41,43 @@ function saveContentToFile() {
   enteredEvents = helperSetBeaklineCharacter(enteredEvents); // Replace all \n with <br> as the code currently depends on that
 
   // CREATE ARRAY FROM INPUT
-  var userInput = [enteredDate, enteredLocation, enteredEvents];
+  var userInput = [enteredDate, enteredLocation, enteredEvents, ""];
 
   // VALIDATE USER INPUT AND SAVE TO FILE
-  var validationResult = validateUserInputFormatAndData(userInput);
+  var validationResult = validateUserInputFormatAndData(datasetArray, userInput);
   if (validationResult == "No errors found.") {
-    console.log(userInput);
+    // Add user input to the dataset
+    datasetArray.unshift(userInput); 
+    
+    // Convert dataset to CSV and add headset
+    var datasetCSV = helperArrayToCSV(datasetArray); 
+    datasetCSV = "Day,Locations,Events,Thoughts\n" + datasetCSV;
+    
+    // Clear validity errors in case of any from previous save attemps attemps
     clearFileValidityError();
+    
+    // Download file as plain text
+    var file = new Blob([datasetCSV], { type: "text/plain" });
+    var a = document.createElement("a");
+    var url = URL.createObjectURL(file);
+    a.href = url;
+    a.download = "helloworld.csv";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 0);
+
+    // Switch back to read mode
+    eventAppModeButtonClicked();
+
+    // Update top pane
+    retrieveDataForTopPane();
+
+    // Redisplay the tabel
+    retrieveDataForUploadedFile();
+
   } else {
     displayFileValidityError(validationResult);
   }
@@ -135,8 +93,8 @@ function retrieveDataForTopPane() {
 
   // RETRIEVE THE LOCATIONS LIST
   // Iterate over every row in the table
-  for (let i = 0; i < datasetFromExcel.length; i++) {
-    let rowLocationValueArray = datasetFromExcel[i][1].split(","); // Get the city and country values in an array
+  for (let i = 0; i < datasetArray.length; i++) {
+    let rowLocationValueArray = datasetArray[i][1].split(","); // Get the city and country values in an array
     // Iterate over every city_country that day
     for (let j = 0; j < rowLocationValueArray.length; j++) {
       var cityCountrySplitArray = rowLocationValueArray[j].split("_"); // Split city and country into an array
@@ -162,7 +120,7 @@ function retrieveDataForTopPane() {
 
   // RETRIEVE THE EVENTS LIST
   // First populate it from the provided list
-  allDropdownValues[2] = datasetFromExcel[datasetFromExcel.length-1][3].split(";"); 
+  allDropdownValues[2] = datasetArray[datasetArray.length-1][3].split(";"); 
   
   // Then remove the last line as it is blank
   allDropdownValues[2].pop(); 
@@ -256,23 +214,23 @@ function retrieveDataFromTopPane() {
   console.log(`retrieveDataFromTopPane executed in: ${performance.now() - startTime} milliseconds`);
 }
 
-function retrieveExcelFileTable() { 
+function retrieveDataForUploadedFile() { 
   // Provide the column names for table to display data: 1- "Data", 2- "Location", and 3- Number of rows
-  var columnHeaders = ["Date", "Location", "(" + datasetFromExcel.length + " rows)"];
+  var columnHeaders = ["Date", "Location", "(" + datasetArray.length + " rows)"];
 
   // Display the data
-  displayDataInTable(columnHeaders, datasetFromExcel);
+  displayDataInTable(columnHeaders, datasetArray);
 
   // Set below datasets as they may be used in future user queries
-  datasetBeforeKeywordFilter = datasetFromExcel.slice();
-  datasetAfterKeywordFilter = datasetFromExcel.slice();
+  datasetBeforeKeywordFilter = datasetArray.slice();
+  datasetAfterKeywordFilter = datasetArray.slice();
 }
 
 function retrieveDataForListTable() {
   let startTime = performance.now();
   
   // Filter dataset to only include lines from the 3 dropdown criteria 
-  datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetFromExcel, selectedDropdownValues[0], selectedDropdownValues[1], selectedDropdownValues[2]); 
+  datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetArray, selectedDropdownValues[0], selectedDropdownValues[1], selectedDropdownValues[2]); 
 
   // Filter dataset to only include lines with the searchword
   if (!searchWord == "") {
@@ -317,7 +275,7 @@ function retrieveDataforGroupByLocationTable() {
   let startTime = performance.now();
 
   // Filter dataset to only include lines from the 3 dropdown criteria and 1 search word
-  datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetFromExcel, selectedDropdownValues[0], selectedDropdownValues[1], selectedDropdownValues[2]); 
+  datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetArray, selectedDropdownValues[0], selectedDropdownValues[1], selectedDropdownValues[2]); 
   if (!searchWord == "") {
     datasetAfterKeywordFilter = helperReturnRowsThatMatchSearchWord(datasetBeforeKeywordFilter, searchWord).slice(0);
   } else {
@@ -349,7 +307,7 @@ function retrieveDataforSummaryTable() {
   let startTime = performance.now();
     
   // FILTER DATASET TO ONLY INCLUDE LINES FROM THE 3 DROPDOWN CRITERIA AND 1 SEARCH WORD
-  datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetFromExcel, selectedDropdownValues[0], selectedDropdownValues[1], selectedDropdownValues[2]); 
+  datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetArray, selectedDropdownValues[0], selectedDropdownValues[1], selectedDropdownValues[2]); 
   if (searchWord == "") {
     datasetAfterKeywordFilter = datasetBeforeKeywordFilter.slice();
   } else {
