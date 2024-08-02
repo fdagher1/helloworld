@@ -1,7 +1,7 @@
 // DEFINE GLOBAL VARIABLES
 
 // Input from excel file
-var datasetFromExcel = []; // Data from excel file, program never changes it
+var datasetArray = []; // Data from excel file, program never changes it
 var datasetBeforeKeywordFilter = []; // Holds the data to display in the output before the keyword filter is applied
 var datasetAfterKeywordFilter = []; // Holds the data to display in the output after the keyword filter is applied
 var allDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
@@ -73,8 +73,9 @@ function eventAppModeButtonClicked() {
 
     // Update element visibility
     document.getElementById("button-modetoggle").value = "Mode: Write";
-    document.getElementById("input-date").valueAsDate = new Date((new Date(datasetFromExcel[0][0])).setDate((new Date(new Date(datasetFromExcel[0][0]))).getDate() + 1));
+    document.getElementById("input-date").valueAsDate = new Date((new Date(datasetArray[0][0])).setDate((new Date(new Date(datasetArray[0][0]))).getDate() + 1));
     document.getElementById("input-location").value = "Washington DC_USA";
+    document.getElementById("input-events").value = "";
 
   } else { 
     // Switch to Read mode
@@ -88,12 +89,12 @@ function eventAppModeButtonClicked() {
   }
 }
 
-function eventSubmitButtonClicked() {
+function eventSaveButtonClicked() {
   saveContentToFile();
 }
 
 function eventCriteriaDropdownClicked(event) {
-  if (datasetFromExcel.length > 0){ // That means the excel file has been uploaded
+  if (datasetArray.length > 0){ // That means the excel file has been uploaded
     if (event.target.parentNode.classList.contains('visible'))
       event.target.parentNode.classList.remove('visible');
     else
@@ -107,7 +108,7 @@ function eventDisplayButtonClicked() {
 
   // Check which display option user chose 
   if (selectedDisplayOption == "List: Excel File") {
-    retrieveExcelFileTable();
+    retrieveDataForUploadedFile();
   } else if (selectedDisplayOption == "List: All Lines") {
     retrieveDataForListTable();
   } else if (selectedDisplayOption == "List: Event Lines") {
