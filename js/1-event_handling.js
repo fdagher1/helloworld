@@ -26,11 +26,11 @@ function eventUploadButtonClicked(event) {
 }
 
 function eventDarkModeButtonClicked() {
-  // If dark mode was not set, then set it
-  if (darkModeBtnValue = document.getElementById("button-darktoggle").value == "Dark Mode: Off") {
+  // If dark theme was not set, then set it
+  if (darkModeBtnValue = document.getElementById("button-themetoggle").value == "Switch to Dark Theme") {
     document.getElementById("label-button-upload").classList.add("darkclass");
-    document.getElementById("button-darktoggle").value = "Dark Mode: On";
-    document.getElementById("button-darktoggle").classList.add("darkclass");
+    document.getElementById("button-themetoggle").value = "Switch to Light Theme";
+    document.getElementById("button-themetoggle").classList.add("darkclass");
     document.getElementById("button-modetoggle").classList.add("darkclass");
     document.getElementById("select-displayoption").classList.add("darkclass");
     document.getElementById("yearDropdownDiv").classList.add("darkclass");
@@ -46,8 +46,8 @@ function eventDarkModeButtonClicked() {
   // otherwise, unset it
   } else {
     document.getElementById("label-button-upload").classList.remove("darkclass");
-    document.getElementById("button-darktoggle").value = "Dark Mode: Off";
-    document.getElementById("button-darktoggle").classList.remove("darkclass");
+    document.getElementById("button-themetoggle").value = "Switch to Dark Theme";
+    document.getElementById("button-themetoggle").classList.remove("darkclass");
     document.getElementById("button-modetoggle").classList.remove("darkclass");
     document.getElementById("select-displayoption").classList.remove("darkclass");
     document.getElementById("yearDropdownDiv").classList.remove("darkclass");
@@ -64,7 +64,7 @@ function eventDarkModeButtonClicked() {
 }
 
 function eventAppModeButtonClicked() {
-  if (darkModeBtnValue = document.getElementById("button-modetoggle").value == "Mode: Read") { 
+  if (darkModeBtnValue = document.getElementById("button-modetoggle").value == "Switch to Write Mode") { 
     // Switch to Write mode
     // Update element visibility
     document.getElementById("filter-grid").style.display = "none";
@@ -72,10 +72,10 @@ function eventAppModeButtonClicked() {
     document.getElementById("input-grid").style.display = "grid";
 
     // Update element visibility
-    document.getElementById("button-modetoggle").value = "Mode: Write";
+    document.getElementById("button-modetoggle").value = "Switch to Read Mode";
     document.getElementById("input-date").valueAsDate = new Date((new Date(datasetArray[0][0])).setDate((new Date(new Date(datasetArray[0][0]))).getDate() + 1));
     document.getElementById("input-location").value = "Washington DC_USA";
-    document.getElementById("input-events").value = "";
+    document.getElementById("input-events").value = "#Workout.\n";
 
   } else { 
     // Switch to Read mode
@@ -85,7 +85,7 @@ function eventAppModeButtonClicked() {
     document.getElementById("input-grid").style.display = "none";
 
     // Update element visibility
-    document.getElementById("button-modetoggle").value = "Mode: Read";
+    document.getElementById("button-modetoggle").value = "Switch to Write Mode";
   }
 }
 

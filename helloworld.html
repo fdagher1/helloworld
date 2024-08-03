@@ -33,16 +33,18 @@
         <input type=file name="files[]" id="button-upload" accept=".csv" onchange="eventUploadButtonClicked(event)">
       </div>
       <div>
-        <input type="button" id="button-darktoggle" class="darkclass" value="Dark Mode: On" onclick="eventDarkModeButtonClicked()">
+        <input type="button" id="button-themetoggle" class="darkclass" value="Switch to Light Theme" onclick="eventDarkModeButtonClicked()">
       </div>
       <div>
-        <input type="button" id="button-modetoggle" class="darkclass" value="Mode: Read" disabled onclick="eventAppModeButtonClicked()">
+        <input type="button" id="button-modetoggle" class="darkclass" value="Switch to Write Mode" disabled onclick="eventAppModeButtonClicked()">
       </div>
     </div><br/>
 
     <div id="filter-grid" style="display: none;">
       <div>
-        <select id="select-displayoption" class="darkclass"><option value="Show All Lines">Show All Lines</option></select>
+        <select id="select-displayoption" class="darkclass" onchange="handleSelect(this)">
+          <option value="Show All Lines">Show All Lines</option>
+        </select>
       </div>
       <div class="dropdown-criteria-list" id="yearDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
         <span class="anchor">All Years</span>
