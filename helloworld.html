@@ -41,11 +41,6 @@
     </div><br/>
 
     <div id="filter-grid" style="display: none;">
-      <div>
-        <select id="select-displayoption" class="darkclass" onchange="handleSelect(this)">
-          <option value="Show All Lines">Show All Lines</option>
-        </select>
-      </div>
       <div class="dropdown-criteria-list" id="yearDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
         <span class="anchor">All Years</span>
         <ul class="items" id="timeItems">
@@ -66,6 +61,11 @@
       </div>
       <div>
         <input type="text" id="textbox-keyword" class="darkclass" placeholder="(Search Criteria)" oninput="eventKeywordEntered()">
+      </div>
+      <div>
+        <select id="select-displayoption" class="darkclass" onchange="eventDisplayOptionSelected()">
+          <option value="Show All Lines">Show All Lines</option>
+        </select>
       </div>
       <div>
         <input type="button" id="button-displaytable" class="darkclass" value="Display" onclick="eventDisplayButtonClicked()">

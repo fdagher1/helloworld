@@ -93,6 +93,31 @@ function eventSaveButtonClicked() {
   saveContentToFile();
 }
 
+function eventDisplayOptionSelected() {
+    // Gather user inputs
+    retrieveDataFromTopPane();
+
+    // Check which display option user chose in order to enable or disable the Display button
+    if (selectedDisplayOption.includes("List")) {
+      document.getElementById("button-displaytable").removeAttribute("disabled"); // Enable Display button
+    } else {
+      document.getElementById("button-displaytable").setAttribute("disabled", true); // Disable Display button
+    }
+    
+    // Check which display option user chose in order to call the corresponding function
+    if (selectedDisplayOption == "List: Excel File") {
+      retrieveDataForUploadedFile();
+    } else if (selectedDisplayOption == "List: All Lines") {
+      retrieveDataForListTable();
+    } else if (selectedDisplayOption == "List: Event Lines") {
+      retrieveDataForListTable();
+    } else if (selectedDisplayOption == "GroupBy: Location") {
+      retrieveDataforGroupByLocationTable();
+    } else if (selectedDisplayOption.includes("Summary:")) {
+      retrieveDataforSummaryTable();
+    }
+}
+
 function eventCriteriaDropdownClicked(event) {
   if (datasetArray.length > 0){ // That means the excel file has been uploaded
     if (event.target.parentNode.classList.contains('visible'))
