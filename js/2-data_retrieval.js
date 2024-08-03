@@ -41,7 +41,7 @@ function saveContentToFile() {
   enteredEvents = helperSetBeaklineCharacter(enteredEvents); // Replace all \n with <br> as the code currently depends on that
 
   // CREATE ARRAY FROM INPUT
-  var userInput = [enteredDate, enteredLocation, enteredEvents, ""];
+  var userInput = [enteredDate, enteredLocation, enteredEvents];
 
   // VALIDATE USER INPUT AND SAVE TO FILE
   var validationResult = validateUserInputFormatAndData(datasetArray, userInput);
@@ -55,6 +55,15 @@ function saveContentToFile() {
     
     // Clear validity errors in case of any from previous save attemps attemps
     clearFileValidityError();
+
+    // Switch back to read mode
+    eventAppModeButtonClicked();
+
+    // Update top pane
+    retrieveDataForTopPane();
+
+    // Redisplay the table
+    retrieveDataForUploadedFile();
     
     // Download file as plain text
     var file = new Blob([datasetCSV], { type: "text/plain" });
@@ -68,15 +77,6 @@ function saveContentToFile() {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
     }, 0);
-
-    // Switch back to read mode
-    eventAppModeButtonClicked();
-
-    // Update top pane
-    retrieveDataForTopPane();
-
-    // Redisplay the tabel
-    retrieveDataForUploadedFile();
 
   } else {
     displayFileValidityError(validationResult);
