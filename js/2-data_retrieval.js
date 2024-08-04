@@ -10,8 +10,10 @@ function readContentFromFile(event) {
   setTimeout(() => { 
     datasetArray = helperCsvToArray(csvData);
 
-    // If file is valid then proceed with displaying the top pane otherwise advise user to look in the browser's console for errors
+    // Check if file format is valid 
     var validationResult = validateFileFormatAndData(datasetArray);
+
+    // If so then proceed with displaying the top pane otherwise advise user to look in the browser's console for errors
     if (validationResult == "No errors found.") {
       // Display Data in Top Pane
       retrieveDataForTopPane();
@@ -70,7 +72,7 @@ function saveContentToFile() {
     var a = document.createElement("a");
     var url = URL.createObjectURL(file);
     a.href = url;
-    a.download = "helloworld.csv";
+    a.download = "helloworld";
     document.body.appendChild(a);
     a.click();
     setTimeout(function () {
