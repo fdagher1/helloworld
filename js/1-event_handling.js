@@ -188,3 +188,6 @@ function eventCheckboxSelected(event) {
   event.target.parentElement.parentElement.parentElement.firstElementChild.innerText = textToSetInDropdown;
 }
 
+function eventInputDateChanged(event) {
+  console.log();
+}

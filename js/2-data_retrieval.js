@@ -72,7 +72,7 @@ function saveContentToFile() {
     var a = document.createElement("a");
     var url = URL.createObjectURL(file);
     a.href = url;
-    a.download = "helloworld";
+    a.download = "helloworld.csv";
     document.body.appendChild(a);
     a.click();
     setTimeout(function () {
