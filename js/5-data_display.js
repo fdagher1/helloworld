@@ -86,3 +86,8 @@ function displayDataInTable(columnHeaders, dataSetToDisplay) {
   }
   console.log(`displayDataInTable executed in: ${performance.now() - startTime} milliseconds`);
 }
+
+function updateUserInputForm(location, events) {
+  document.getElementById("input-location").value = location;
+  document.getElementById("input-events").value = events;
+}
