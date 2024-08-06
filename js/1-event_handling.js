@@ -63,36 +63,6 @@ function eventDarkModeButtonClicked() {
   }
 }
 
-function eventAppModeButtonClicked() {
-  if (darkModeBtnValue = document.getElementById("button-modetoggle").value == "Switch to Write Mode") { 
-    // Switch to Write mode
-    // Update element visibility
-    document.getElementById("filter-grid").style.display = "none";
-    document.getElementById("output-table").style.display = "none";
-    document.getElementById("input-grid").style.display = "grid";
-
-    // Update element visibility
-    document.getElementById("button-modetoggle").value = "Switch to Read Mode";
-    document.getElementById("input-date").valueAsDate = new Date((new Date(datasetArray[0][0])).setDate((new Date(new Date(datasetArray[0][0]))).getDate() + 1));
-    document.getElementById("input-location").value = "Washington DC_USA";
-    document.getElementById("input-events").value = "#Workout.\n";
-
-  } else { 
-    // Switch to Read mode
-    // Update element visibility
-    document.getElementById("filter-grid").style.display = "grid";
-    document.getElementById("output-table").style.display = "grid";
-    document.getElementById("input-grid").style.display = "none";
-
-    // Update element visibility
-    document.getElementById("button-modetoggle").value = "Switch to Write Mode";
-  }
-}
-
-function eventSaveButtonClicked() {
-  saveContentToFile();
-}
-
 function eventDisplayOptionSelected() {
     // Gather user inputs
     retrieveDataFromTopPane();
@@ -188,6 +158,43 @@ function eventCheckboxSelected(event) {
   event.target.parentElement.parentElement.parentElement.firstElementChild.innerText = textToSetInDropdown;
 }
 
+function eventAppModeButtonClicked() {
+  if (darkModeBtnValue = document.getElementById("button-modetoggle").value == "Switch to Write Mode") { 
+    // Switch to Write mode
+    // Update element visibility
+    document.getElementById("filter-grid").style.display = "none";
+    document.getElementById("output-table").style.display = "none";
+    document.getElementById("input-grid").style.display = "grid";
+
+    // Update element visibility
+    document.getElementById("button-modetoggle").value = "Switch to Read Mode";
+    document.getElementById("input-date").valueAsDate = new Date((new Date(datasetArray[0][0])).setDate((new Date(new Date(datasetArray[0][0]))).getDate() + 1));
+    document.getElementById("input-location").value = "Washington DC_USA";
+    document.getElementById("input-events").value = "#Workout.\n";
+
+  } else { 
+    // Switch to Read mode
+    // Update element visibility
+    document.getElementById("filter-grid").style.display = "grid";
+    document.getElementById("output-table").style.display = "grid";
+    document.getElementById("input-grid").style.display = "none";
+
+    // Update element visibility
+    document.getElementById("button-modetoggle").value = "Switch to Write Mode";
+  }
+}
+
+function eventSaveButtonClicked() {
+  saveContentToFile();
+}
+
 function eventInputDateChanged(event) {
-  console.log();
+  // Find the row with that date to get the corresponding location and event values to then set them in the user's input
+  var result = helperReturnRowThatMatchesDate(datasetArray, event.target.value)
+  if (result == "Date not found.") {
+    updateUserInputForm("Washington DC_USA", "#Workout.\n");
+  } else {
+    var retrievedEvent = helperSetBeaklineCharacter(result[2], "<br>tobackslashn");
+    updateUserInputForm(result[1], retrievedEvent);
+  }
 }
