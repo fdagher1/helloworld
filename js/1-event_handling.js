@@ -28,6 +28,7 @@ function eventUploadButtonClicked(event) {
 function eventDarkModeButtonClicked() {
   // If dark theme was not set, then set it
   if (darkModeBtnValue = document.getElementById("button-themetoggle").value == "Switch to Dark Theme") {
+    document.getElementById("textbox-password").classList.add("darkclass");
     document.getElementById("label-button-upload").classList.add("darkclass");
     document.getElementById("button-themetoggle").value = "Switch to Light Theme";
     document.getElementById("button-themetoggle").classList.add("darkclass");
@@ -45,6 +46,7 @@ function eventDarkModeButtonClicked() {
     document.getElementById("body").classList.add("darkclass");
   // otherwise, unset it
   } else {
+    document.getElementById("textbox-password").classList.remove("darkclass");
     document.getElementById("label-button-upload").classList.remove("darkclass");
     document.getElementById("button-themetoggle").value = "Switch to Dark Theme";
     document.getElementById("button-themetoggle").classList.remove("darkclass");
