@@ -102,8 +102,9 @@ async function saveContentToFile() {
   var url = URL.createObjectURL(file);
   a.href = url;
   a.download = "helloworld.csv";
+  document.body.appendChild(a);
   a.click();
-  setTimeout(function () {window.URL.revokeObjectURL(url);}, 0);
+  setTimeout(function () {document.body.removeChild(a); window.URL.revokeObjectURL(url);}, 0);
 }
 
 async function decrypt(encryptedCsvData) {
