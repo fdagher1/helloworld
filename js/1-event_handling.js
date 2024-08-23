@@ -168,11 +168,15 @@ function eventAppModeButtonClicked() {
     document.getElementById("output-table").style.display = "none";
     document.getElementById("input-grid").style.display = "grid";
 
-    // Update element visibility
+    // Update element values
     document.getElementById("button-modetoggle").value = "Switch to Read Mode";
     document.getElementById("input-date").valueAsDate = new Date((new Date(datasetArray[0][0])).setDate((new Date(new Date(datasetArray[0][0]))).getDate() + 1));
-    document.getElementById("input-location").value = "Washington DC_USA";
-    document.getElementById("input-events").value = "#Workout.\n";
+    var eventsToAdd = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][3], "<br>tobackslashn");
+    updateUserInputForm("Washington DC_USA", eventsToAdd);
+
+    var eventsToAdd = datasetArray[datasetArray.length-2][3]; 
+    eventsToAdd = helperSetBeaklineCharacter(eventsToAdd, "<br>tobackslashn");
+    updateUserInputForm("Washington DC_USA", eventsToAdd);
 
   } else { 
     // Switch to Read mode
@@ -181,7 +185,7 @@ function eventAppModeButtonClicked() {
     document.getElementById("output-table").style.display = "grid";
     document.getElementById("input-grid").style.display = "none";
 
-    // Update element visibility
+    // Update element values
     document.getElementById("button-modetoggle").value = "Switch to Write Mode";
   }
 }
@@ -193,9 +197,11 @@ function eventSaveButtonClicked() {
 function eventInputDateChanged(event) {
   // Find the row with that date to get the corresponding location and event values to then set them in the user's input
   var result = helperReturnRowThatMatchesDate(datasetArray, event.target.value)
-  if (result == "Date not found.") {
-    updateUserInputForm("Washington DC_USA", "#Workout.\n");
-  } else {
+  if (result == "Date not found.") { // If this is a new date, then insert new line
+    // Get the template to use from the dataset array, replacing all <br> back to \n 
+    var eventsToAdd = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][3], "<br>tobackslashn");
+    updateUserInputForm("Washington DC_USA", eventsToAdd);
+  } else { // If this is an existing date, then update
     var retrievedEvent = helperSetBeaklineCharacter(result[2], "<br>tobackslashn");
     updateUserInputForm(result[1], retrievedEvent);
   }
