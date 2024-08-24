@@ -89,22 +89,25 @@ async function saveContentToFile() {
   // Encrypt data
   var encryptedDatasetCSV = await encrypt(datasetCSV);
   
-  // Set file content type to create depending on whether it is encrypted or not  
+  // Set file content type depending on whether it is encrypted or not  
   if (enteredPassword == "") {
-    var blob = new Blob([encryptedDatasetCSV], { type: "text/plain" });
+    var contentType = "text/plain";
   } else {
-    var blob = new Blob([encryptedDatasetCSV], { type: "application/octet-stream" });
+    var contentType = "application/octet-stream";
   }
   
   // Save file
-  const file = new File([blob], "helloworld.csv");
-  var a = document.createElement("a");
+  var file = new Blob([encryptedDatasetCSV], { type: contentType });
+  var link = document.createElement("a");
   var url = URL.createObjectURL(file);
-  a.href = url;
-  a.download = "helloworld.csv";
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(function () {document.body.removeChild(a); window.URL.revokeObjectURL(url);}, 0);
+  link.href = url;
+  link.download = "helloworld.csv";
+  document.body.appendChild(link);
+  link.click();
+  setTimeout(function () {
+    document.body.removeChild(link); 
+    window.URL.revokeObjectURL(url);
+  }, 0);
 }
 
 async function decrypt(encryptedCsvData) {
