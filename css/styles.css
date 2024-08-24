@@ -3,7 +3,7 @@ input[type="file"] {
 }
 
 /*ALL USER INPUT ELEMENTS*/
-#label-button-upload, #button-themetoggle, #button-modetoggle, 
+#textbox-password, #label-button-upload, #button-themetoggle, #button-modetoggle, 
 #select-displayoption, #button-displaytable, #textbox-keyword,
 #input-date, #input-location, #input-events, #button-submit,
 .anchor {
