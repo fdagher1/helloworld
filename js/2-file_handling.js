@@ -96,6 +96,7 @@ async function saveContentToFile() {
     var contentType = "application/octet-stream";
   }
   
+  /*
   // Save file
   var file = new Blob([encryptedDatasetCSV], { type: contentType });
   var link = document.createElement("a");
@@ -108,6 +109,20 @@ async function saveContentToFile() {
     document.body.removeChild(link); 
     window.URL.revokeObjectURL(url);
   }, 0);
+  */
+
+      // Download file as plain text
+      var file = new Blob([encryptedDatasetCSV], { type: "text/plain" });
+      var a = document.createElement("a");
+      var url = URL.createObjectURL(file);
+      a.href = url;
+      a.download = "helloworld.csv";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+      }, 0);
 }
 
 async function decrypt(encryptedCsvData) {
