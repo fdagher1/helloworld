@@ -8,75 +8,14 @@
     <link rel="manifest" href="manifest.json">
 
     <!--adding an async tag can help the browser load without waiting for each script to finish execution first-->
+    <script src="js/1-event_handling.js"></script>
+    <script src="js/2-file_handling.js"></script>
+    <script src="js/3-data_retrieval.js"></script>
+    <script src="js/4-data_validity.js"></script>
+    <script src="js/5-data_display.js"></script>
+    <script src="js/6-helper_functions.js"></script>
     <script>
-      var datasetArray;
-
-      function helperCsvToArray(csvString) {
-        const rows = [];
-        let currentRow = [];
-        let currentField = '';
-        let insideQuotes = false;
-
-        for (let i = 0; i < csvString.length; i++) {
-            const char = csvString[i];
-            const nextChar = csvString[i + 1];
-            if (char === '"' && insideQuotes && nextChar === '"') { // Handle escaped quotes
-                currentField += '"';
-                i++; // Skip the next quote
-            } else if (char === '"') { // Toggle the insideQuotes flag
-                insideQuotes = !insideQuotes;
-            } else if (char === ',' && !insideQuotes) { // End of a field
-                currentRow.push(currentField);
-                currentField = '';
-            } else if (char === '\n' && !insideQuotes) { // End of a row
-                currentRow.push(currentField);
-                rows.push(currentRow);
-                currentRow = [];
-                currentField = '';
-            } else { // Regular character
-                if (char === '\n') { // Replace any \n, present at the end of each break line within a cell, with <br>, to remain compliant with my other code
-                  currentField += '<br>';
-                } else if (char === '\r') { // Ignore any \r, present at the end of each cell in the 4th column, as it's not needed
-                  // Don't do anything
-                } else if (char === '�') {
-                  currentField += "'";
-                } else {
-                  currentField += char;
-                }
-            }
-        }
-
-        // Add the last field and row, and remove the very first row as it only has the table headers
-        //currentRow.push(currentField);
-        //rows.push(currentRow);
-        rows.shift();
-        return rows;
-      }
-
-      async function readContentFromFile(event) {
-        // Get user entered password, if any
-        var enteredPassword = document.getElementById("textbox-password").value;
-
-        // Get file content
-        const file = event.target.files[0];
-        if (enteredPassword == "") {
-          var reader = await file.text();
-        } else {
-          var reader = await file.arrayBuffer();
-        }
-
-        // If password was entered then decrypt the content of the read file
-        if (enteredPassword == "") {
-          var decryptedCsvData = reader;
-        } else {
-          var decryptedCsvData = await decrypt(reader);
-        }
-        
-        // Convert content from string format to array
-        datasetArray = helperCsvToArray(decryptedCsvData);
-      }
-
-      async function eventSaveButtonClicked() {
+      async function eventSaveButtonClicked1() {
         // Get password
         var enteredPassword = document.getElementById("textbox-password").value; // Read password
         
@@ -102,66 +41,85 @@
           window.URL.revokeObjectURL(url);
         }, 0);
       }
-
-      async function encrypt(datasetCSV) {
-        // Get password
-        var enteredPassword = document.getElementById("textbox-password").value; // Read password
-
-        if (enteredPassword == "") {
-          return datasetCSV;
-        } else {
-          try {
-            // Convert the password to a key using PBKDF2
-            const iv = new Uint8Array(12);
-            const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode(enteredPassword), { name: 'PBKDF2' }, false, ['deriveBits', 'deriveKey']);
-            const key = await crypto.subtle.deriveKey({name: 'PBKDF2', salt: new Uint8Array(16), iterations: 100000, hash: 'SHA-256',}, keyMaterial, { name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
-              
-            // Encrypt the plaintext
-            const encodedPlaintext = new TextEncoder().encode(datasetCSV);
-            return await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encodedPlaintext);
-          } catch (err) {
-            displayFileValidityError('Encryption failed:', err.message);
-          }
-        }
-      } 
-    
-      async function decrypt(encryptedCsvData) {
-        // Get password
-        var enteredPassword = document.getElementById("textbox-password").value; // Read password
-        
-        if (enteredPassword == "") {
-          return encryptedCsvData;
-        } else {
-          try {
-            // Convert the password to a key using PBKDF2
-            const iv = new Uint8Array(12);
-            const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode(enteredPassword), { name: 'PBKDF2' }, false, ['deriveBits', 'deriveKey']);
-            const key = await crypto.subtle.deriveKey({name: 'PBKDF2', salt: new Uint8Array(16), iterations: 100000, hash: 'SHA-256',}, keyMaterial, { name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);    
-        
-            // Decrypt the ciphertext
-            const decryptedData = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, encryptedCsvData);
-            return new TextDecoder().decode(decryptedData);
-          } catch (err) {
-            displayFileValidityError('Decryption failed:', err.message);
-          }
-        }
-      }
-
     </script>
   </head>
 
   <body id="body" class="darkclass">
-
-    <div id="input-grid">
-      <div>
-        <label for="button-upload" id="label-button-upload" class="darkclass">Load File</label>
-        <input type=file name="files[]" id="button-upload" accept=".csv" onchange="readContentFromFile(event)">
-      </div>
+    
+    <div id="top-grid">   
       <div>
         <input type="password" id="textbox-password" placeholder="(Enter Password)" class="darkclass">
       </div>
       <div>
-        <input type="button" id="button-submit" class="darkclass" value="Save File" onclick="eventSaveButtonClicked()">
+        <label for="button-upload" id="label-button-upload" class="darkclass">Load File</label>
+        <input type=file name="files[]" id="button-upload" accept=".csv" onchange="eventUploadButtonClicked(event)">
+      </div>
+      <div>
+        <input type="button" id="button-themetoggle" class="darkclass" value="Switch to Light Theme" onclick="eventDarkModeButtonClicked()">
+      </div>
+      <div>
+        <input type="button" id="button-modetoggle" class="darkclass" value="Switch to Write Mode" disabled onclick="eventAppModeButtonClicked()">
+      </div>
+    </div><br/>
+
+    <div id="filter-grid" style="display: none;">
+      <div class="dropdown-criteria-list" id="yearDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
+        <span class="anchor">All Years</span>
+        <ul class="items" id="timeItems">
+          <li><input type="checkbox" onchange="eventCheckboxSelected()" />Place Holder </li>
+        </ul>
+      </div>
+      <div class="dropdown-criteria-list" id="locationDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
+        <span class="anchor">All Locations</span>
+        <ul class="items" id="locationItems">
+          <li><input type="checkbox" onchange="eventCheckboxSelected()" />Place Holder </li>
+        </ul>
+      </div>
+      <div class="dropdown-criteria-list" id="eventDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
+        <span class="anchor">All Events</span>
+        <ul class="items" id="eventItems">
+          <li><input type="checkbox" onchange="eventCheckboxSelected(event)" />Place Holder </li>
+        </ul>
+      </div>
+      <div>
+        <input type="text" id="textbox-keyword" class="darkclass" placeholder="(Search Criteria)" oninput="eventKeywordEntered()">
+      </div>
+      <div>
+        <select id="select-displayoption" class="darkclass" onchange="eventDisplayOptionSelected()">
+          <option value="Show All Lines">Show All Lines</option>
+        </select>
+      </div>
+      <div>
+        <input type="button" id="button-displaytable" class="darkclass" value="Display" onclick="eventDisplayButtonClicked()">
+      </div>
+    </div><br/>
+
+    <div id="output-table" style="display: none;">
+      <table>
+        <thead id="thead">
+          <tr>
+            <th style="font-weight:bold; color:red">Please upload your file!</th>
+          </tr>
+      </thead>
+        <tbody id="tbody">
+        </tbody>
+      </table>
+    </div>
+
+    <div id="input-grid" style="display: none;">
+      <div>
+        <div>
+          <input id="input-date" type="date" class="darkclass" onchange="eventInputDateChanged(event)">
+        </div>
+        <div>
+          <input id="input-location" type="text" class="darkclass">
+        </div>
+        <div>
+          <textarea id="input-events" rows="8" class="darkclass"></textarea>
+        </div>
+      </div>
+      <div>
+        <input type="button" id="button-submit" class="darkclass" value="Save File" onclick="eventSaveButtonClicked1()">
       </div>
     </div>
     
