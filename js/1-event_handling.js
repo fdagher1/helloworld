@@ -28,7 +28,6 @@ function eventUploadButtonClicked(event) {
 function eventDarkModeButtonClicked() {
   // If dark theme was not set, then set it
   if (darkModeBtnValue = document.getElementById("button-themetoggle").value == "Switch to Dark Theme") {
-    document.getElementById("textbox-password").classList.add("darkclass");
     document.getElementById("label-button-upload").classList.add("darkclass");
     document.getElementById("button-themetoggle").value = "Switch to Light Theme";
     document.getElementById("button-themetoggle").classList.add("darkclass");
@@ -46,7 +45,6 @@ function eventDarkModeButtonClicked() {
     document.getElementById("body").classList.add("darkclass");
   // otherwise, unset it
   } else {
-    document.getElementById("textbox-password").classList.remove("darkclass");
     document.getElementById("label-button-upload").classList.remove("darkclass");
     document.getElementById("button-themetoggle").value = "Switch to Dark Theme";
     document.getElementById("button-themetoggle").classList.remove("darkclass");
@@ -168,15 +166,11 @@ function eventAppModeButtonClicked() {
     document.getElementById("output-table").style.display = "none";
     document.getElementById("input-grid").style.display = "grid";
 
-    // Update element values
+    // Update element visibility
     document.getElementById("button-modetoggle").value = "Switch to Read Mode";
     document.getElementById("input-date").valueAsDate = new Date((new Date(datasetArray[0][0])).setDate((new Date(new Date(datasetArray[0][0]))).getDate() + 1));
-    var eventsToAdd = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][3], "<br>tobackslashn");
-    updateUserInputForm("Washington DC_USA", eventsToAdd);
-
-    var eventsToAdd = datasetArray[datasetArray.length-2][3]; 
-    eventsToAdd = helperSetBeaklineCharacter(eventsToAdd, "<br>tobackslashn");
-    updateUserInputForm("Washington DC_USA", eventsToAdd);
+    document.getElementById("input-location").value = "Washington DC_USA";
+    document.getElementById("input-events").value = "#Workout.\n";
 
   } else { 
     // Switch to Read mode
@@ -185,7 +179,7 @@ function eventAppModeButtonClicked() {
     document.getElementById("output-table").style.display = "grid";
     document.getElementById("input-grid").style.display = "none";
 
-    // Update element values
+    // Update element visibility
     document.getElementById("button-modetoggle").value = "Switch to Write Mode";
   }
 }
@@ -197,11 +191,9 @@ function eventSaveButtonClicked() {
 function eventInputDateChanged(event) {
   // Find the row with that date to get the corresponding location and event values to then set them in the user's input
   var result = helperReturnRowThatMatchesDate(datasetArray, event.target.value)
-  if (result == "Date not found.") { // If this is a new date, then insert new line
-    // Get the template to use from the dataset array, replacing all <br> back to \n 
-    var eventsToAdd = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][3], "<br>tobackslashn");
-    updateUserInputForm("Washington DC_USA", eventsToAdd);
-  } else { // If this is an existing date, then update
+  if (result == "Date not found.") {
+    updateUserInputForm("Washington DC_USA", "#Workout.\n");
+  } else {
     var retrievedEvent = helperSetBeaklineCharacter(result[2], "<br>tobackslashn");
     updateUserInputForm(result[1], retrievedEvent);
   }
