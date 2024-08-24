@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="https://fdagher1.github.io/helloworld/icon.png">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="manifest" href="manifest.json">
+
+    <!--adding an async tag can help the browser load without waiting for each script to finish execution first-->
+    <script>
+      function eventSaveButtonClicked() {
+        // Save file
+        var file = new Blob(["test"], { type: "text/plain" });
+        var link = document.createElement("a");
+        var url = URL.createObjectURL(file);
+        link.href = url;
+        link.download = "helloworld.csv";
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(function () {
+          document.body.removeChild(link); 
+          window.URL.revokeObjectURL(url);
+        }, 0);
+      }
+    </script>
+  </head>
+
+  <body id="body" class="darkclass">
+
+    <div id="input-grid">
+      <div>
+        <input type="button" id="button-submit" class="darkclass" value="Save File" onclick="eventSaveButtonClicked()">
+      </div>
+    </div>
+    
+    <div>
+      <table>
+        <tbody id="errorcontent">
+        </tbody>
+      </table>
+    </div>
+
+  </body>
+
+</html>
