@@ -9,9 +9,12 @@
 
     <!--adding an async tag can help the browser load without waiting for each script to finish execution first-->
     <script>
-      function eventSaveButtonClicked() {
+      async function eventSaveButtonClicked() {
+        // Generate content
+        var encryptedDatasetCSV = await encrypt("testtesttesttest");
+        
         // Save file
-        var file = new Blob(["test"], { type: "text/plain" });
+        var file = new Blob([encryptedDatasetCSV], { type: "text/plain" });
         var link = document.createElement("a");
         var url = URL.createObjectURL(file);
         link.href = url;
@@ -23,6 +26,10 @@
           window.URL.revokeObjectURL(url);
         }, 0);
       }
+
+      async function encrypt(datasetCSV) {
+        return datasetCSV;
+      } 
     </script>
   </head>
 
