@@ -64,10 +64,10 @@ async function saveContentToFile() {
   // SAVE FILE
   // Check if date already exists and if so update the dataset with the new values, otherwise insert line
   if (result == "Date not found.") {
-  // Add user input to the dataset
-  datasetArray.unshift(userInput); 
+    // Add user input to the dataset
+    datasetArray.unshift(userInput); 
   } else {
-  datasetArray = helperUpdateRowInDataset(datasetArray, userInput).slice();
+    datasetArray = helperUpdateRowInDataset(datasetArray, userInput).slice();
   }
   
   // Convert dataset to CSV and add headset
