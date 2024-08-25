@@ -25,6 +25,8 @@
         /*
         // CHECK IF OPERATION IS TO UPDATE EXISTING ENTRY OR TO ADD A NEW ONE
         var result = helperReturnRowThatMatchesDate(datasetArray, enteredDate)
+        */
+        var result = "Date not found.";
 
         // CREATE ARRAY FROM INPUT
         enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
@@ -39,7 +41,6 @@
           return;
         }
         
-
         // Check if date already exists and if so update the dataset with the new values, otherwise insert line
         if (result == "Date not found.") {
           // Add user input to the dataset
@@ -51,7 +52,6 @@
         // Convert dataset to CSV and add headset
         var datasetCSV = helperArrayToCSV(datasetArray); 
         datasetCSV = "Day,Locations,Events,Thoughts\n" + datasetCSV;
-        */
 
         // Encrypt data
         var encryptedDatasetCSV = await encrypt(JSON.stringify(datasetArray));
