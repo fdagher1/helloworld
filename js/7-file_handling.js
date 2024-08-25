@@ -61,7 +61,8 @@ async function saveContentToFile() {
     displayFileValidityError(validationResult);
     return;
   }
-  
+
+  // SAVE FILE
   // Check if date already exists and if so update the dataset with the new values, otherwise insert line
   if (result == "Date not found.") {
     // Add user input to the dataset
@@ -69,35 +70,35 @@ async function saveContentToFile() {
   } else {
     datasetArray = helperUpdateRowInDataset(datasetArray, userInput).slice();
   }
-
+  
   // Convert dataset to CSV and add headset
   var datasetCSV = helperArrayToCSV(datasetArray); 
   datasetCSV = "Day,Locations,Events,Thoughts\n" + datasetCSV;
-
-  // Encrypt data
-  var encryptedDatasetCSV = await encrypt(JSON.stringify(datasetArray));
-
-  /*
-  */
-
-  //enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
-  //var userInput = [enteredDate, enteredLocation, "#Workout.<br>"];
-  //encryptedDatasetCSV = datasetArray;
   
   // Clear validity errors in case of any from previous save attemps attemps
   clearFileValidityError();
+
+  // Switch back to read mode
+  eventAppModeButtonClicked();
+
+  // Update top pane
+  retrieveDataForTopPane();
+
+  // Redisplay the table
+  retrieveDataForUploadedFile();
+
+  // Encrypt data
+  var encryptedDatasetCSV = await encrypt(datasetCSV);
   
-  // Save file
   // Set file content type depending on whether it is encrypted or not  
   if (enteredPassword == "") {
-    var data = datasetArray;
     var contentType = "text/plain";
   } else {
-    var data = await encrypt(datasetArray);
     var contentType = "application/octet-stream";
   }
-
-  var file = new Blob([data], { type: contentType });
+  
+  // Save file
+  var file = new Blob([encryptedDatasetCSV], { type: contentType });
   var link = document.createElement("a");
   var url = URL.createObjectURL(file);
   link.href = url;
