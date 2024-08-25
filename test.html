@@ -22,12 +22,12 @@
         var enteredLocation = document.getElementById("input-location").value; // Read Location
         var enteredEvents = document.getElementById("input-events").value; // Read events
 
+        /*
         // CHECK IF OPERATION IS TO UPDATE EXISTING ENTRY OR TO ADD A NEW ONE
         var result = helperReturnRowThatMatchesDate(datasetArray, enteredDate)
 
         // CREATE ARRAY FROM INPUT
-        //enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
-        enteredDate = "Sun, 7/21/2024";
+        enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
         enteredEvents = helperSetBeaklineCharacter(enteredEvents, "backslashnto<br>"); // Replace all \n with <br> as the code currently depends on that
         var userInput = [enteredDate, enteredLocation, enteredEvents];
 
@@ -37,8 +37,7 @@
           displayFileValidityError(validationResult);
           return;
         }
-
-        // SAVE FILE
+        
         // Check if date already exists and if so update the dataset with the new values, otherwise insert line
         if (result == "Date not found.") {
           // Add user input to the dataset
@@ -50,31 +49,30 @@
         // Convert dataset to CSV and add headset
         var datasetCSV = helperArrayToCSV(datasetArray); 
         datasetCSV = "Day,Locations,Events,Thoughts\n" + datasetCSV;
+
+        // Encrypt data
+        var encryptedDatasetCSV = await encrypt(JSON.stringify(datasetArray));
+
+        */
+
+        enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
+        //var userInput = [enteredDate, enteredLocation, "#Workout.<br>"];
+        //encryptedDatasetCSV = datasetArray;
         
         // Clear validity errors in case of any from previous save attemps attemps
         clearFileValidityError();
-
-        // Switch back to read mode
-        eventAppModeButtonClicked();
-
-        // Update top pane
-        retrieveDataForTopPane();
-
-        // Redisplay the table
-        retrieveDataForUploadedFile();
-
-        // Encrypt data
-        var encryptedDatasetCSV = await encrypt(datasetCSV);
-        
-        // Set file content type depending on whether it is encrypted or not  
-        if (enteredPassword == "") {
-          var contentType = "text/plain";
-        } else {
-          var contentType = "application/octet-stream";
-        }
         
         // Save file
-        var file = new Blob([encryptedDatasetCSV], { type: contentType });
+        // Set file content type depending on whether it is encrypted or not  
+        if (enteredPassword == "") {
+          var data = datasetArray;
+          var contentType = "text/plain";
+        } else {
+          var data = await encrypt(datasetArray);
+          var contentType = "application/octet-stream";
+        }
+
+        var file = new Blob([data], { type: contentType });
         var link = document.createElement("a");
         var url = URL.createObjectURL(file);
         link.href = url;
@@ -85,7 +83,6 @@
           document.body.removeChild(link); 
           window.URL.revokeObjectURL(url);
         }, 0);
-      
       }
     </script>
   </head>
