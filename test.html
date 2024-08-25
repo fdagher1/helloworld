@@ -25,15 +25,16 @@
         /*
         // CHECK IF OPERATION IS TO UPDATE EXISTING ENTRY OR TO ADD A NEW ONE
         var result = helperReturnRowThatMatchesDate(datasetArray, enteredDate)
-        */
-        var result = "Date not found.";
 
         // CREATE ARRAY FROM INPUT
         enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
         enteredEvents = helperSetBeaklineCharacter(enteredEvents, "backslashnto<br>"); // Replace all \n with <br> as the code currently depends on that
         var userInput = [enteredDate, enteredLocation, enteredEvents];
+        */
 
-        
+        var result = "Date not found.";
+        enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
+        var userInput = [enteredDate, enteredLocation, "#Workout.<br>"];
         // VALIDATE USER INPUT ARRAY
         var validationResult = validateUserInputFormatAndData(datasetArray, userInput, result);
         if (validationResult != "No errors found.") {
