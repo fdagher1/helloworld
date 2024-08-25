@@ -22,17 +22,16 @@
         var enteredLocation = document.getElementById("input-location").value; // Read Location
         var enteredEvents = document.getElementById("input-events").value; // Read events
 
-        
-        /*
         // CHECK IF OPERATION IS TO UPDATE EXISTING ENTRY OR TO ADD A NEW ONE
         var result = helperReturnRowThatMatchesDate(datasetArray, enteredDate)
-
         
         // CREATE ARRAY FROM INPUT
         enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
+        enteredDate = "Sun, 7/21/2024";
         enteredEvents = helperSetBeaklineCharacter(enteredEvents, "backslashnto<br>"); // Replace all \n with <br> as the code currently depends on that
         var userInput = [enteredDate, enteredLocation, enteredEvents];
 
+        /*
         // VALIDATE USER INPUT ARRAY
         var validationResult = validateUserInputFormatAndData(datasetArray, userInput, result);
         if (validationResult != "No errors found.") {
