@@ -50,8 +50,8 @@ async function saveContentToFile() {
   var result = helperReturnRowThatMatchesDate(datasetArray, enteredDate)
   
   // CREATE ARRAY FROM INPUT
-  //enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
-  enteredDate = "Sun, 7/21/2024";
+  enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
+  //enteredDate = "Sun, 7/21/2024";
   enteredEvents = helperSetBeaklineCharacter(enteredEvents, "backslashnto<br>"); // Replace all \n with <br> as the code currently depends on that
   var userInput = [enteredDate, enteredLocation, enteredEvents];
   
