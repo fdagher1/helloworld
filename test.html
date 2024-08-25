@@ -22,11 +22,11 @@
         var enteredLocation = document.getElementById("input-location").value; // Read Location
         var enteredEvents = document.getElementById("input-events").value; // Read events
 
-        
+        /*
         // CHECK IF OPERATION IS TO UPDATE EXISTING ENTRY OR TO ADD A NEW ONE
         var result = helperReturnRowThatMatchesDate(datasetArray, enteredDate)
 
-        /*
+        
         // CREATE ARRAY FROM INPUT
         enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
         enteredEvents = helperSetBeaklineCharacter(enteredEvents, "backslashnto<br>"); // Replace all \n with <br> as the code currently depends on that
@@ -38,10 +38,6 @@
           displayFileValidityError(validationResult);
           return;
         }
-        */
-
-        enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
-        var userInput = [enteredDate, enteredLocation, "#Workout.<br>"];
         
         // Check if date already exists and if so update the dataset with the new values, otherwise insert line
         if (result == "Date not found.") {
@@ -51,9 +47,18 @@
           datasetArray = helperUpdateRowInDataset(datasetArray, userInput).slice();
         }
         
+
+
+        
         // Convert dataset to CSV and add headset
         var datasetCSV = helperArrayToCSV(datasetArray); 
         datasetCSV = "Day,Locations,Events,Thoughts\n" + datasetCSV;
+
+        */
+
+        enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
+        var userInput = [enteredDate, enteredLocation, "#Workout.<br>"];
+        datasetCSV = datasetArray;
 
         // Encrypt data
         var encryptedDatasetCSV = await encrypt(JSON.stringify(datasetArray));
