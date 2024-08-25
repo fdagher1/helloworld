@@ -30,17 +30,18 @@
         enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
         enteredEvents = helperSetBeaklineCharacter(enteredEvents, "backslashnto<br>"); // Replace all \n with <br> as the code currently depends on that
         var userInput = [enteredDate, enteredLocation, enteredEvents];
-        */
 
-        var result = "Date not found.";
-        enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
-        var userInput = [enteredDate, enteredLocation, "#Workout.<br>"];
         // VALIDATE USER INPUT ARRAY
         var validationResult = validateUserInputFormatAndData(datasetArray, userInput, result);
         if (validationResult != "No errors found.") {
           displayFileValidityError(validationResult);
           return;
         }
+        */
+
+        var result = "Date not found.";
+        enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
+        var userInput = [enteredDate, enteredLocation, "#Workout.<br>"];
         
         // Check if date already exists and if so update the dataset with the new values, otherwise insert line
         if (result == "Date not found.") {
