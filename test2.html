@@ -31,7 +31,7 @@
         enteredEvents = helperSetBeaklineCharacter(enteredEvents, "backslashnto<br>"); // Replace all \n with <br> as the code currently depends on that
         var userInput = [enteredDate, enteredLocation, enteredEvents];
 
-        /*
+        
         // VALIDATE USER INPUT ARRAY
         var validationResult = validateUserInputFormatAndData(datasetArray, userInput, result);
         if (validationResult != "No errors found.") {
@@ -46,6 +46,8 @@
         } else {
           datasetArray = helperUpdateRowInDataset(datasetArray, userInput).slice();
         }
+
+        /*
         
         // Convert dataset to CSV and add headset
         var datasetCSV = helperArrayToCSV(datasetArray); 
