@@ -128,7 +128,7 @@ function helperReturnRowThatMatchesDate(dataset, enteredDate) {
   var day = enteredDate.split("-")[2];
   var month = enteredDate.split("-")[1];
   var year = enteredDate.split("-")[0];
-  enteredDate =  month + "-" + day + "-" + year;
+  enteredDate =  month + "/" + day + "/" + year;
   
   // Check if date exists already and if so return that row
   for (const row of dataset) {
