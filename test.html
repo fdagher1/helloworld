@@ -46,14 +46,14 @@
         } else {
           datasetArray = helperUpdateRowInDataset(datasetArray, userInput).slice();
         }
-        */
-       
+        
         // Convert dataset to CSV and add headset
         var datasetCSV = helperArrayToCSV(datasetArray); 
         datasetCSV = "Day,Locations,Events,Thoughts\n" + datasetCSV;
+        */
 
         // Encrypt data
-        var encryptedDatasetCSV = await encrypt(datasetCSV);
+        var encryptedDatasetCSV = await encrypt(JSON.stringify(datasetArray));
         
         // Clear validity errors in case of any from previous save attemps attemps
         clearFileValidityError();
