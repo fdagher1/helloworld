@@ -22,10 +22,11 @@
         var enteredLocation = document.getElementById("input-location").value; // Read Location
         var enteredEvents = document.getElementById("input-events").value; // Read events
 
-        /*
+        
         // CHECK IF OPERATION IS TO UPDATE EXISTING ENTRY OR TO ADD A NEW ONE
         var result = helperReturnRowThatMatchesDate(datasetArray, enteredDate)
 
+        /*
         // CREATE ARRAY FROM INPUT
         enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
         enteredEvents = helperSetBeaklineCharacter(enteredEvents, "backslashnto<br>"); // Replace all \n with <br> as the code currently depends on that
@@ -39,7 +40,6 @@
         }
         */
 
-        var result = "Date not found.";
         enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
         var userInput = [enteredDate, enteredLocation, "#Workout.<br>"];
         
