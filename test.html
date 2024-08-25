@@ -16,8 +16,44 @@
     <script src="js/6-helper_functions.js"></script>
     <script>
       async function eventSaveButtonClicked1() {
-        // Get password
-        var enteredPassword = document.getElementById("textbox-password").value; // Read password
+        // GATHER USER INPUT    
+        var enteredPassword = document.getElementById("textbox-password").value; // Get user entered password, if any
+        var enteredDate = document.getElementById("input-date").value; // Read date
+        var enteredLocation = document.getElementById("input-location").value; // Read Location
+        var enteredEvents = document.getElementById("input-events").value; // Read events
+
+        // CHECK IF OPERATION IS TO UPDATE EXISTING ENTRY OR TO ADD A NEW ONE
+        var result = helperReturnRowThatMatchesDate(datasetArray, enteredDate)
+
+        // CREATE ARRAY FROM INPUT
+        enteredDate = helperSetDateFormat(enteredDate); // Convert it to format Mon, 12/1/2024
+        enteredEvents = helperSetBeaklineCharacter(enteredEvents, "backslashnto<br>"); // Replace all \n with <br> as the code currently depends on that
+        var userInput = [enteredDate, enteredLocation, enteredEvents];
+
+        // VALIDATE USER INPUT ARRAY
+        var validationResult = validateUserInputFormatAndData(datasetArray, userInput, result);
+        if (validationResult != "No errors found.") {
+          displayFileValidityError(validationResult);
+          return;
+        }
+
+        // Check if date already exists and if so update the dataset with the new values, otherwise insert line
+        if (result == "Date not found.") {
+          // Add user input to the dataset
+          datasetArray.unshift(userInput); 
+        } else {
+          datasetArray = helperUpdateRowInDataset(datasetArray, userInput).slice();
+        }
+
+        // Convert dataset to CSV and add headset
+        var datasetCSV = helperArrayToCSV(datasetArray); 
+        datasetCSV = "Day,Locations,Events,Thoughts\n" + datasetCSV;
+
+        // Encrypt data
+        var encryptedDatasetCSV = await encrypt(datasetCSV);
+        
+        // Clear validity errors in case of any from previous save attemps attemps
+        clearFileValidityError();
         
         // Save file
         // Set file content type depending on whether it is encrypted or not  
