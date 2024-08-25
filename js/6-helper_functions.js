@@ -182,7 +182,7 @@ function helperSetDateFormat(enteredDate) {
   var day = enteredDate.split("-")[2];
   var month = enteredDate.split("-")[1];
   var year = enteredDate.split("-")[0];
-  enteredDate =  month + "-" + day + "-" + year;
+  enteredDate =  month + "/" + day + "/" + year;
   enteredDate = new Date(enteredDate);
  
   //enteredDate = new Date(enteredDate.getTime(enteredDate) + 5 * 60 * 60 * 1000); // Add 5 hours as for some reason it thinks it's reading GMT even though the date entered doesn't say that
