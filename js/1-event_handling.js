@@ -27,41 +27,13 @@ function eventUploadButtonClicked(event) {
 
 function eventDarkModeButtonClicked() {
   // If dark theme was not set, then set it
-  if (darkModeBtnValue = document.getElementById("button-themetoggle").value == "Switch to Dark Theme") {
-    document.getElementById("textbox-password").classList.add("darkclass");
-    document.getElementById("label-button-upload").classList.add("darkclass");
-    document.getElementById("button-themetoggle").value = "Switch to Light Theme";
-    document.getElementById("button-themetoggle").classList.add("darkclass");
-    document.getElementById("button-modetoggle").classList.add("darkclass");
-    document.getElementById("select-displayoption").classList.add("darkclass");
-    document.getElementById("yearDropdownDiv").classList.add("darkclass");
-    document.getElementById("locationDropdownDiv").classList.add("darkclass");
-    document.getElementById("eventDropdownDiv").classList.add("darkclass");
-    document.getElementById("textbox-keyword").classList.add("darkclass");
-    document.getElementById("button-displaytable").classList.add("darkclass");
-    document.getElementById("input-date").classList.add("darkclass");
-    document.getElementById("input-location").classList.add("darkclass");
-    document.getElementById("input-events").classList.add("darkclass");
-    document.getElementById("button-submit").classList.add("darkclass");
-    document.getElementById("body").classList.add("darkclass");
+  if (darkModeBtnValue = document.getElementById("label-button-theme").innerText == "Switch to Dark Theme") {
+    document.getElementById("label-button-theme").innerText = "Switch to Light Theme";
+    document.getElementById("body").classList.remove("lightmode");
   // otherwise, unset it
   } else {
-    document.getElementById("textbox-password").classList.remove("darkclass");
-    document.getElementById("label-button-upload").classList.remove("darkclass");
-    document.getElementById("button-themetoggle").value = "Switch to Dark Theme";
-    document.getElementById("button-themetoggle").classList.remove("darkclass");
-    document.getElementById("button-modetoggle").classList.remove("darkclass");
-    document.getElementById("select-displayoption").classList.remove("darkclass");
-    document.getElementById("yearDropdownDiv").classList.remove("darkclass");
-    document.getElementById("locationDropdownDiv").classList.remove("darkclass");
-    document.getElementById("eventDropdownDiv").classList.remove("darkclass");
-    document.getElementById("textbox-keyword").classList.remove("darkclass");
-    document.getElementById("button-displaytable").classList.remove("darkclass");
-    document.getElementById("input-date").classList.remove("darkclass");
-    document.getElementById("input-location").classList.remove("darkclass");
-    document.getElementById("input-events").classList.remove("darkclass");
-    document.getElementById("button-submit").classList.remove("darkclass");
-    document.getElementById("body").classList.remove("darkclass");
+    document.getElementById("label-button-theme").innerText = "Switch to Dark Theme";
+    document.getElementById("body").classList.add("lightmode");
   }
 }
 
@@ -161,7 +133,7 @@ function eventCheckboxSelected(event) {
 }
 
 function eventAppModeButtonClicked() {
-  if (darkModeBtnValue = document.getElementById("button-modetoggle").value == "Switch to Write Mode") { 
+  if (darkModeBtnValue = document.getElementById("label-button-mode").innerText == "Switch to Write Mode") { 
     // Switch to Write mode
     // Update element visibility
     document.getElementById("filter-grid").style.display = "none";
@@ -169,7 +141,7 @@ function eventAppModeButtonClicked() {
     document.getElementById("input-grid").style.display = "grid";
 
     // Update element values
-    document.getElementById("button-modetoggle").value = "Switch to Read Mode";
+    document.getElementById("label-button-mode").innerText = "Switch to Read Mode";
     document.getElementById("input-date").valueAsDate = new Date((new Date(datasetArray[0][0])).setDate((new Date(new Date(datasetArray[0][0]))).getDate() + 1));
     var eventsToAdd = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][3], "<br>tobackslashn");
     updateUserInputForm("Washington DC_USA", eventsToAdd);
@@ -186,7 +158,7 @@ function eventAppModeButtonClicked() {
     document.getElementById("input-grid").style.display = "none";
 
     // Update element values
-    document.getElementById("button-modetoggle").value = "Switch to Write Mode";
+    document.getElementById("label-button-mode").innerText = "Switch to Write Mode";
   }
 }
 
