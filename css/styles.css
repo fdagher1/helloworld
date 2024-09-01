@@ -1,43 +1,68 @@
-input[type="file"] {
-  display: none;
+/*Colors*/
+:root{
+  --text-color: rgb(222, 222, 222);
+  --text-color-header: black;
+  --background-color: rgb(22, 22, 22);
+  --section-color: red;
+  --border-color: #1c87c9;
 }
 
-/*ALL USER INPUT ELEMENTS*/
-#textbox-password, #label-button-upload, #button-themetoggle, #button-modetoggle, 
-#select-displayoption, #button-displaytable, #textbox-keyword,
-#input-date, #input-location, #input-events, #button-submit,
-.anchor {
-  position: relative;
-  cursor: pointer;
-  display: inline-grid;
-  border: 1px solid #1c87c9;
-  height: 5vh;
-  width: 98vw;
-  font-family: Arial, Helvetica, sans-serif;
+.lightmode{
+  --text-color: rgb(22, 22, 22);
+  --text-color-header: white;
+  --background-color: rgb(222, 222, 222); 
+  --section-color: blue;
+  --border-color: #1c87c9;
+}
+
+body, 
+#textbox-password, #textbox-keyword, #select-displayoption, 
+#input-date, #input-location, #input-events {
+  background-color: var(--background-color);
+  color: var(--text-color);
   text-align: center;
   font-size: 17px;
 }
 
-.anchor, #label-button-upload {
+#label-header,
+#label-button-upload, #label-button-theme, #label-button-mode, #textbox-password, 
+#label-filters,
+.anchor, #select-displayoption, #label-button-display, #textbox-keyword, 
+#input-date, #input-location, #input-events, #label-button-submit
+{
+  position: relative;
+  cursor: pointer;
+  display: inline-grid;
+  border: 1px solid var(--border-color);
+  height: 4vh;
+  width: 98vw;
+}
+
+#label-header, #label-filters {
+  text-align: center;
+  font-size:xx-large;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text-color-header);
+  background-color: var(--section-color);
+}
+
+#label-header, 
+#label-button-upload, #label-button-theme, #label-button-mode, 
+#label-filters, #label-button-display,
+#label-button-submit,
+.anchor {
   display: flex;
   justify-content: center;
   align-items: center;
   font-family: Arial, Helvetica, sans-serif;
 }
 
-#input-events {
-  height: 60vh;
+#input-location, #input-events {
   text-align: left;
 }
 
-.lightclass {
-  background-color: rgb(222, 222, 222);
-  color: rgb(22, 22, 22);
-}
-
-.darkclass {
-  background-color: rgb(22, 22, 22);
-  color: rgb(222, 222, 222);
+#input-events {
+  height: 30vh;
 }
 
 td {

@@ -30,22 +30,25 @@
   <body id="body" class="darkclass">
     
     <div id="top-grid">   
+      <div><label id="label-header">Hello World</label></div>
       <div>
-        <input type="password" id="textbox-password" placeholder="(Enter Password)" class="darkclass">
+        <label for="button-themetoggle" id="label-button-theme" >Switch to Light Theme</label>
+        <input type="button" id="button-themetoggle" onclick="eventDarkModeButtonClicked()" hidden>
       </div>
       <div>
-        <label for="button-upload" id="label-button-upload" class="darkclass">Load File</label>
-        <input type=file name="files[]" id="button-upload" accept=".csv" onchange="eventUploadButtonClicked(event)">
+        <label for="button-modetoggle" id="label-button-mode" >Switch to Write Mode</label>
+        <input type="button" id="button-modetoggle" disabled onclick="eventAppModeButtonClicked()" hidden>
       </div>
+      <div><input type="password" id="textbox-password" placeholder="(Enter Password)"></div>
       <div>
-        <input type="button" id="button-themetoggle" class="darkclass" value="Switch to Light Theme" onclick="eventDarkModeButtonClicked()">
+        <label for="button-upload" id="label-button-upload" >Load File</label>
+        <input type=file name="files[]" id="button-upload" accept=".csv" hidden onchange="eventUploadButtonClicked(event)">
       </div>
-      <div>
-        <input type="button" id="button-modetoggle" class="darkclass" value="Switch to Write Mode" disabled onclick="eventAppModeButtonClicked()">
-      </div>
-    </div><br/>
+      <div><label id="label-filters"></label></div>
+    </div>
 
     <div id="filter-grid" style="display: none;">
+      
       <div class="dropdown-criteria-list" id="yearDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
         <span class="anchor">All Years</span>
         <ul class="items" id="timeItems">
@@ -64,24 +67,24 @@
           <li><input type="checkbox" onchange="eventCheckboxSelected(event)" />Place Holder </li>
         </ul>
       </div>
+      <div><input type="text" id="textbox-keyword" placeholder="(Search Criteria)" oninput="eventKeywordEntered()"></div>
       <div>
-        <input type="text" id="textbox-keyword" class="darkclass" placeholder="(Search Criteria)" oninput="eventKeywordEntered()">
-      </div>
-      <div>
-        <select id="select-displayoption" class="darkclass" onchange="eventDisplayOptionSelected()">
+        <select id="select-displayoption" onchange="eventDisplayOptionSelected()">
           <option value="Show All Lines">Show All Lines</option>
         </select>
       </div>
       <div>
-        <input type="button" id="button-displaytable" class="darkclass" value="Display" onclick="eventDisplayButtonClicked()">
+        <label for="button-displaytable" id="label-button-display" >Display</label>
+        <input type="button" id="button-displaytable" hidden onclick="eventDisplayButtonClicked()">
       </div>
-    </div><br/>
+      <div><label id="label-filters"></label></div>
+    </div>
 
-    <div id="output-table" style="display: none;">
+    <div id="output-table">
       <table>
         <thead id="thead">
           <tr>
-            <th style="font-weight:bold; color:red">Please upload your file!</th>
+            <th>Please upload your file!</th>
           </tr>
       </thead>
         <tbody id="tbody">
@@ -91,18 +94,13 @@
 
     <div id="input-grid" style="display: none;">
       <div>
-        <div>
-          <input id="input-date" type="date" class="darkclass" onchange="eventInputDateChanged(event)">
-        </div>
-        <div>
-          <input id="input-location" type="text" class="darkclass">
-        </div>
-        <div>
-          <textarea id="input-events" rows="8" class="darkclass"></textarea>
-        </div>
+        <div><input id="input-date" type="date" onchange="eventInputDateChanged(event)"></div>
+        <div><input id="input-location" type="text" ></div>
+        <div><textarea id="input-events" rows="8" ></textarea></div>
       </div>
       <div>
-        <input type="button" id="button-submit" class="darkclass" value="Save File" onclick="eventSaveButtonClicked()">
+        <label for="button-submit" id="label-button-submit" >Save File</label>
+        <input type="button" id="button-submit" hidden onclick="eventSaveButtonClicked()">
       </div>
     </div>
     
