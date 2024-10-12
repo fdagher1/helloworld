@@ -12,7 +12,7 @@ async function readContentFromFile(event) {
   datasetArray = helperCsvToArray(decryptedCsvData); // Convert content from string format to array
 
   // CHECK FILE VALIDITY
-  var validationResult = validateFileFormatAndData(datasetArray);
+  var validationResult = validateFileFormatAndData(datasetArray.slice(0,-2)); // Remove the last 2 lines before validating as they contain event data in wrong format
 
   // IF VALID THEN UPDATE APP, OTHERWISE DISPLAY ERROR
   if (validationResult == "No errors found.") {
