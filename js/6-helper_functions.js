@@ -45,8 +45,12 @@ function helperCsvToArray(csvString) {
 function helperArrayToCSV(datasetArray) {
   var datasetCSV = "";
   for (const row of datasetArray) {
-    for (const cell of row) {
-      datasetCSV += "\"" + cell + "\"" + ",";
+    for (const rowNumber in row) {
+      if (rowNumber != 2) {
+        datasetCSV += "\"" + row[rowNumber] + "\"" + ",";
+      } else {
+        datasetCSV += "\"" + row[rowNumber] + "\"";
+      }
     }
     datasetCSV += "\n";
   }

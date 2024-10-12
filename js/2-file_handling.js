@@ -49,12 +49,12 @@ async function saveContentToFile() {
 
   // CREATE FILE CONTENT
   if (result == "Date not found.") {
-    datasetArray.unshift(userInput);  // If date alreadt exists, insert user data as a new line
+    datasetArray.unshift(userInput);  // If date already exists, insert user data as a new line
   } else {
     datasetArray = helperUpdateRowInDataset(datasetArray, userInput).slice(); // Otherwise, update existing line
   }
   var datasetCSV = helperArrayToCSV(datasetArray); // Convert dataset to CSV 
-  datasetCSV = "Day,Locations,Events,Thoughts\n" + datasetCSV; // Add headset to CSV
+  datasetCSV = "Day,Locations,Events\n" + datasetCSV; // Add headset to CSV
   
   // SAVE FILE
   // Set file content type depending on whether it is encrypted or not  
