@@ -49,9 +49,7 @@ function eventDisplayOptionSelected() {
     }
     
     // Check which display option user chose in order to call the corresponding function
-    if (selectedDisplayOption == "List: Excel File") {
-      retrieveDataForUploadedFile();
-    } else if (selectedDisplayOption == "List: All Lines") {
+    if (selectedDisplayOption == "List: All Lines") {
       retrieveDataForListTable();
     } else if (selectedDisplayOption == "List: Event Lines") {
       retrieveDataForListTable();
@@ -143,10 +141,10 @@ function eventAppModeButtonClicked() {
     // Update element values
     document.getElementById("label-button-mode").innerText = "Switch to Read Mode";
     document.getElementById("input-date").valueAsDate = new Date((new Date(datasetArray[0][0])).setDate((new Date(new Date(datasetArray[0][0]))).getDate() + 1));
-    var eventsToAdd = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][3], "<br>tobackslashn");
+    var eventsToAdd = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn");
     updateUserInputForm("Washington DC_USA", eventsToAdd);
 
-    var eventsToAdd = datasetArray[datasetArray.length-2][3]; 
+    var eventsToAdd = datasetArray[datasetArray.length-2][2]; 
     eventsToAdd = helperSetBeaklineCharacter(eventsToAdd, "<br>tobackslashn");
     updateUserInputForm("Washington DC_USA", eventsToAdd);
 

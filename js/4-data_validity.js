@@ -21,7 +21,7 @@ function helperValidateLocation(locationString) {
 }
 
 // Returns a string confirming if eventCell is properly formatted (various different checks)
-function helperValidateEvent(eventCell, datasetArray) {
+function helperValidateEvent(eventCell, SliceddatasetArray) {
   // CHECK IF EVENT CELL IS BLANK
   if (eventCell === '') {
     return "The event cell is blank.";
@@ -48,7 +48,7 @@ function helperValidateEvent(eventCell, datasetArray) {
   }
 
   // CHECK IF THERE ARE EVENT TAGS THAT ARE NOT IN THE EVENT LIST
-  var eventsFromExcelFile = datasetArray[datasetArray.length-1][3].split(";"); // Retrieve the events list from the bottom cell
+  var eventsFromExcelFile = datasetArray[datasetArray.length-1][2].split(";"); // Retrieve the events list from the bottom cell
   // Check if there are any tags in the event cell that are missing from the list
   while (eventCell.includes("#")) { // Iterate over all the # entries in the same cell
     let new_eventCell = eventCell.slice(eventCell.indexOf("#")); // Remove anything before the first # in the cell
@@ -80,16 +80,16 @@ function helperValidateEvent(eventCell, datasetArray) {
 }
 
 // Validates the file input by calling all the validation helper functions
-function validateFileFormatAndData(datasetArray){
+function validateFileFormatAndData(SliceddatasetArray){
   let startTime = performance.now();
   let validationResult = "No errors found."; 
-  var previousCellDate = new Date(datasetArray[0][0]); // Used further down by the validity check code 
+  var previousCellDate = new Date(SliceddatasetArray[0][0]); // Used further down by the validity check code 
   
   // ITERATE OVER EVERY ROW TO INSPECT IT
-  for (let i = 0; i < datasetArray.length; i++) { 
+  for (let i = 0; i < SliceddatasetArray.length; i++) { 
     
     // CHECK THAT DATES ARE IN DESCENDING ORDER
-    var currentCellDate = new Date(datasetArray[i][0]); 
+    var currentCellDate = new Date(SliceddatasetArray[i][0]); 
     if (i == 0){ 
       // Do nothing as that means we're still in the first row and it's too early to check
     } else {
@@ -102,7 +102,7 @@ function validateFileFormatAndData(datasetArray){
     previousCellDate = currentCellDate;
 
     // CHECK THAT LOCATIONS HAVE UNDERSCORES IN THEM
-    validationResult = helperValidateLocation(datasetArray[i][1]);
+    validationResult = helperValidateLocation(SliceddatasetArray[i][1]);
     if (validationResult != "No errors found.") {
       validationResult = validationResult + " Row: " + ++i;
       break;
@@ -113,7 +113,7 @@ function validateFileFormatAndData(datasetArray){
     // 2- ends with a break line,
     // 3- has at least 1 hashtag, and
     // 4- all its hashtags are in the list
-    validationResult = helperValidateEvent(datasetArray[i][2], datasetArray);
+    validationResult = helperValidateEvent(SliceddatasetArray[i][2], SliceddatasetArray);
     if (validationResult != "No errors found.") {
       validationResult = validationResult + " Row: " + ++i;
       break;

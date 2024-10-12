@@ -35,7 +35,7 @@ function retrieveDataForTopPane() {
 
   // RETRIEVE THE EVENTS LIST
   // First populate it from the provided list
-  allDropdownValues[2] = datasetArray[datasetArray.length-1][3].split(";"); 
+  allDropdownValues[2] = datasetArray[datasetArray.length-1][2].split(";"); 
   
   // Then remove the last line as it is blank
   allDropdownValues[2].pop(); 
@@ -60,7 +60,7 @@ function retrieveDataForTopPane() {
   }*/
   
   // RETRIEVE THE DISPLAY OPTIONS LIST
-  var displayOptionsText = ["List: All Lines", "List: Event Lines", "List: Excel File", "GroupBy: Location"]; // This holds the options to display in the Display Options dropdown 
+  var displayOptionsText = ["List: All Lines", "List: Event Lines", "GroupBy: Location"]; // This holds the options to display in the Display Options dropdown 
   var eventCategories = []; // This will hold the variable event categories to be used in the display
   for (eventName of allDropdownValues[2]) {
     var eventCategory = eventName.split("_")[0];
