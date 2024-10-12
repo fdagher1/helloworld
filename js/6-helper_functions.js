@@ -54,7 +54,7 @@ function helperArrayToCSV(datasetArray) {
     }
     datasetCSV += "\n";
   }
-  datasetCSV = datasetCSV.substring(0, datasetCSV.length - 2); // Remove the last command breakline
+  datasetCSV = datasetCSV.substring(0, datasetCSV.length - 1); // Remove the last command breakline
   datasetCSV = datasetCSV + "\n"; // Add a breakline to match the current file structure
   datasetCSV = datasetCSV.replace(/<br>/g, "\n"); // Replace all <br> entries with \n instead
   return datasetCSV;
