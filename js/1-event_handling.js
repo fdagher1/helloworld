@@ -141,13 +141,13 @@ function eventAppModeButtonClicked() {
     // Update element values
     document.getElementById("label-button-mode").innerText = "Switch to Read Mode";
     document.getElementById("input-date").valueAsDate = new Date((new Date(datasetArray[0][0])).setDate((new Date(new Date(datasetArray[0][0]))).getDate() + 1));
-    var eventsToAdd = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn");
-    updateUserInputForm("Washington DC_USA", eventsToAdd);
+    //var eventsToAdd = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn");
+    //updateUserInputForm("Washington DC_USA", eventsToAdd);
 
-    var eventsToAdd = datasetArray[datasetArray.length-2][2]; 
-    eventsToAdd = helperSetBeaklineCharacter(eventsToAdd, "<br>tobackslashn");
-    updateUserInputForm("Washington DC_USA", eventsToAdd);
-
+    //var eventsToAdd = datasetArray[datasetArray.length-2][2]; 
+    var locationToDisplay = "Arlington VA_USA, Washington DC_USA";
+    var eventLinesToDisplay = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn");
+    updateUserInputForm(locationToDisplay, eventLinesToDisplay);
   } else { 
     // Switch to Read mode
     // Update element visibility
@@ -169,8 +169,9 @@ function eventInputDateChanged(event) {
   var result = helperReturnRowThatMatchesDate(datasetArray, event.target.value)
   if (result == "Date not found.") { // If this is a new date, then insert new line
     // Get the template to use from the dataset array, replacing all <br> back to \n 
-    var eventsToAdd = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][3], "<br>tobackslashn");
-    updateUserInputForm("Washington DC_USA", eventsToAdd);
+    var locationToDisplay = "Arlington VA_USA, Washington DC_USA";
+    var eventLinesToDisplay = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][3], "<br>tobackslashn");
+    updateUserInputForm(locationToDisplay, eventLinesToDisplay);
   } else { // If this is an existing date, then update
     var retrievedEvent = helperSetBeaklineCharacter(result[2], "<br>tobackslashn");
     updateUserInputForm(result[1], retrievedEvent);
