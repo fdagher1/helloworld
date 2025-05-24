@@ -7,6 +7,7 @@ var datasetAfterKeywordFilter = []; // Holds the data to display in the output a
 var allDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
 var allDisplayOptions = []; // All Display Options in the Display Options dropdown
 var citiesListedInLocationDropdown = []; // All city names in the Location dropdown. Not used currently, and it can be integrated in the allDropdownValues at some point.
+var defaultCountrySuffix; // Holds the default country name to append to locations when a _country is not entered
 
 // Input from webpage
 var selectedDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
@@ -138,16 +139,17 @@ function eventAppModeButtonClicked() {
     document.getElementById("output-table").style.display = "none";
     document.getElementById("input-grid").style.display = "grid";
 
-    // Get default location and event values
+    // Get default values for location, country to append, and event, from the file
      var defaultValues = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn");
     defaultValues = defaultValues.split("\n");
+    var defaultLocation = defaultValues[0]; // First line has the locations
+    defaultCountrySuffix = defaultValues[1]; // Second line has the default country suffix
+    var defaultEventLine = defaultValues.slice(2).join("\n"); // Afterwards it's the default events
 
     // Display the default location and event values
     document.getElementById("label-button-mode").innerText = "Switch to Read Mode";
     document.getElementById("input-date").valueAsDate = new Date((new Date(datasetArray[0][0])).setDate((new Date(new Date(datasetArray[0][0]))).getDate() + 1));
-    var locationToDisplay = defaultValues[0];
-    var eventLinesToDisplay = defaultValues.slice(1).join("\n");
-    updateUserInputForm(locationToDisplay, eventLinesToDisplay);
+    updateUserInputForm(defaultLocation, defaultEventLine);
   } else { 
     // Switch to Read mode
     // Update element visibility

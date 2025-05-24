@@ -124,11 +124,25 @@ function validateFileFormatAndData(SliceddatasetArray){
   return validationResult;
 }
 
+// Adds the default country to add to all locations that don't have a country suffix
+function helperCheckCountrySuffixAndAddIfMissing(locationString) {
+  let rowLocationValueArray = locationString.split(","); // Get the city_country values in an array
+  for (let j = 0; j < rowLocationValueArray.length; j++) { // Iterate over every city_country that day
+    var cityCountrySplitArray = rowLocationValueArray[j].split("_"); // Split city_country into an array
+    if (cityCountrySplitArray.length != 2) { // If there's no underscore
+      rowLocationValueArray[j] = rowLocationValueArray[j] + defaultCountrySuffix; // Add 
+    }
+  }
+  
+  locationString = rowLocationValueArray.toString();
+  return locationString;
+}
+
 // Validates the user input by calling all the validation helper functions
 function validateUserInputFormatAndData(datasetArray, userInput, result) {
   var validationResult = "No errors found.";
 
-  // CHECK THAT THE DATE IS IN INCREMENTAL ORDER BUT ONLY IF IT"S NOT ALREADY THERE
+  // CHECK THAT THE DATE IS IN INCREMENTAL ORDER BUT ONLY IF IT'S NOT ALREADY THERE
   if (result == "Date not found.") {
     var latestDateInFile = new Date(datasetArray[0][0]);
     var dateFromUserInput = new Date(userInput[0]);

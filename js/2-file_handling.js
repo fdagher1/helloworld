@@ -31,12 +31,18 @@ async function readContentFromFile(event) {
 
 async function saveContentToFile() {
   // GATHER USER INPUT AND CREATE CORRESPONDING ARRAY
+  // Gather user input
   var enteredPassword = document.getElementById("textbox-password").value; // Get user entered password, if any
   var enteredDate = document.getElementById("input-date").value; // Read date
   var enteredLocation = document.getElementById("input-location").value; // Read Location
   var enteredEvents = document.getElementById("input-events").value; // Read events
+  
+  // Format input correctly
   enteredDate = helperSetDateFormat(enteredDate); // Convert date to format Mon, 12/1/2024
+  enteredLocation = helperCheckCountrySuffixAndAddIfMissing(enteredLocation); // Add a default country if underscore is missing 
   enteredEvents = helperSetBeaklineCharacter(enteredEvents, "backslashnto<br>"); // Replace all \n with <br> as the code currently depends on that
+  
+  // Create array from properly formatted input
   var userInput = [enteredDate, enteredLocation, enteredEvents];
 
   // VALIDATE USER INPUT ARRAY
