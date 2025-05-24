@@ -170,13 +170,13 @@ function eventInputDateChanged(event) {
   // Find the row with that date to get the corresponding location and event values to then set them in the user's input
   var result = helperReturnRowThatMatchesDate(datasetArray, event.target.value)
   if (result == "Date not found.") { // If this is a new date, then insert new line
-    // Get default location and event values
+    // Get default values for location and event from the file
      var defaultValues = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn");
     defaultValues = defaultValues.split("\n");
+        var locationToDisplay = defaultValues[0];
+    var eventLinesToDisplay = defaultValues.slice(2).join("\n");
 
     // Display the default location and event values
-    var locationToDisplay = defaultValues[0];
-    var eventLinesToDisplay = defaultValues.slice(1).join("\n");
     updateUserInputForm(locationToDisplay, eventLinesToDisplay);
   } else { // If this is an existing date, then update
     var retrievedEvent = helperSetBeaklineCharacter(result[2], "<br>tobackslashn");
