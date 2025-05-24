@@ -138,15 +138,15 @@ function eventAppModeButtonClicked() {
     document.getElementById("output-table").style.display = "none";
     document.getElementById("input-grid").style.display = "grid";
 
-    // Update element values
+    // Get default location and event values
+     var defaultValues = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn");
+    defaultValues = defaultValues.split("\n");
+
+    // Display the default location and event values
     document.getElementById("label-button-mode").innerText = "Switch to Read Mode";
     document.getElementById("input-date").valueAsDate = new Date((new Date(datasetArray[0][0])).setDate((new Date(new Date(datasetArray[0][0]))).getDate() + 1));
-    //var eventsToAdd = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn");
-    //updateUserInputForm("Washington DC_USA", eventsToAdd);
-
-    //var eventsToAdd = datasetArray[datasetArray.length-2][2]; 
-    var locationToDisplay = "Arlington VA_USA, Washington DC_USA";
-    var eventLinesToDisplay = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn");
+    var locationToDisplay = defaultValues[0];
+    var eventLinesToDisplay = defaultValues.slice(1).join("\n");
     updateUserInputForm(locationToDisplay, eventLinesToDisplay);
   } else { 
     // Switch to Read mode
@@ -168,9 +168,13 @@ function eventInputDateChanged(event) {
   // Find the row with that date to get the corresponding location and event values to then set them in the user's input
   var result = helperReturnRowThatMatchesDate(datasetArray, event.target.value)
   if (result == "Date not found.") { // If this is a new date, then insert new line
-    // Get the template to use from the dataset array, replacing all <br> back to \n 
-    var locationToDisplay = "Arlington VA_USA, Washington DC_USA";
-    var eventLinesToDisplay = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][3], "<br>tobackslashn");
+    // Get default location and event values
+     var defaultValues = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn");
+    defaultValues = defaultValues.split("\n");
+
+    // Display the default location and event values
+    var locationToDisplay = defaultValues[0];
+    var eventLinesToDisplay = defaultValues.slice(1).join("\n");
     updateUserInputForm(locationToDisplay, eventLinesToDisplay);
   } else { // If this is an existing date, then update
     var retrievedEvent = helperSetBeaklineCharacter(result[2], "<br>tobackslashn");
