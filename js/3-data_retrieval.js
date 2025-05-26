@@ -34,31 +34,25 @@ function retrieveDataForTopPane() {
   citiesListedInLocationDropdown.sort();
 
   // RETRIEVE THE EVENTS LIST
-  // First populate it from the provided list
-  allDropdownValues[2] = datasetArray[datasetArray.length-1][2].split(";"); 
-  
-  // Then remove the last line as it is blank
-  allDropdownValues[2].pop(); 
+  allDropdownValues[2] = datasetArray[datasetArray.length-1][2].split(";"); // First populate it from the provided list
+  allDropdownValues[2].pop(); // Then remove the last line as it is blank
 
-  // Then remove the breakline characters at the end of each entry as well as the events with -Sum or -DSum since we don't need to display them
-  var indexToRemove = [];
-  var currentArrayLength = allDropdownValues[2].length; // This is needed as the array may shrink down in size during cleanup
-  for (let i=0; i < currentArrayLength; i++) {
+  // Then remove the breakline characters at the end of each entry as well as the events with ignore in them
+  for (let i=0; i < allDropdownValues[2].length; i++) {
     if (allDropdownValues[2][i].includes("<br>")) {
       allDropdownValues[2][i] = allDropdownValues[2][i].split("<br>")[1];
     }
   }
-  // Then remove the events with -Sum and -DSum in their name since we dont need to display them. 
-  // Commenting this out for now as the Summary view picks its columns from these same dropdown values, 
-  // and so by removing these from here they are being removed from the Summary view, which defeats their purpose
-  // one solution is to have another variable holding these values and which the Summary section references 
-  /*for (let i=0; i < currentArrayLength; i++) {
-    if (allDropdownValues[2][i].includes("-Sum") || allDropdownValues[2][i].includes("-DSum")) {
-      allDropdownValues[2].splice(i, 1);
-      currentArrayLength--;
-    }
-  }*/
   
+  // Then remove the events with Ignore_ in their name since we dont need them 
+  let cleanupArray = [];
+  for (let i=0; i < allDropdownValues[2].length; i++) {
+    if (!allDropdownValues[2][i].includes("Ignore_")) {
+      cleanupArray.push(allDropdownValues[2][i]);
+    }
+  }
+  allDropdownValues[2] = cleanupArray.slice(); // Set existing array equal to the new/cleaned one
+
   // RETRIEVE THE DISPLAY OPTIONS LIST
   var displayOptionsText = ["List: All Lines", "List: Event Lines", "GroupBy: Location"]; // This holds the options to display in the Display Options dropdown 
   var eventCategories = []; // This will hold the variable event categories to be used in the display
@@ -198,7 +192,7 @@ function retrieveDataforGroupByLocationTable() {
   }
   
   // Iterate over content of newly defined location array in order to query it for matches
-  var groupbyDataToDisplay = {}; // Dictionary that will have country names has keys, and number of occurences as values, to display in output
+  var groupbyDataToDisplay = {}; // Dictionary that will have country names as keys, and number of occurences as values, to display in output
   for (var location of selectedDropdownValues[1]) {
     for (i = 0; i < datasetAfterKeywordFilter.length; i++) {
       if (datasetAfterKeywordFilter[i][1].includes(location) && !datasetAfterKeywordFilter[i][1].includes("(" + location) && !datasetAfterKeywordFilter[i][1].includes(location + ")")) {
