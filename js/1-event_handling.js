@@ -44,9 +44,9 @@ function eventDisplayOptionSelected() {
 
     // Check which display option user chose in order to enable or disable the Display button
     if (selectedDisplayOption.includes("List")) {
-      document.getElementById("button-displaytable").removeAttribute("disabled"); // Enable Display button
+      //document.getElementById("button-displaytable").removeAttribute("disabled"); // Enable Display button
     } else {
-      document.getElementById("button-displaytable").setAttribute("disabled", true); // Disable Display button
+      //document.getElementById("button-displaytable").setAttribute("disabled", true); // Disable Display button
     }
     
     // Check which display option user chose in order to call the corresponding function
@@ -70,7 +70,7 @@ function eventCriteriaDropdownClicked(event) {
   }
 }
 
-function eventDisplayButtonClicked() {
+function helperUpdateTable() {
   // Gather user inputs
   retrieveDataFromTopPane();
 
@@ -129,6 +129,9 @@ function eventCheckboxSelected(event) {
 
   // Update the dropdown value
   event.target.parentElement.parentElement.parentElement.firstElementChild.innerText = textToSetInDropdown;
+
+  // Update the table accordingly (i.e., as if the user hit the Display button)
+  helperUpdateTable();
 }
 
 function eventAppModeButtonClicked() {
