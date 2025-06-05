@@ -2,7 +2,8 @@ function retrieveDataForTopPane() {
   let startTime = performance.now();
   // RETRIEVE THE YEARS LIST
   var currentYear = new Date().getFullYear();
-  for (var year = currentYear; year >= 1984; year--) {
+  var startingYear = new Date(datasetArray[datasetArray.length-1][0]).getFullYear();
+  for (var year = currentYear; year >= startingYear; year--) {
     allDropdownValues[0].push(year.toString());
   }
 
@@ -13,31 +14,22 @@ function retrieveDataForTopPane() {
     // Iterate over every city_country that day
     for (let j = 0; j < rowLocationValueArray.length; j++) {
       var cityCountrySplitArray = rowLocationValueArray[j].split("_"); // Split city and country into an array
-      if (cityCountrySplitArray.length != 0) {
 
-      }
-
-      // Add city name to array
-      let cityName = cityCountrySplitArray[0].trim();
-      if (!cityName.includes("(") && !citiesListedInLocationDropdown.includes(cityName)) { 
-          citiesListedInLocationDropdown.push(cityName); 
-      }
-
-      // Add country name to array
+      // Add country name to array if not already there
       let countryName = cityCountrySplitArray[1].trim();
       if (!countryName.includes(")") && !allDropdownValues[1].includes(countryName)) {
         allDropdownValues[1].push(countryName);
       }
+      
     }
   }
   allDropdownValues[1].sort();
-  citiesListedInLocationDropdown.sort();
 
   // RETRIEVE THE EVENTS LIST
   allDropdownValues[2] = datasetArray[datasetArray.length-1][2].split(";"); // First populate it from the provided list
   allDropdownValues[2].pop(); // Then remove the last line as it is blank
 
-  // Then remove the breakline characters at the end of each entry as well as the events with ignore in them
+  // Then remove the breakline characters at the end of each entry
   for (let i=0; i < allDropdownValues[2].length; i++) {
     if (allDropdownValues[2][i].includes("<br>")) {
       allDropdownValues[2][i] = allDropdownValues[2][i].split("<br>")[1];
@@ -54,7 +46,7 @@ function retrieveDataForTopPane() {
   allDropdownValues[2] = cleanupArray.slice(); // Set existing array equal to the new/cleaned one
 
   // RETRIEVE THE DISPLAY OPTIONS LIST
-  var displayOptionsText = ["List: All Lines", "List: Event Lines", "GroupBy: Location"]; // This holds the options to display in the Display Options dropdown 
+  var displayOptionsText = ["List: All Lines", "List: Event Lines", "GroupBy: Country", "GroupBy: State", "GroupBy: City"]; // This holds the options to display in the Display Options dropdown 
   var eventCategories = []; // This will hold the variable event categories to be used in the display
   for (eventName of allDropdownValues[2]) {
     var eventCategory = eventName.split("_")[0];
@@ -97,7 +89,7 @@ function retrieveDataFromTopPane() {
         }
       }
     }
-``}
+  }
 
   // If any of the selections are blank then fill the array with all of options (as if they were all selected)
   for (let i=0; i < selectedDropdownValues.length; i++) {
@@ -180,29 +172,61 @@ function retrieveDataForListTable() {
 
 }
 
-function retrieveDataforGroupByLocationTable() {   
+function retrieveDataForGroupByTable() {
   let startTime = performance.now();
 
-  // Filter dataset to only include lines from the 3 dropdown criteria and 1 search word
+  // FILTER DATASET TO ONLY INCLUDE LINES FROM THE 3 DROPDOWN CRITERIA AND 1 SEARCH WORD
   datasetBeforeKeywordFilter = helperReturnRowsThatMatchDropdowns(datasetArray, selectedDropdownValues[0], selectedDropdownValues[1], selectedDropdownValues[2]); 
-  if (!searchWord == "") {
-    datasetAfterKeywordFilter = helperReturnRowsThatMatchSearchWord(datasetBeforeKeywordFilter, searchWord).slice(0);
-  } else {
+  if (searchWord == "") {
     datasetAfterKeywordFilter = datasetBeforeKeywordFilter.slice();
+  } else {
+    datasetAfterKeywordFilter = helperReturnRowsThatMatchSearchWord(datasetBeforeKeywordFilter, searchWord).slice(0);
   }
   
-  // Iterate over content of newly defined location array in order to query it for matches
-  var groupbyDataToDisplay = {}; // Dictionary that will have country names as keys, and number of occurences as values, to display in output
-  for (var location of selectedDropdownValues[1]) {
-    for (i = 0; i < datasetAfterKeywordFilter.length; i++) {
-      if (datasetAfterKeywordFilter[i][1].includes(location) && !datasetAfterKeywordFilter[i][1].includes("(" + location) && !datasetAfterKeywordFilter[i][1].includes(location + ")")) {
-        helperIncrementCount(location, groupbyDataToDisplay);
+  // RETRIEVE THE LOCATIONS LIST
+  var countOfLocationDictionaryArray = [{}, {}, {}]; // Array of dictionaries that will have city, state, and country counts in it
+  // Iterate over every row in the table
+  for (let i = 0; i < datasetAfterKeywordFilter.length; i++) {
+    let rowLocationValueArray = datasetAfterKeywordFilter[i][1].split(","); // Place each location from that day in an array
+    // Iterate over every city_country entry of the array
+    var locationsAddedForThisDay = [[], [], []]; // Used to capture the locations added for a given day, in order not to over count them that same day
+    for (let j = 0; j < rowLocationValueArray.length; j++) {
+      var cityCountrySplitArray = rowLocationValueArray[j].split("_"); // Split city and country into an array
+
+      // Add city name to dictionary if not already there, otherwise increment count
+      let cityName = cityCountrySplitArray[0].trim();
+      if (!cityName.includes("(") && !locationsAddedForThisDay[0].includes(cityName)) { 
+          helperIncrementCount(cityName, countOfLocationDictionaryArray[0]);
+          locationsAddedForThisDay[0].push(cityName);
+      }
+
+      // Add country name to dictionary if not already there, otherwise increment count
+      let countryName = cityCountrySplitArray[1].trim();
+      if (!countryName.includes(")") && !locationsAddedForThisDay[2].includes(countryName)) {
+        helperIncrementCount(countryName, countOfLocationDictionaryArray[2]);
+        locationsAddedForThisDay[2].push(countryName);
+      }
+
+      // Add state name to dictionary if country is USA and state is not already there and country is US, otherwise increment count
+      defaultCountrySuffix = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn").split("\n")[1]; // Get default country suffix
+      if (countryName == defaultCountrySuffix.slice(1)) {
+        let stateName = helperSplitStringLastOccurrence(cityName, " ");
+        if(!locationsAddedForThisDay[1].includes(stateName)) {
+          helperIncrementCount(stateName, countOfLocationDictionaryArray[1]);
+          locationsAddedForThisDay[1].push(stateName);
+        }
       }
     }
   }
   
-  // Sort the array to have the countries with highest count first
-  groupbyDataToDisplay = helperReturnSortedArrayFromDictionary(groupbyDataToDisplay); 
+  // Check which display option the user selected in order to determine what to sort and then to output it 
+  if (selectedDisplayOption == "GroupBy: Country") {
+    groupbyDataToDisplay = helperReturnSortedArrayFromDictionary(countOfLocationDictionaryArray[2]);
+  } else if (selectedDisplayOption == "GroupBy: State") {
+    groupbyDataToDisplay = helperReturnSortedArrayFromDictionary(countOfLocationDictionaryArray[1]);
+  } else if (selectedDisplayOption == "GroupBy: City") {
+    groupbyDataToDisplay = helperReturnSortedArrayFromDictionary(countOfLocationDictionaryArray[0]);
+  }
   
   // Set the columnHeaders for use when displaying the table
   var columnHeaders = ["Locations", "Count"]; // To hold the column names for passing to the data display function

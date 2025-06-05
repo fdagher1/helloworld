@@ -2,7 +2,7 @@
 function helperValidateDate(date1, date2) { 
   date1 = new Date(date1);
   if (date2.toString() !== new Date(date1.setDate((new Date(date1)).getDate() + 1)).toString()) {
-    return "The dates are not in descending order.";
+    return "The dates are not in a chronologically descending order.";
   } else {
     return "No errors found.";
   }

@@ -6,8 +6,8 @@ var datasetBeforeKeywordFilter = []; // Holds the data to display in the output 
 var datasetAfterKeywordFilter = []; // Holds the data to display in the output after the keyword filter is applied
 var allDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
 var allDisplayOptions = []; // All Display Options in the Display Options dropdown
-var citiesListedInLocationDropdown = []; // All city names in the Location dropdown. Not used currently, and it can be integrated in the allDropdownValues at some point.
-var defaultCountrySuffix; // Holds the default country name to append to locations when a _country is not entered
+var defaultCountrySuffix; // Holds the default country name to append to locations when the _country suffix is not entered
+                          // It's also the value that gets checked for before incrementing the stateName variable
 
 // Input from webpage
 var selectedDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
@@ -39,26 +39,7 @@ function eventDarkModeButtonClicked() {
 }
 
 function eventDisplayOptionSelected() {
-    // Gather user inputs
-    retrieveDataFromTopPane();
-
-    // Check which display option user chose in order to enable or disable the Display button
-    if (selectedDisplayOption.includes("List")) {
-      //document.getElementById("button-displaytable").removeAttribute("disabled"); // Enable Display button
-    } else {
-      //document.getElementById("button-displaytable").setAttribute("disabled", true); // Disable Display button
-    }
-    
-    // Check which display option user chose in order to call the corresponding function
-    if (selectedDisplayOption == "List: All Lines") {
-      retrieveDataForListTable();
-    } else if (selectedDisplayOption == "List: Event Lines") {
-      retrieveDataForListTable();
-    } else if (selectedDisplayOption == "GroupBy: Location") {
-      retrieveDataforGroupByLocationTable();
-    } else if (selectedDisplayOption.includes("Summary:")) {
-      retrieveDataforSummaryTable();
-    }
+  helperUpdateOutput();
 }
 
 function eventCriteriaDropdownClicked(event) {
@@ -70,33 +51,8 @@ function eventCriteriaDropdownClicked(event) {
   }
 }
 
-function helperUpdateTable() {
-  // Gather user inputs
-  retrieveDataFromTopPane();
-
-  // Check which display option user chose 
-  if (selectedDisplayOption == "List: Excel File") {
-    retrieveDataForUploadedFile();
-  } else if (selectedDisplayOption == "List: All Lines") {
-    retrieveDataForListTable();
-  } else if (selectedDisplayOption == "List: Event Lines") {
-    retrieveDataForListTable();
-  } else if (selectedDisplayOption == "GroupBy: Location") {
-    retrieveDataforGroupByLocationTable();
-  } else if (selectedDisplayOption.includes("Summary:")) {
-    retrieveDataforSummaryTable();
-  }
-}
-
 function eventKeywordEntered() {
-  // Gather keyword
-  retrieveDataFromTopPane();
-
-  // Retrieve data which then calls output display
-  if (selectedDisplayOption == "List: Excel File" || selectedDisplayOption == "List: All Lines" || selectedDisplayOption == "List: Event Lines") {
-    retrieveDataForListTable();
-  }
-
+  helperUpdateOutput();
 }
 
 function eventCheckboxSelected(event) {
@@ -131,7 +87,7 @@ function eventCheckboxSelected(event) {
   event.target.parentElement.parentElement.parentElement.firstElementChild.innerText = textToSetInDropdown;
 
   // Update the table accordingly (i.e., as if the user hit the Display button)
-  helperUpdateTable();
+  helperUpdateOutput();
 }
 
 function eventAppModeButtonClicked() {
@@ -143,7 +99,7 @@ function eventAppModeButtonClicked() {
     document.getElementById("input-grid").style.display = "grid";
 
     // Get default values for location, country to append, and event, from the file
-     var defaultValues = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn");
+    var defaultValues = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn");
     defaultValues = defaultValues.split("\n");
     var defaultLocation = defaultValues[0]; // First line has the locations
     defaultCountrySuffix = defaultValues[1]; // Second line has the default country suffix
@@ -184,5 +140,19 @@ function eventInputDateChanged(event) {
   } else { // If this is an existing date, then update
     var retrievedEvent = helperSetBeaklineCharacter(result[2], "<br>tobackslashn");
     updateUserInputForm(result[1], retrievedEvent);
+  }
+}
+
+function helperUpdateOutput() {
+  // Gather user inputs
+  retrieveDataFromTopPane();
+
+  // Check which display option user chose in order to call the corresponding function
+  if (selectedDisplayOption.includes("List:")) {
+    retrieveDataForListTable();
+  } else if (selectedDisplayOption.includes("GroupBy:")) {
+    retrieveDataForGroupByTable();
+  } else if (selectedDisplayOption.includes("Summary:")) {
+    retrieveDataforSummaryTable();
   }
 }

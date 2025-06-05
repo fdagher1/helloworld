@@ -209,3 +209,17 @@ function helperSetBeaklineCharacter(inputString, direction) {
     return inputString.replace(/<br>/g, "\n");
   }
 }
+
+// Function that returns splits a string on last occurance of a character then returns the string after the split (needed for retrieving state names)
+function helperSplitStringLastOccurrence(str, char) {
+  const lastIndex = str.lastIndexOf(char);
+
+  if (lastIndex === -1) {
+    return [str]; // Character not found, return original string as single element array
+  }
+
+  const partBefore = str.substring(0, lastIndex);
+  const partAfter = str.substring(lastIndex + 1);
+
+  return partAfter;
+} 
