@@ -19,8 +19,11 @@ async function readContentFromFile(event) {
     // Display Data in Top Pane
     retrieveDataForTopPane();
 
+    // Retrieve date from top pane
+    retrieveDataFromTopPane();
+
     // Display Data in Table
-    retrieveDataForUploadedFile();
+    retrieveDataForListTable();
 
     // Clear validity errors if any
     clearFileValidityError();
