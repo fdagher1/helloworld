@@ -2,7 +2,7 @@
 
 // Input from excel file
 var datasetArray = []; // Data from excel file, program never changes it
-var datasetAfterSearchFilter = []; // Holds the data to display in the output after the search filter is applied
+var datasetArrayAfterFilter = []; // Holds the data to display in the output after the filter is applied
 var allDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
 var allDisplayOptions = []; // All Display Options in the Display Options dropdown
 var defaultCountrySuffix; // Holds the default country name to append to locations when the _country suffix is not entered
@@ -139,19 +139,5 @@ function eventInputDateChanged(event) {
   } else { // If this is an existing date, then update
     var retrievedEvent = helperSetBeaklineCharacter(result[2], "<br>tobackslashn");
     updateUserInputForm(result[1], retrievedEvent);
-  }
-}
-
-function helperUpdateOutput() {
-  // Gather user inputs
-  retrieveDataFromTopPane();
-
-  // Check which display option user chose in order to call the corresponding function
-  if (selectedDisplayOption.includes("List:")) {
-    retrieveDataForListTable();
-  } else if (selectedDisplayOption.includes("GroupBy:")) {
-    retrieveDataForGroupByTable();
-  } else if (selectedDisplayOption.includes("Summary:")) {
-    retrieveDataforSummaryTable();
   }
 }
