@@ -37,10 +37,6 @@ function eventDarkModeButtonClicked() {
   }
 }
 
-function eventDisplayOptionSelected() {
-  helperUpdateOutput();
-}
-
 function eventCriteriaDropdownClicked(event) {
   if (datasetArray.length > 0){ // That means the excel file has been uploaded
     if (event.target.parentNode.classList.contains('visible'))
@@ -50,8 +46,24 @@ function eventCriteriaDropdownClicked(event) {
   }
 }
 
-function eventKeywordEntered() {
-  helperUpdateOutput();
+function eventDisplayOptionSelected() {
+  // Gather user inputs
+  retrieveDataFromTopPane();
+
+  // Clear the search word text box (needed in order to optimize search speed)
+  document.getElementById('textbox-keyword').value = '';
+
+  // Filter dataset to only include lines matching from the search word
+  updateDataSetToMatchSearchCriteria(); 
+
+  // Check which display option user chose in order to call the corresponding function
+  if (selectedDisplayOption.includes("List:")) {
+    retrieveDataForListTable();
+  } else if (selectedDisplayOption.includes("GroupBy:")) {
+    retrieveDataForGroupByTable();
+  } else if (selectedDisplayOption.includes("Summary:")) {
+    retrieveDataforSummaryTable();
+  }
 }
 
 function eventCheckboxSelected(event) {
@@ -85,8 +97,37 @@ function eventCheckboxSelected(event) {
   // Update the dropdown value
   event.target.parentElement.parentElement.parentElement.firstElementChild.innerText = textToSetInDropdown;
 
-  // Update the table accordingly (i.e., as if the user hit the Display button)
-  helperUpdateOutput();
+  // Clear the search word text box (needed in order to optimize search speed)
+  document.getElementById('textbox-keyword').value = '';
+
+  // Filter datasets to only include lines matching from the 3 dropdown selections
+  updateDataSetToMatchSearchCriteria(); 
+
+  // Check which display option user chose in order to call the corresponding function
+  if (selectedDisplayOption.includes("List:")) {
+    retrieveDataForListTable();
+  } else if (selectedDisplayOption.includes("GroupBy:")) {
+    retrieveDataForGroupByTable();
+  } else if (selectedDisplayOption.includes("Summary:")) {
+    retrieveDataforSummaryTable();
+  }
+}
+
+function eventKeywordEntered() {
+  // Gather user inputs
+  retrieveDataFromTopPane();
+
+  // Filter datasets to only include lines matching from the search word
+  updateDataSetToMatchSearchCriteria(); 
+
+  // Check which display option user chose in order to call the corresponding function
+  if (selectedDisplayOption.includes("List:")) {
+    retrieveDataForListTable();
+  } else if (selectedDisplayOption.includes("GroupBy:")) {
+    retrieveDataForGroupByTable();
+  } else if (selectedDisplayOption.includes("Summary:")) {
+    retrieveDataforSummaryTable();
+  }
 }
 
 function eventAppModeButtonClicked() {

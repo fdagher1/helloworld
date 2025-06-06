@@ -117,9 +117,6 @@ function retrieveDataFromTopPane() {
 
 function retrieveDataForListTable() {
   let startTime = performance.now();
-
-  // Filter datasets to only include lines matching from the 3 dropdown selections and search word
-  updateDataSetToMatchSearchCriteria(); 
   
   if (selectedDisplayOption == "List: Event Lines") {
     // Retrieve the selected events from the events fields 
@@ -155,9 +152,6 @@ function retrieveDataForListTable() {
 
 function retrieveDataForGroupByTable() {
   let startTime = performance.now();
-  
-  // Filter datasets to only include lines matching from the 3 dropdown selections and search word
-  updateDataSetToMatchSearchCriteria(); 
 
   // RETRIEVE THE LOCATIONS LIST
   var countOfLocationDictionaryArray = [{}, {}, {}]; // Array of dictionaries that will have city, state, and country counts in it
@@ -214,9 +208,6 @@ function retrieveDataForGroupByTable() {
 
 function retrieveDataforSummaryTable() {
   let startTime = performance.now();
- 
-  // Filter datasets to only include lines matching from the 3 dropdown selections and search word
-  updateDataSetToMatchSearchCriteria(); 
 
   // ITERATE OVER THE DATASET TO FIND MATCHES WITH THE EVENTS FROM THE USER'S SUMMARY OPTION
   // Compile event list of interest based on the user's "Summary: " selection
@@ -306,4 +297,38 @@ function retrieveDataforSummaryTable() {
   
   // DISPLAY THE DATA
   displayDataInTable(columnHeaders, summaryDataset);
+}
+
+// Updates the dataset based on the filter
+function updateDataSetToMatchSearchCriteria() {
+  // Loop over the array to find matches
+  var datasetArrayAfterDropDownFilter = []; // Array to hold rows that match the chosen criteria in the 3 dropdowns
+  for (i = 0; i < datasetArray.length; i++) {
+    var lineAdded = false; // Used to jump out of for loops when match is found
+    if (selectedDropdownValues[0].includes(new Date (datasetArray[i][0]).getFullYear().toString())) { // Check if row date is among the selected dates
+      for (const country of selectedDropdownValues[1] ) {
+        if (lineAdded == true) {break;} // If this line has already been added, then get out of this location for loop
+        if (datasetArray[i][1].includes(country)) {
+          for (const event of selectedDropdownValues[2]) { // Iterate over the selected events to see if any of them match
+            if (lineAdded == true) {break;} // If this line has already been added, then get out of this event for loop
+            if (datasetArray[i][2].includes("#" + event)) { // Check if event criteria matches
+              datasetArrayAfterDropDownFilter.push([datasetArray[i][0], datasetArray[i][1], datasetArray[i][2]]); // I listed the 3 cells specifically instead of using dataset[i][0] in order to remove the 4th column from the output
+              lineAdded = true;
+            }
+          }
+        }
+      }
+    }
+  }
+  datasetArrayAfterFilter = datasetArrayAfterDropDownFilter.slice();
+
+  if (searchWord != '') {
+    datasetArrayAfterWordFilter = []; // Array to hold rows that match the searchword criteria
+    for (const row of datasetArrayAfterFilter) {
+      if (row[0].toLowerCase().includes(searchWord.toLowerCase()) || row[1].toLowerCase().includes(searchWord.toLowerCase()) || row[2].toLowerCase().includes(searchWord.toLowerCase())) {
+        datasetArrayAfterWordFilter.push(row);
+      }
+    }
+    datasetArrayAfterFilter = datasetArrayAfterWordFilter.slice();
+  }
 }

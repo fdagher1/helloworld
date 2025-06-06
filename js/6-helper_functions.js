@@ -102,58 +102,6 @@ function helperReturnDSumFromString(inputString) {
   return sum; 
 }
 
-// Updates the dataset based on the filter
-function updateDataSetToMatchSearchCriteria() {
-  // Loop over the array to find matches
-  var dropdownFilteredDataSet = []; // Array to hold rows that match the chosen criteria in the 3 dropdowns
-  for (i = 0; i < datasetArray.length; i++) {
-    var lineAdded = false; // Used to jump out of for loops when match is found
-    if (selectedDropdownValues[0].includes(new Date (datasetArray[i][0]).getFullYear().toString())) { // Check if row date is among the selected dates
-      for (const country of selectedDropdownValues[1] ) {
-        if (lineAdded == true) {break;} // If this line has already been added, then get out of this location for loop
-        if (datasetArray[i][1].includes(country)) {
-          for (const event of selectedDropdownValues[2]) { // Iterate over the selected events to see if any of them match
-            if (lineAdded == true) {break;} // If this line has already been added, then get out of this event for loop
-            if (datasetArray[i][2].includes("#" + event)) { // Check if event criteria matches
-              dropdownFilteredDataSet.push([datasetArray[i][0], datasetArray[i][1], datasetArray[i][2]]); // I listed the 3 cells specifically instead of using dataset[i][0] in order to remove the 4th column from the output
-              lineAdded = true;
-            }
-          }
-        }
-      }
-    }
-  }
-  
-  // Search for keyword
-  if (searchWord != "") {
-    searchWordfilteredDataSet = []; // Array to hold rows that match the searchword criteria
-    for (const row of dropdownFilteredDataSet) {
-      if (row[0].toLowerCase().includes(searchWord.toLowerCase()) || row[1].toLowerCase().includes(searchWord.toLowerCase()) || row[2].toLowerCase().includes(searchWord.toLowerCase())) {
-        searchWordfilteredDataSet.push(row);
-      }
-    }
-    datasetArrayAfterFilter = searchWordfilteredDataSet.slice();
-  } else {
-    datasetArrayAfterFilter = dropdownFilteredDataSet.slice();
-  }
-  
-}
-
-// To rename correctly
-function helperUpdateOutput() {
-  // Gather user inputs
-  retrieveDataFromTopPane();
-
-  // Check which display option user chose in order to call the corresponding function
-  if (selectedDisplayOption.includes("List:")) {
-    retrieveDataForListTable();
-  } else if (selectedDisplayOption.includes("GroupBy:")) {
-    retrieveDataForGroupByTable();
-  } else if (selectedDisplayOption.includes("Summary:")) {
-    retrieveDataforSummaryTable();
-  }
-}
-
 // Returns a row from the dataset with the enteredDate
 function helperReturnRowThatMatchesDate(dataset, enteredDate) {
   // Convert date to below format otherwise the new Date(enteredDate) function returns GMT timezone for some reason
