@@ -10,6 +10,7 @@ async function readContentFromFile(event) {
     var decryptedCsvData = await decrypt(reader, enteredPassword); // decrypt file
   }
   datasetArray = helperCsvToArray(decryptedCsvData); // Convert content from string format to array
+  datasetArrayAfterFilter = datasetArray.slice(); // Set this array as this is one used for the display
 
   // CHECK FILE VALIDITY
   var validationResult = validateFileFormatAndData(datasetArray.slice(0,-2)); // Remove the last 2 lines before validating as they contain event data in wrong format
