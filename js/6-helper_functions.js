@@ -102,7 +102,7 @@ function helperReturnDSumFromString(inputString) {
   return sum; 
 }
 
-// Returns an array containing rows from dataset that match the criteria selectedTime, selectedLocations, selectedEvents,
+// Updates the dataset based on the filter
 function updateDataSetToMatchSearchCriteria() {
   // Loop over the array to find matches
   var dropdownFilteredDataSet = []; // Array to hold rows that match the chosen criteria in the 3 dropdowns
@@ -132,11 +132,26 @@ function updateDataSetToMatchSearchCriteria() {
         searchWordfilteredDataSet.push(row);
       }
     }
-    datasetAfterSearchFilter = searchWordfilteredDataSet.slice();
+    datasetArrayAfterFilter = searchWordfilteredDataSet.slice();
   } else {
-    datasetAfterSearchFilter = dropdownFilteredDataSet.slice();
+    datasetArrayAfterFilter = dropdownFilteredDataSet.slice();
   }
   
+}
+
+// To rename correctly
+function helperUpdateOutput() {
+  // Gather user inputs
+  retrieveDataFromTopPane();
+
+  // Check which display option user chose in order to call the corresponding function
+  if (selectedDisplayOption.includes("List:")) {
+    retrieveDataForListTable();
+  } else if (selectedDisplayOption.includes("GroupBy:")) {
+    retrieveDataForGroupByTable();
+  } else if (selectedDisplayOption.includes("Summary:")) {
+    retrieveDataforSummaryTable();
+  }
 }
 
 // Returns a row from the dataset with the enteredDate
