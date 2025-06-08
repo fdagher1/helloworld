@@ -10,7 +10,7 @@ var defaultCountrySuffix; // Holds the default country name to append to locatio
 
 // Input from webpage
 var selectedDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
-var selectedDisplayOption; // Value of the user selected radio button
+var selectedDisplayOption; // Value of the user selected drop down
 var searchWord = ""; // Value of the user entered keyword
 
 // DEFINE RESPONSE FUNCTIONS
@@ -97,7 +97,7 @@ function eventCheckboxSelected(event) {
   // Update the dropdown value
   event.target.parentElement.parentElement.parentElement.firstElementChild.innerText = textToSetInDropdown;
 
-  // Clear the search word text box (needed in order to optimize search speed)
+  // Clear the search word text box (to avoid having to search for a keyword in order to optimize search speed)
   document.getElementById('textbox-keyword').value = '';
 
   // Filter datasets to only include lines matching from the 3 dropdown selections

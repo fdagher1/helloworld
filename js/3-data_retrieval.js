@@ -118,29 +118,6 @@ function retrieveDataFromTopPane() {
 function retrieveDataForListTable() {
   let startTime = performance.now();
   
-  if (selectedDisplayOption == "List: Event Lines") {
-    // Retrieve the selected events from the events fields 
-    var tempDataSet = []; // This will hold the data that will be displayed
-    for (var row of datasetArrayAfterFilter) {
-      var eventLinesToAdd = ""; // will hold all the events of that cell
-      var brIndices = getIndicesOf("<br>", row[2]) // Get all the indices of <br> in that cell
-      brIndices.unshift(0); // Add 0 to the beginning for ease of looping over each line in that cell
-      for (var i = 0; i < brIndices.length ; i++) { // Loop over the different lines in that cell
-        for (var event of selectedDropdownValues[2]) { // Loop over every selected event to check if it's present in that line
-          var line = row[2].substring(brIndices[i],brIndices[i+1]) + "<br>"; // Extract the line.
-          if (line.includes("#" + event)) { // Now check if the line contains the event
-            if (!eventLinesToAdd.includes(line)) { // If so then check if that line is not already there (useful for lines that have multiple tags)
-              eventLinesToAdd += line; // If not then add it
-            }
-          }
-        }
-      }
-      if (eventLinesToAdd != "") {
-        tempDataSet.push([row[0], row[1], eventLinesToAdd]);
-      }
-    }
-    datasetArrayAfterFilter = tempDataSet.slice(0);
-  }
   // Provide the column names for table to display data: 1- "Data", 2- "Location", and 3- Number of rows
   var columnHeaders = ["Date", "Location", "(" + datasetArrayAfterFilter.length + " rows)"];
 
@@ -299,21 +276,118 @@ function retrieveDataforSummaryTable() {
   displayDataInTable(columnHeaders, summaryDataset);
 }
 
-// Updates the dataset based on the filter
 function updateDataSetToMatchSearchCriteria() {
+  
+  // FILTER BASED ON DROPDOWN VALUES
+  datasetArrayAfterFilter.length = 0; // First clear the contents of the array 
+  for (i = 0; i < datasetArray.length; i++) {
+    var includeRowToDataset = false; // used to decide if a given row should be added or not, first assuming it shouldn't
+    
+    // Filter based on year
+    if (selectedDropdownValues[0].length != allDropdownValues[0].length) { // Check if any years were explicitly selected as criteria
+      for (const year of selectedDropdownValues[0]) {
+        if (datasetArray[i][0].includes(year)) { // If the selected year is in this row, then include row to the output dataset
+          includeRowToDataset = true;
+          break; // no need to keep looping since we want to include this row
+        } else {
+          includeRowToDataset = false;
+        }
+      }
+    } else {
+      includeRowToDataset = true; // If no year was selected, then it is not a filter critera and row should be included 
+    }
+    if (includeRowToDataset == false) {continue;} // If row should not be included per this criteria, then go to next row, since there's no point checking for other criteria
+
+    // Filter based on location
+    if (selectedDropdownValues[1].length != allDropdownValues[1].length) { // Check if any locations were explicitly selected as criteria
+      for (const location of selectedDropdownValues[1]) {
+        if (datasetArray[i][1].includes(location)) { // If the selected location is in this row, then include row to the output dataset
+          includeRowToDataset = true;
+          break; // no need to keep looping since we want to include this row
+        } else {
+          includeRowToDataset = false;
+        }
+      }
+    } else {
+      includeRowToDataset = true; // If no location was selected, then it is not a filter critera and row should be included 
+    }
+    if (includeRowToDataset == false) {continue;} // If row should not be included per this criteria, then go to next row, since there's no point checking for other criteria
+
+    // Filter based on events
+    if (selectedDropdownValues[2].length != allDropdownValues[2].length) { // Check if any events were explicitly selected as criteria
+      for (const event of selectedDropdownValues[2]) {
+        if (datasetArray[i][2].includes("#" + event)) { // If the selected event is in this row, then include row to the output dataset
+          includeRowToDataset = true;
+          break; // no need to keep looping since we want to include this row
+        } else {
+          includeRowToDataset = false;
+        }
+      }
+    } else {
+      includeRowToDataset = true; // If no event was selected, then it is not a filter critera and row should be included 
+    }
+    if (includeRowToDataset == false) {continue;} // If row should not be included per this criteria, then go to next row, since there's no point checking for other criteria
+
+    // If row should not be excluded, then add it to the output array
+    if (includeRowToDataset == true) {
+      datasetArrayAfterFilter.push(datasetArray[i]);
+    }
+  }
+
+  // IF USER ONLY WANTS TO LIST EVENTS THEN REMOVE THE OTHER ENTRIES  
+  if (selectedDisplayOption == "List: Event Lines") {
+    // Retrieve the selected events from the events fields 
+    var tempDataSet = []; // This will hold the data that will be displayed
+    for (var row of datasetArrayAfterFilter) {
+      var eventLinesToAdd = ""; // will hold all the events of that cell
+      var brIndices = getIndicesOf("<br>", row[2]) // Get all the indices of <br> in that cell
+      brIndices.unshift(0); // Add 0 to the beginning for ease of looping over each line in that cell
+      for (var i = 0; i < brIndices.length ; i++) { // Loop over the different lines in that cell
+        for (var event of selectedDropdownValues[2]) { // Loop over every selected event to check if it's present in that line
+          var line = row[2].substring(brIndices[i],brIndices[i+1]) + "<br>"; // Extract the line.
+          if (line.includes("#" + event)) { // Now check if the line contains the event
+            if (!eventLinesToAdd.includes(line)) { // If so then check if that line is not already there (useful for lines that have multiple tags)
+              eventLinesToAdd += line; // If not then add it
+            }
+          }
+        }
+      }
+      if (eventLinesToAdd != "") {
+        tempDataSet.push([row[0], row[1], eventLinesToAdd]);
+      }
+    }
+    datasetArrayAfterFilter = tempDataSet.slice(0);
+  }
+
+  // FILTER BASED ON SEARCH WORD VALUE
+  if (searchWord != '') {
+    var tempArray = []; // Array to hold rows that match the searchword criteria
+    for (const row of datasetArrayAfterFilter) {
+      if (row[0].toLowerCase().includes(searchWord.toLowerCase()) || row[1].toLowerCase().includes(searchWord.toLowerCase()) || row[2].toLowerCase().includes(searchWord.toLowerCase())) {
+        tempArray.push(row);
+      }
+    }
+    datasetArrayAfterFilter = tempArray.slice();
+  }
+}
+
+//NO LONGER USED
+function updateDataSetToMatchSearchCriteriaOld() {
   // Loop over the array to find matches
   var datasetArrayAfterDropDownFilter = []; // Array to hold rows that match the chosen criteria in the 3 dropdowns
   for (i = 0; i < datasetArray.length; i++) {
     var lineAdded = false; // Used to jump out of for loops when match is found
-    if (selectedDropdownValues[0].includes(new Date (datasetArray[i][0]).getFullYear().toString())) { // Check if row date is among the selected dates
-      for (const country of selectedDropdownValues[1] ) {
-        if (lineAdded == true) {break;} // If this line has already been added, then get out of this location for loop
-        if (datasetArray[i][1].includes(country)) {
-          for (const event of selectedDropdownValues[2]) { // Iterate over the selected events to see if any of them match
-            if (lineAdded == true) {break;} // If this line has already been added, then get out of this event for loop
-            if (datasetArray[i][2].includes("#" + event)) { // Check if event criteria matches
-              datasetArrayAfterDropDownFilter.push([datasetArray[i][0], datasetArray[i][1], datasetArray[i][2]]); // I listed the 3 cells specifically instead of using dataset[i][0] in order to remove the 4th column from the output
-              lineAdded = true;
+    for (const year of selectedDropdownValues[0]) {
+      if (datasetArray[i][0].includes(year)) {
+        for (const country of selectedDropdownValues[1] ) {
+          if (lineAdded == true) {break;} // If this line has already been added, then get out of this location for loop
+          if (datasetArray[i][1].includes(country)) {
+            for (const event of selectedDropdownValues[2]) { // Iterate over the selected events to see if any of them match
+              if (lineAdded == true) {break;} // If this line has already been added, then get out of this event for loop
+              if (datasetArray[i][2].includes("#" + event)) { // Check if event criteria matches
+                datasetArrayAfterDropDownFilter.push([datasetArray[i][0], datasetArray[i][1], datasetArray[i][2]]); // I listed the 3 cells specifically instead of using dataset[i][0] in order to remove the 4th column from the output
+                lineAdded = true;
+              }
             }
           }
         }
