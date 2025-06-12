@@ -119,11 +119,11 @@ function retrieveDataForListTable() {
   let startTime = performance.now();
   
   // Provide the column names for table to display data: 1- "Data", 2- "Location", and 3- Number of rows
-  var columnHeaders = ["Date", "Location", "(" + datasetArrayAfterFilter.length + " rows)"];
+  var columnHeaders = ["Date", "Location", "(" + datasetArrayForDisplay.length + " rows)"];
 
   console.log(`retrieveDataForListTable executed in: ${performance.now() - startTime} milliseconds`);
   // Display the data
-  displayDataInTable(columnHeaders, datasetArrayAfterFilter);
+  displayDataInTable(columnHeaders, datasetArrayForDisplay);
 
 }
 
@@ -133,8 +133,8 @@ function retrieveDataForGroupByTable() {
   // RETRIEVE THE LOCATIONS LIST
   var countOfLocationDictionaryArray = [{}, {}, {}]; // Array of dictionaries that will have city, state, and country counts in it
   // Iterate over every row in the table
-  for (let i = 0; i < datasetArrayAfterFilter.length; i++) {
-    let rowLocationValueArray = datasetArrayAfterFilter[i][1].split(","); // Place each location from that day in an array
+  for (let i = 0; i < datasetArrayForDisplay.length; i++) {
+    let rowLocationValueArray = datasetArrayForDisplay[i][1].split(","); // Place each location from that day in an array
     // Iterate over every city_country entry of the array
     var locationsAddedForThisDay = [[], [], []]; // Used to capture the locations added for a given day, in order not to over count them that same day
     for (let j = 0; j < rowLocationValueArray.length; j++) {
@@ -197,7 +197,7 @@ function retrieveDataforSummaryTable() {
 
   // Compile the month/year array based on the dates in the dataset
   var month_year_arr = []; // holds the month/year array
-  for (var row of datasetArrayAfterFilter) { // Loop over the filtered datasheet to identify the different months needed to be covered
+  for (var row of datasetArrayForDisplay) { // Loop over the filtered datasheet to identify the different months needed to be covered
     var month_year = (new Date(row[0]).getMonth()+1).toString() +"/" + new Date(row[0]).getFullYear().toString(); //Adding 1 to month as it starts from 0
     if (!month_year_arr.includes(month_year)) {
       month_year_arr.push(month_year);
@@ -216,14 +216,14 @@ function retrieveDataforSummaryTable() {
   }
   
   // Iterate over the datasheet to count or sum the hits for each selected tag
-  for (i = 0; i < datasetArrayAfterFilter.length; i++) {
+  for (i = 0; i < datasetArrayForDisplay.length; i++) {
     
     // Get that row's date
-    var cell_date = new Date(datasetArrayAfterFilter[i][0]);
+    var cell_date = new Date(datasetArrayForDisplay[i][0]);
     var month_year = (cell_date.getMonth()+1).toString() +"/" + cell_date.getFullYear().toString();
     
     // Iterate over each line in the row's event cell 
-    var rowsFromEventsCell = datasetArrayAfterFilter[i][2].split("<br>");
+    var rowsFromEventsCell = datasetArrayForDisplay[i][2].split("<br>");
     for (rowFromEventsCell of rowsFromEventsCell) {
       // Check if line has hashtag sign first to save time from iterating for each selected event later
       if (rowFromEventsCell.includes("#")) {
@@ -279,7 +279,7 @@ function retrieveDataforSummaryTable() {
 function updateDataSetToMatchSearchCriteria() {
   
   // FILTER BASED ON DROPDOWN VALUES
-  datasetArrayAfterFilter.length = 0; // First clear the contents of the array 
+  datasetArrayForDisplay.length = 0; // First clear the contents of the array 
   for (i = 0; i < datasetArray.length; i++) {
     var includeRowToDataset = false; // used to decide if a given row should be added or not, first assuming it shouldn't
     
@@ -330,7 +330,7 @@ function updateDataSetToMatchSearchCriteria() {
 
     // If row should not be excluded, then add it to the output array
     if (includeRowToDataset == true) {
-      datasetArrayAfterFilter.push(datasetArray[i]);
+      datasetArrayForDisplay.push(datasetArray[i]);
     }
   }
 
@@ -338,7 +338,7 @@ function updateDataSetToMatchSearchCriteria() {
   if (selectedDisplayOption == "List: Event Lines") {
     // Retrieve the selected events from the events fields 
     var tempDataSet = []; // This will hold the data that will be displayed
-    for (var row of datasetArrayAfterFilter) {
+    for (var row of datasetArrayForDisplay) {
       var eventLinesToAdd = ""; // will hold all the events of that cell
       var brIndices = getIndicesOf("<br>", row[2]) // Get all the indices of <br> in that cell
       brIndices.unshift(0); // Add 0 to the beginning for ease of looping over each line in that cell
@@ -356,53 +356,17 @@ function updateDataSetToMatchSearchCriteria() {
         tempDataSet.push([row[0], row[1], eventLinesToAdd]);
       }
     }
-    datasetArrayAfterFilter = tempDataSet.slice(0);
+    datasetArrayForDisplay = tempDataSet.slice(0);
   }
 
   // FILTER BASED ON SEARCH WORD VALUE
   if (searchWord != '') {
     var tempArray = []; // Array to hold rows that match the searchword criteria
-    for (const row of datasetArrayAfterFilter) {
+    for (const row of datasetArrayForDisplay) {
       if (row[0].toLowerCase().includes(searchWord.toLowerCase()) || row[1].toLowerCase().includes(searchWord.toLowerCase()) || row[2].toLowerCase().includes(searchWord.toLowerCase())) {
         tempArray.push(row);
       }
     }
-    datasetArrayAfterFilter = tempArray.slice();
-  }
-}
-
-//NO LONGER USED
-function updateDataSetToMatchSearchCriteriaOld() {
-  // Loop over the array to find matches
-  var datasetArrayAfterDropDownFilter = []; // Array to hold rows that match the chosen criteria in the 3 dropdowns
-  for (i = 0; i < datasetArray.length; i++) {
-    var lineAdded = false; // Used to jump out of for loops when match is found
-    for (const year of selectedDropdownValues[0]) {
-      if (datasetArray[i][0].includes(year)) {
-        for (const country of selectedDropdownValues[1] ) {
-          if (lineAdded == true) {break;} // If this line has already been added, then get out of this location for loop
-          if (datasetArray[i][1].includes(country)) {
-            for (const event of selectedDropdownValues[2]) { // Iterate over the selected events to see if any of them match
-              if (lineAdded == true) {break;} // If this line has already been added, then get out of this event for loop
-              if (datasetArray[i][2].includes("#" + event)) { // Check if event criteria matches
-                datasetArrayAfterDropDownFilter.push([datasetArray[i][0], datasetArray[i][1], datasetArray[i][2]]); // I listed the 3 cells specifically instead of using dataset[i][0] in order to remove the 4th column from the output
-                lineAdded = true;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  datasetArrayAfterFilter = datasetArrayAfterDropDownFilter.slice();
-
-  if (searchWord != '') {
-    datasetArrayAfterWordFilter = []; // Array to hold rows that match the searchword criteria
-    for (const row of datasetArrayAfterFilter) {
-      if (row[0].toLowerCase().includes(searchWord.toLowerCase()) || row[1].toLowerCase().includes(searchWord.toLowerCase()) || row[2].toLowerCase().includes(searchWord.toLowerCase())) {
-        datasetArrayAfterWordFilter.push(row);
-      }
-    }
-    datasetArrayAfterFilter = datasetArrayAfterWordFilter.slice();
+    datasetArrayForDisplay = tempArray.slice();
   }
 }

@@ -2,7 +2,7 @@
 
 // Input from excel file
 var datasetArray = []; // Data from excel file, program never changes it
-var datasetArrayAfterFilter = []; // Holds the data to display in the output after the filter is applied
+var datasetArrayForDisplay = []; // Holds the data to display in the output after the filter is applied
 var allDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
 var allDisplayOptions = []; // All Display Options in the Display Options dropdown
 var defaultCountrySuffix; // Holds the default country name to append to locations when the _country suffix is not entered
