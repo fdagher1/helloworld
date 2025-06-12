@@ -49,12 +49,16 @@ async function saveContentToFile() {
   // Create array from properly formatted input
   var userInput = [enteredDate, enteredLocation, enteredEvents];
 
-  // VALIDATE USER INPUT ARRAY
-  var result = helperReturnRowThatMatchesDate(datasetArray, enteredDate) // Check if operation is to insert new line or to update existing line
-  var validationResult = validateUserInputFormatAndData(datasetArray, userInput, result);
-  if (validationResult != "No errors found.") {
-    displayFileValidityError(validationResult);
-    return;
+  // Check if operation is to insert new line or to update existing line
+  var result = helperReturnRowThatMatchesDate(datasetArray, enteredDate) 
+
+  // VALIDATE USER INPUT ARRAY IF ENTRY IS NOT FOR THE VERY FIRST DAY AS IT WOULD FAIL FOR THAT DAY
+  if (enteredDate != datasetArray[datasetArray.length-1][0]) {
+    var validationResult = validateUserInputFormatAndData(datasetArray, userInput, result);
+    if (validationResult != "No errors found.") {
+      displayFileValidityError(validationResult);
+      return;
+    }
   }
 
   // CREATE FILE CONTENT
