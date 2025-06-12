@@ -10,7 +10,7 @@ async function readContentFromFile(event) {
     var decryptedCsvData = await decrypt(reader, enteredPassword); // decrypt file
   }
   datasetArray = helperCsvToArray(decryptedCsvData); // Convert content from string format to array
-  datasetArrayAfterFilter = datasetArray.slice(); // Set this array as this is one used for the display
+  datasetArrayForDisplay = datasetArray.slice(); // Set this array as this is one used for the display
 
   // CHECK FILE VALIDITY
   var validationResult = validateFileFormatAndData(datasetArray.slice(0,-2)); // Remove the last 2 lines before validating as they contain event data in wrong format
@@ -65,6 +65,7 @@ async function saveContentToFile() {
   }
   var datasetCSV = helperArrayToCSV(datasetArray); // Convert dataset to CSV 
   datasetCSV = "Day,Locations,Events\n" + datasetCSV; // Add headset to CSV
+  datasetArrayForDisplay = datasetArray.slice(); // Update the output dataset array
   
   // SAVE FILE
   // Set file content type depending on whether it is encrypted or not  
@@ -91,7 +92,7 @@ async function saveContentToFile() {
   clearFileValidityError(); // Clear validity errors in case of any from previous save attemps attemps
   eventAppModeButtonClicked(); // Switch back to read mode
   retrieveDataForTopPane(); // Update top pane
-  retrieveDataForUploadedFile();  // Redisplay the table 
+  retrieveDataForListTable();;  // Redisplay the table 
 }
 
 async function decrypt(encryptedCsvData, enteredPassword) { 
