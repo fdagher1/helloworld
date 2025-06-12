@@ -91,17 +91,6 @@ function helperReturnSumFromString(inputString) {
   return numbers.reduce((sum, num) => sum + Number(num), 0);
 }
 
-// Returns the sum of all the D numbers found in a string 
-function helperReturnDSumFromString(inputString) {
-  const dollarNumbers = inputString.match(/\$\d+(\.\d+)?/g);
-  if (!dollarNumbers) return 0;
-  const sum = dollarNumbers.reduce((total, dollarValue) => {
-      const numericValue = parseFloat(dollarValue.slice(1));
-      return total + numericValue;
-  }, 0);
-  return sum; 
-}
-
 // Returns a row from the dataset with the enteredDate
 function helperReturnRowThatMatchesDate(dataset, enteredDate) {
   // Convert date to below format otherwise the new Date(enteredDate) function returns GMT timezone for some reason
