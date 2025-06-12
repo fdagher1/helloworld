@@ -223,19 +223,13 @@ function retrieveDataforSummaryTable() {
     var month_year = (cell_date.getMonth()+1).toString() +"/" + cell_date.getFullYear().toString();
     
     // Iterate over each line in the row's event cell 
-    var rowsFromEventsCell = datasetArrayForDisplay[i][2].split("<br>");
-    for (rowFromEventsCell of rowsFromEventsCell) {
+    var linesFromEventsCell = datasetArrayForDisplay[i][2].split("<br>");
+    for (lineFromEventsCell of linesFromEventsCell) {
       // Check if line has hashtag sign first to save time from iterating for each selected event later
-      if (rowFromEventsCell.includes("#")) {
+      if (lineFromEventsCell.includes("#")) {
         for (const eventToQuery of eventsToQuery) { // Iterate over every selected event to check for matches 
-          if (rowFromEventsCell.includes("#" + eventToQuery.split("-")[0]))  { // I removed the suffix, such as -Sum, from the event name since the event name doesn't actually contain it
-            if (eventToQuery.includes("-DSum")) { // If event ends with sum then sum the figures 
-              countByMonth[month_year][eventToQuery] += helperReturnDSumFromString(rowFromEventsCell); // Get the figures from that cell and add them
-            } else if (eventToQuery.includes("-Sum")) { // If event ends with sum then sum the figures 
-              countByMonth[month_year][eventToQuery] += helperReturnSumFromString(rowFromEventsCell); // Get the figures from that cell and add them
-            } else { // Then treat event as a normal tag
-              countByMonth[month_year][eventToQuery] += 1 // Increment count in dictionary
-            }  
+          if (lineFromEventsCell.includes("#" + eventToQuery))  { // If event found
+            countByMonth[month_year][eventToQuery] += 1 // Increment count in dictionary
           }
         }
       }
