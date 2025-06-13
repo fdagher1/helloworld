@@ -176,7 +176,7 @@ function retrieveDataForGroupByTable() {
   }
   
   // Set the columnHeaders for use when displaying the table
-  var columnHeaders = ["Locations", "Count"]; // To hold the column names for passing to the data display function
+  var columnHeaders = ["Locations (" + groupbyDataToDisplay.length + ")", "Count (" + helperSumSecondElement(groupbyDataToDisplay) + ")"]; // To hold the column names for passing to the data display function
 
   console.log(`retrieveDataforGroupByLocationTable executed in: ${performance.now() - startTime} milliseconds`);
   // Display the group table
