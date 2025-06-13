@@ -176,3 +176,12 @@ function helperSplitStringLastOccurrence(str, char) {
 
   return partAfter;
 } 
+
+// Function that sums the second element in an 2 dimentional array
+function helperSumSecondElement(arr) {
+  var total = 0;
+  for (const row of arr) {
+    total += row[1];
+  }
+  return total;
+}
