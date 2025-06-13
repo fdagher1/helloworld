@@ -60,6 +60,10 @@ body,
   text-align: center;
 }
 
+select option {
+  text-align: center;
+}
+
 #input-events {
   height: 30vh;
 }

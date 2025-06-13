@@ -35,10 +35,6 @@
         <label for="button-themetoggle" id="label-button-theme" >Switch to Light Theme</label>
         <input type="button" id="button-themetoggle" onclick="eventDarkModeButtonClicked()" hidden>
       </div>
-      <div>
-        <label for="button-modetoggle" id="label-button-mode" >Switch to Write Mode</label>
-        <input type="button" id="button-modetoggle" disabled onclick="eventAppModeButtonClicked()" hidden>
-      </div>
       <div><input type="password" id="textbox-password" placeholder="(Enter Password)"></div>
       <div>
         <label for="button-upload" id="label-button-upload" >Load File</label>
@@ -68,12 +64,22 @@
         </ul>
       </div>
       <div><input type="text" id="textbox-keyword" placeholder="(Search Criteria)" oninput="eventKeywordEntered()"></div>
+      
       <div><label id="label-filters"></label></div>
+      
       <div>
         <select id="select-displayoption" onchange="eventDisplayOptionSelected()">
           <option value="Show All Lines">Show All Lines</option>
         </select>
       </div>
+
+    </div>
+    <div id ="switch-mode-section" style="display: none;">
+      <div>
+        <label for="button-modetoggle" id="label-button-mode" >Switch to Write Mode</label>
+        <input type="button" id="button-modetoggle" disabled onclick="eventAppModeButtonClicked()" hidden>
+      </div>
+    
       <div><label id="label-filters"></label></div>
     </div>
 
