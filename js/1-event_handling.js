@@ -23,6 +23,7 @@ function eventUploadButtonClicked(event) {
   document.getElementById("button-modetoggle").removeAttribute("disabled");
   document.getElementById("filter-grid").style.display = "grid";
   document.getElementById("output-table").style.display = "grid";
+  document.getElementById("switch-mode-section").style.display = "grid";
 }
 
 function eventDarkModeButtonClicked() {
