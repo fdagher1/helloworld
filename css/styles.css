@@ -58,6 +58,7 @@ body,
 
 #textbox-password, #select-displayoption, #textbox-keyword, #select-displayoption {
   text-align: center;
+  text-align-last: center;
 }
 
 select option {
