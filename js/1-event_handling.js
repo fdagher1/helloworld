@@ -48,11 +48,11 @@ function eventCriteriaDropdownClicked(event) {
 }
 
 function eventDisplayOptionSelected() {
+  // Clear the search word text box (needed in order to optimize search speed)
+  //document.getElementById('textbox-keyword').value = '';
+
   // Gather user inputs
   retrieveDataFromTopPane();
-
-  // Clear the search word text box (needed in order to optimize search speed)
-  document.getElementById('textbox-keyword').value = '';
 
   // Filter dataset to only include lines matching from the search word
   updateDataSetToMatchSearchCriteria(); 
@@ -68,6 +68,9 @@ function eventDisplayOptionSelected() {
 }
 
 function eventCheckboxSelected(event) {
+  // Clear the search word text box (to avoid having to search for a keyword in order to optimize search speed)
+  document.getElementById('textbox-keyword').value = '';
+  
   // To simplify the code, I will retrieve the values from all checkboxes and even other inputs, rather than just the checkbox that the user checked
   retrieveDataFromTopPane();
 
@@ -97,9 +100,6 @@ function eventCheckboxSelected(event) {
 
   // Update the dropdown value
   event.target.parentElement.parentElement.parentElement.firstElementChild.innerText = textToSetInDropdown;
-
-  // Clear the search word text box (to avoid having to search for a keyword in order to optimize search speed)
-  document.getElementById('textbox-keyword').value = '';
 
   // Filter datasets to only include lines matching from the 3 dropdown selections
   updateDataSetToMatchSearchCriteria(); 
