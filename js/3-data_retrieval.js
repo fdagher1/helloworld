@@ -235,8 +235,6 @@ function retrieveDataforSummaryTable() {
         for (const eventToQuery of eventsToQuery) { // Iterate over every selected event to check for matches 
           if (lineFromEventsCell.includes("#" + eventToQuery))  { // If event found
             if (eventToQuery.includes("(avg)")) { // If event has the average keyword
-              console.log("");
-              console.log(month_year, eventToQuery);
               averageByMonth[month_year][eventToQuery] = helperAverageValue(lineFromEventsCell, countByMonth[month_year][eventToQuery], averageByMonth[month_year][eventToQuery]); // Calculate the average value
             }
             countByMonth[month_year][eventToQuery] += 1 // Increment count in dictionary
@@ -276,21 +274,11 @@ function retrieveDataforSummaryTable() {
   var totalCount;
   for (tag of eventsToQuery) { // Iterate over every column (i.e. tag) 
     // Iterate over every row (i.e. month) in this column in order to sum the total to later display it in the header
-    if (!tag.includes("(avg)")) { // If tag has the average keyword
-      totalCount = 0;
-      for (let monthYearDictionaryKey in countByMonth) {
-        totalCount += countByMonth[monthYearDictionaryKey][tag];
-      }
-    } else {
-      totalCount = "";
+    totalCount = 0;
+    for (let monthYearDictionaryKey in countByMonth) {
+      totalCount += Number(countByMonth[monthYearDictionaryKey][tag]);
     }
-    
-    if (totalCount == "") {
-      columnHeaders.push(tag);
-    } else {
-      columnHeaders.push(tag + "(" + totalCount.toString() + ")");
-    } 
-    
+    columnHeaders.push(tag + "(" + totalCount.toString() + ")");
   }
 
   console.log(`retrieveDataforSummaryTable executed in: ${performance.now() - startTime} milliseconds`);

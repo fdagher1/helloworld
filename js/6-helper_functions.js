@@ -179,6 +179,7 @@ function helperSumSecondElement(arr) {
   return total;
 }
 
+// Function that calculates the average value for the current month based on the eventLine value and existing average
 function helperAverageValue(eventLine, totalCountThisMonth, averageThisMonth){
   var valueToday = parseInt((eventLine.split(" ")[1]));
   if (valueToday) {
