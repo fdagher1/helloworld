@@ -273,10 +273,11 @@ function retrieveDataforSummaryTable() {
 
   // Create the table header and include the total from each column in the header
   var columnHeaders = ["Month"];
+  var totalCount;
   for (tag of eventsToQuery) { // Iterate over every column (i.e. tag) 
     // Iterate over every row (i.e. month) in this column in order to sum the total to later display it in the header
     if (!tag.includes("(avg)")) { // If tag has the average keyword
-      let totalCount = 0;
+      totalCount = 0;
       for (let monthYearDictionaryKey in countByMonth) {
         totalCount += countByMonth[monthYearDictionaryKey][tag];
       }
@@ -284,8 +285,12 @@ function retrieveDataforSummaryTable() {
       totalCount = "";
     }
     
-    // Add the new column name to the column names array
-    columnHeaders.push(tag + "(" + totalCount.toString() + ")");
+    if (totalCount == "") {
+      columnHeaders.push(tag);
+    } else {
+      columnHeaders.push(tag + "(" + totalCount.toString() + ")");
+    } 
+    
   }
 
   console.log(`retrieveDataforSummaryTable executed in: ${performance.now() - startTime} milliseconds`);
