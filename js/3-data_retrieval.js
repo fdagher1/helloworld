@@ -206,12 +206,17 @@ function retrieveDataforSummaryTable() {
   
   // Build the dictionary that will hold the count of each event in each month (dictionary of a dictionaries), Ex: countByMonth["1/2023"]["#Workout"] = 0; 
   var countByMonth = {};
+  var averageByMonth = {}; // For the events that have the average keyword in them, this will hold the average value for that month, instead of the count
   for (let month_year of month_year_arr) {
     countByMonth[month_year] = {};
+    averageByMonth[month_year] = {};
     for (let eventToQuery of eventsToQuery) {
       let temp_month_year_dict = {};
       temp_month_year_dict[eventToQuery] = 0;
       countByMonth[month_year] = Object.assign(countByMonth[month_year], temp_month_year_dict); // This is needed as countByMonth[eventToQuery] = {month_year: 0}; results in month_year used as value 
+      if (eventToQuery.includes("(avg)")) { // If event has the average keyword
+        averageByMonth[month_year] = Object.assign(averageByMonth[month_year], temp_month_year_dict); // This is needed as averageByMonth[eventToQuery] = {month_year: 0}; results in month_year used as value 
+      }
     }
   }
   
@@ -229,13 +234,28 @@ function retrieveDataforSummaryTable() {
       if (lineFromEventsCell.includes("#")) {
         for (const eventToQuery of eventsToQuery) { // Iterate over every selected event to check for matches 
           if (lineFromEventsCell.includes("#" + eventToQuery))  { // If event found
+            if (eventToQuery.includes("(avg)")) { // If event has the average keyword
+              console.log("");
+              console.log(month_year, eventToQuery);
+              averageByMonth[month_year][eventToQuery] = helperAverageValue(lineFromEventsCell, countByMonth[month_year][eventToQuery], averageByMonth[month_year][eventToQuery]); // Calculate the average value
+            }
             countByMonth[month_year][eventToQuery] += 1 // Increment count in dictionary
           }
         }
       }
     }
   }
-  
+
+  for (const outerKey in countByMonth) {
+    if (averageByMonth.hasOwnProperty(outerKey)) {
+      for (const innerKey in countByMonth[outerKey]) {
+        if (averageByMonth[outerKey].hasOwnProperty(innerKey)) {
+          countByMonth[outerKey][innerKey] = averageByMonth[outerKey][innerKey];
+        }
+      }
+    }
+  }
+
   // PREPARE DATA FOR OUTPUT
   
   // Convert the countByMonth dictionary of dictionaries to an array of arrays for use in the display data function
@@ -271,11 +291,12 @@ function retrieveDataforSummaryTable() {
 }
 
 function updateDataSetToMatchSearchCriteria() {
-  
+  let startTime = performance.now();
+
   // FILTER BASED ON DROPDOWN VALUES
   datasetArrayForDisplay.length = 0; // First clear the contents of the array 
-  for (i = 0; i < datasetArray.length; i++) {
-    var includeRowToDataset = false; // used to decide if a given row should be added or not, first assuming it shouldn't
+  for (i = 0; i < datasetArray.length; i++) { // Iterate over every row 
+    var includeRowToDataset = false; // assume row should not be included in dataset
     
     // Filter based on year
     if (selectedDropdownValues[0].length != allDropdownValues[0].length) { // Check if any years were explicitly selected as criteria
@@ -363,4 +384,6 @@ function updateDataSetToMatchSearchCriteria() {
     }
     datasetArrayForDisplay = tempArray.slice();
   }
+
+  console.log(`updateDataSetToMatchSearchCriteria executed in: ${performance.now() - startTime} milliseconds`);
 }

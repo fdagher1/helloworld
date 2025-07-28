@@ -84,13 +84,6 @@ function helperReturnSortedArrayFromDictionary(dict) {
   return items;
 }
 
-// Returns the sum of all the numbers found in a string 
-function helperReturnSumFromString(inputString) {
-  const numbers = inputString.match(/\d+/g); // match(/\d+/g) returns an array containing all the numbers found in the string 
-  if (!numbers) return 0;
-  return numbers.reduce((sum, num) => sum + Number(num), 0);
-}
-
 // Returns a row from the dataset with the enteredDate
 function helperReturnRowThatMatchesDate(dataset, enteredDate) {
   // Convert date to below format otherwise the new Date(enteredDate) function returns GMT timezone for some reason
@@ -184,4 +177,20 @@ function helperSumSecondElement(arr) {
     total += row[1];
   }
   return total;
+}
+
+function helperAverageValue(eventLine, totalCountThisMonth, averageThisMonth){
+  console.log("Total count this month: " + totalCountThisMonth);
+  console.log("Average this month before this new line: " + averageThisMonth);
+  console.log("Event line: " + eventLine);
+  var valueToday = parseInt((eventLine.split(" ")[1]));
+  console.log("The value today: " + valueToday);
+  if (valueToday) {
+    var average = ((averageThisMonth * totalCountThisMonth) + (valueToday * 1)) / (totalCountThisMonth + 1);
+    console.log("The new average is: " + average);
+    return average;
+  } else {
+    console.log("The average did not change: " + averageThisMonth);
+    return averageThisMonth; // If the value is not a number, return the previous average
+  }
 }
