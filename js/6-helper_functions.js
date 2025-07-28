@@ -180,17 +180,11 @@ function helperSumSecondElement(arr) {
 }
 
 function helperAverageValue(eventLine, totalCountThisMonth, averageThisMonth){
-  console.log("Total count this month: " + totalCountThisMonth);
-  console.log("Average this month before this new line: " + averageThisMonth);
-  console.log("Event line: " + eventLine);
   var valueToday = parseInt((eventLine.split(" ")[1]));
-  console.log("The value today: " + valueToday);
   if (valueToday) {
     var average = ((averageThisMonth * totalCountThisMonth) + (valueToday * 1)) / (totalCountThisMonth + 1);
-    console.log("The new average is: " + average.toFixed(2));
     return average.toFixed(2);
   } else {
-    console.log("The average did not change: " + averageThisMonth);
     return averageThisMonth; // If the value is not a number, return the previous average
   }
 }
