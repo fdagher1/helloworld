@@ -1,5 +1,6 @@
 function retrieveDataForTopPane() {
   let startTime = performance.now();
+  
   // RETRIEVE THE YEARS LIST
   var currentYear = new Date().getFullYear();
   var startingYear = new Date(datasetArray[datasetArray.length-1][0]).getFullYear();
@@ -122,9 +123,9 @@ function retrieveDataForListTable() {
   var columnHeaders = ["Date", "Location", "(" + datasetArrayForDisplay.length + " rows)"];
 
   console.log(`retrieveDataForListTable executed in: ${performance.now() - startTime} milliseconds`);
+  
   // Display the data
   displayDataInTable(columnHeaders, datasetArrayForDisplay);
-
 }
 
 function retrieveDataForGroupByTable() {
@@ -155,8 +156,7 @@ function retrieveDataForGroupByTable() {
       }
 
       // Add state name to dictionary if country is USA and state is not already there and country is US, otherwise increment count
-      defaultCountrySuffix = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn").split("\n")[1]; // Get default country suffix
-      if (countryName == defaultCountrySuffix.slice(1)) {
+      if (countryName == defaultInputValues[2].slice(1)) { // defaultInputValues[2] is the default country suffix 
         let stateName = helperSplitStringLastOccurrence(cityName, " ");
         if(!locationsAddedForThisDay[1].includes(stateName)) {
           helperIncrementCount(stateName, countOfLocationDictionaryArray[1]);
@@ -383,4 +383,17 @@ function updateDataSetToMatchSearchCriteria() {
   }
 
   console.log(`updateDataSetToMatchSearchCriteria executed in: ${performance.now() - startTime} milliseconds`);
+}
+
+function retrieveDefaultInputValues() {
+  // Retrieve the default values for date, location, country to append, and event, which will be used later in the app
+  let defaultDate = datasetArray[0][0].split(', ')[1];
+  defaultDate = new Date((new Date(defaultDate)).setDate((new Date(new Date(defaultDate))).getDate() + 1));
+  
+  let defaultValues = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn").split("\n");
+  let defaultLocation = defaultValues[0]; // First line has the locations
+  let defaultCountrySuffix = defaultValues[1]; // Second line has the default country suffix
+  let defaultEventLine = defaultValues.slice(2).join("\n"); // Afterwards it's the default events
+  
+  defaultInputValues = [defaultDate, defaultLocation, defaultCountrySuffix, defaultEventLine]; // Store the default values in an array for later use
 }

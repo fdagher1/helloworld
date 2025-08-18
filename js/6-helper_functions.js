@@ -84,17 +84,21 @@ function helperReturnSortedArrayFromDictionary(dict) {
   return items;
 }
 
-// Returns a row from the dataset with the enteredDate
-function helperReturnRowThatMatchesDate(dataset, enteredDate) {
-  // Convert date to below format otherwise the new Date(enteredDate) function returns GMT timezone for some reason
-  var day = enteredDate.split("-")[2];
-  var month = enteredDate.split("-")[1];
-  var year = enteredDate.split("-")[0];
-  enteredDate =  month + "/" + day + "/" + year;
-  
+// Returns a row from the dataset with the dateToSearchFor
+function helperReturnRowThatMatchesDate(dataset, dateToSearchFor, comingFrom) {
+  if (comingFrom == "inputForm") {
+    // Convert date to below format otherwise the new Date(enteredDate) function returns GMT timezone for some reason
+    var day = dateToSearchFor.split("-")[2];
+    var month = dateToSearchFor.split("-")[1];
+    var year = dateToSearchFor.split("-")[0];
+    dateToSearchFor =  month + "/" + day + "/" + year;
+  } else if (comingFrom == "outputTable") {
+    dateToSearchFor = dateToSearchFor.split(', ')[1]; // extracts the "DD/MM/YYYY" from "DAY, DD/MM/YYYY"
+  }
+
   // Check if date exists already and if so return that row
   for (const row of dataset) {
-    if (new Date(row[0].split(",")[1]).toString() == new Date(enteredDate).toString()) {
+    if (new Date(row[0].split(",")[1]).toString() == new Date(dateToSearchFor).toString()) {
       return row;
     }
   }

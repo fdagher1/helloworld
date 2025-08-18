@@ -5,8 +5,7 @@ var datasetArray = []; // Data from excel file, program never changes it
 var datasetArrayForDisplay = []; // Holds the data to display in the output after the filter is applied
 var allDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
 var allDisplayOptions = []; // All Display Options in the Display Options dropdown
-var defaultCountrySuffix; // Holds the default country name to append to locations when the _country suffix is not entered
-                          // It's also the value that gets checked for before incrementing the stateName variable
+var defaultInputValues = []; // Holds the default values for date, location, country to append, and event, which will be used later in the app
 
 // Input from webpage
 var selectedDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
@@ -133,23 +132,12 @@ function eventKeywordEntered() {
 
 function eventAppModeButtonClicked() {
   if (darkModeBtnValue = document.getElementById("label-button-mode").innerText == "Switch to Write Mode") { 
-    // Switch to Write mode
-    // Update element visibility
-    document.getElementById("filter-grid").style.display = "none";
-    document.getElementById("output-table").style.display = "none";
-    document.getElementById("input-grid").style.display = "grid";
+    
+    // Retrieve default values for date, location, country, and event from file
+    retrieveDefaultInputValues();
 
-    // Get default values for location, country to append, and event, from the file
-    var defaultValues = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn");
-    defaultValues = defaultValues.split("\n");
-    var defaultLocation = defaultValues[0]; // First line has the locations
-    defaultCountrySuffix = defaultValues[1]; // Second line has the default country suffix
-    var defaultEventLine = defaultValues.slice(2).join("\n"); // Afterwards it's the default events
-
-    // Display the default location and event values
-    document.getElementById("label-button-mode").innerText = "Switch to Read Mode";
-    document.getElementById("input-date").valueAsDate = new Date((new Date(datasetArray[0][0])).setDate((new Date(new Date(datasetArray[0][0]))).getDate() + 1));
-    updateUserInputForm(defaultLocation, defaultEventLine);
+    // display the values in the input form
+    displayUserInputForm(defaultInputValues[0], defaultInputValues[1], defaultInputValues[3]);
   } else { 
     // Switch to Read mode
     // Update element visibility
@@ -166,20 +154,32 @@ function eventSaveButtonClicked() {
   saveContentToFile();
 }
 
-function eventInputDateChanged(event) {
-  // Find the row with that date to get the corresponding location and event values to then set them in the user's input
-  var result = helperReturnRowThatMatchesDate(datasetArray, event.target.value)
+function eventInputDateChanged(event, comingFrom) {
+  // Set the date to search for in the right format 
+  let dateToSearchFor;
+  if (comingFrom == "inputForm") { 
+    dateToSearchFor = event.target.value; // Get the date from the input type=date element
+  } else if (comingFrom == "outputTable") { 
+    dateToSearchFor = event.target.innerText; // Get the date from the clicked element
+    eventAppModeButtonClicked();
+  } else {
+    // This scenario does not exist, keeping this here for future-proofing
+  }
+
+  // Find the row with that date to get the corresponding location and event values
+  var result = helperReturnRowThatMatchesDate(datasetArray, dateToSearchFor, comingFrom);
+  
+  // Set found values as the user's input
   if (result == "Date not found.") { // If this is a new date, then insert new line
     // Get default values for location and event from the file
-     var defaultValues = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn");
-    defaultValues = defaultValues.split("\n");
-        var locationToDisplay = defaultValues[0];
+    var defaultValues = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn").split("\n");
+    var locationToDisplay = defaultValues[0];
     var eventLinesToDisplay = defaultValues.slice(2).join("\n");
 
     // Display the default location and event values
-    updateUserInputForm(locationToDisplay, eventLinesToDisplay);
+    displayUserInputForm(dateToSearchFor, locationToDisplay, eventLinesToDisplay);
+  
   } else { // If this is an existing date, then update
-    var retrievedEvent = helperSetBeaklineCharacter(result[2], "<br>tobackslashn");
-    updateUserInputForm(result[1], retrievedEvent);
+    displayUserInputForm(result[0], result[1], helperSetBeaklineCharacter(result[2], "<br>tobackslashn"));
   }
 }

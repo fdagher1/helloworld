@@ -50,29 +50,26 @@ function displayDataInTopPane() {
 
 function displayDataInTable(columnHeaders, dataSetToDisplay) {
   let startTime = performance.now();
-  // Clear table header element then add new row to it
+  
+  // Clear the table header element
   const thead_HTML_Element = document.getElementById("thead");
   thead_HTML_Element.replaceChildren();
-  let row = thead_HTML_Element.insertRow();
 
-  // Iterate over the column names array, creating a header for each, with proper styling
+  // Add a new header row and iterate over the column headers array to add them to that row
+  let row = thead_HTML_Element.insertRow();
   for (var i = 0; i < columnHeaders.length; i++) {
     let cell = row.insertCell(i);
 
-    // Set column name value
+    // Set column name value and styling
     cell.innerHTML = columnHeaders[i];
-
-    // Set column styling
     cell.style.fontWeight = "bold";
     cell.style.verticalAlign = "top";
-
-    // If column name is "Date" or "Location" set width to 150px
-    if (cell.innerHTML == "Date" || cell.innerHTML == "Location") {
+    if (cell.innerHTML == "Date" || cell.innerHTML == "Location") { // If column name is "Date" or "Location" set width to 150px
       cell.style.width = "150px";
     }
   }
 
-  // Clear table body element
+  // Clear the table body element
   const new_tbody_HTML_Element = document.getElementById("tbody"); // Get tbody HTML element
   new_tbody_HTML_Element.replaceChildren() // Clear content
   
@@ -81,13 +78,29 @@ function displayDataInTable(columnHeaders, dataSetToDisplay) {
     let row = new_tbody_HTML_Element.insertRow();
     for (var j = 0; j < dataSetToDisplay[i].length; j++) {
       let cell = row.insertCell(j);
-      cell.innerHTML = dataSetToDisplay[i][j];
+      let textToInsert = '';
+      if (j == 0) { // If data is date, then make it clickable 
+        //textToInsert = `<a onclick="eventInputDateChanged(this.innerText, 'outputTable')">` + dataSetToDisplay[i][j] + `</a>`;
+        textToInsert = `<a onclick="eventInputDateChanged(event, 'outputTable')">` + dataSetToDisplay[i][j] + `</a>`;
+      } else {
+        textToInsert = dataSetToDisplay[i][j];
+      }
+      cell.innerHTML = textToInsert;
     }
   }
   console.log(`displayDataInTable executed in: ${performance.now() - startTime} milliseconds`);
 }
 
-function updateUserInputForm(locationToDisplay, eventLinesToDisplay) {
+function displayUserInputForm(dateToDisplay, locationToDisplay, eventLinesToDisplay) {
+  // Switch to Write mode
+  // Update element visibility
+  document.getElementById("filter-grid").style.display = "none";
+  document.getElementById("output-table").style.display = "none";
+  document.getElementById("input-grid").style.display = "grid";
+  document.getElementById("label-button-mode").innerText = "Switch to Read Mode";
+
+  // display the values in the input form
+  document.getElementById("input-date").valueAsDate = new Date(new Date(dateToDisplay));
   document.getElementById("input-location").value = locationToDisplay;
   document.getElementById("input-events").value = eventLinesToDisplay;
 }

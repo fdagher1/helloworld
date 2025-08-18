@@ -130,7 +130,7 @@ function helperCheckCountrySuffixAndAddIfMissing(locationString) {
   for (let j = 0; j < rowLocationValueArray.length; j++) { // Iterate over every city_country that day
     var cityCountrySplitArray = rowLocationValueArray[j].split("_"); // Split city_country into an array
     if (cityCountrySplitArray.length != 2) { // If there's no underscore
-      rowLocationValueArray[j] = rowLocationValueArray[j] + defaultCountrySuffix; // Add 
+      rowLocationValueArray[j] = rowLocationValueArray[j] + defaultInputValues[2]; // defaultInputValues[2] is the default country suffix 
     }
   }
   
