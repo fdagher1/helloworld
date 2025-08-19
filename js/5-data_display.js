@@ -80,8 +80,7 @@ function displayDataInTable(columnHeaders, dataSetToDisplay) {
       let cell = row.insertCell(j);
       let textToInsert = '';
       if (j == 0) { // If data is date, then make it clickable 
-        //textToInsert = `<a onclick="eventInputDateChanged(this.innerText, 'outputTable')">` + dataSetToDisplay[i][j] + `</a>`;
-        textToInsert = `<a onclick="eventInputDateChanged(event, 'outputTable')">` + dataSetToDisplay[i][j] + `</a>`;
+        textToInsert = `<a onclick="eventInputDateChanged(event, 'outputTable')" style="font-weight: bold; text-decoration: underline;">` + dataSetToDisplay[i][j] + `</a>`;
       } else {
         textToInsert = dataSetToDisplay[i][j];
       }
