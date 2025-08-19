@@ -1,4 +1,4 @@
-async function readContentFromFile(event) {
+async function readFileAndValidate(event) {
   // GET FILE CONTENT, AND PASSWORD (IF ANY)
   var enteredPassword = document.getElementById("textbox-password").value; // Get user entered password, if any
   const file = event.target.files[0]; 

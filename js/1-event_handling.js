@@ -16,7 +16,7 @@ var searchWord = ""; // Value of the user entered keyword
 
 function eventUploadButtonClicked(event) {
   // Get file content
-  readContentFromFile(event);
+  readFileAndValidate(event);
   
   // Enable HTML elements again
   document.getElementById("button-modetoggle").removeAttribute("disabled");
@@ -30,8 +30,7 @@ function eventDarkModeButtonClicked() {
   if (darkModeBtnValue = document.getElementById("label-button-theme").innerText == "Switch to Dark Theme") {
     document.getElementById("label-button-theme").innerText = "Switch to Light Theme";
     document.getElementById("body").classList.remove("lightmode");
-  // otherwise, unset it
-  } else {
+  } else { // otherwise, unset it
     document.getElementById("label-button-theme").innerText = "Switch to Dark Theme";
     document.getElementById("body").classList.add("lightmode");
   }
@@ -154,7 +153,7 @@ function eventSaveButtonClicked() {
   saveContentToFile();
 }
 
-function eventInputDateChanged(event, comingFrom) {
+function eventInputDateChanged(event, comingFrom) { // This can be done from either the input form or the output table
   // Set the date to search for in the right format 
   let dateToSearchFor;
   if (comingFrom == "inputForm") { 
