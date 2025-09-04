@@ -156,6 +156,7 @@ function retrieveDataForGroupByTable() {
       }
 
       // Add state name to dictionary if country is USA and state is not already there and country is US, otherwise increment count
+      retrieveDefaultInputValues(); // needed in order to retrieve the default country suffix
       if (countryName == defaultInputValues[2].slice(1)) { // defaultInputValues[2] is the default country suffix 
         let stateName = helperSplitStringLastOccurrence(cityName, " ");
         if(!locationsAddedForThisDay[1].includes(stateName)) {
