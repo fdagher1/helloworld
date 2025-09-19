@@ -27,7 +27,7 @@ function displayDataInTopPane() {
       var inputElement = document.createElement("input");
       inputElement.type = "checkbox";
       inputElement.value = dataValue;
-      inputElement.addEventListener("change", e => {eventCheckboxSelected(e);});
+      inputElement.addEventListener("change", e => {filterCheckboxSelected(e);});
       var liElement = document.createElement("li");
       liElement.appendChild(inputElement);
       liElement.appendChild(labelElement);

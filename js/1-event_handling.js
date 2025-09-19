@@ -37,12 +37,10 @@ function eventDarkModeButtonClicked() {
 }
 
 function eventCriteriaDropdownClicked(event) {
-  if (datasetArray.length > 0){ // That means the excel file has been uploaded
-    if (event.target.parentNode.classList.contains('visible'))
-      event.target.parentNode.classList.remove('visible');
-    else
-    event.target.parentNode.classList.add('visible');
-  }
+  if (event.target.parentNode.classList.contains('visible'))
+    event.target.parentNode.classList.remove('visible');
+  else
+  event.target.parentNode.classList.add('visible');
 }
 
 function eventDisplayOptionSelected() {
@@ -65,7 +63,7 @@ function eventDisplayOptionSelected() {
   }
 }
 
-function eventCheckboxSelected(event) {
+function filterCheckboxSelected(event) {
   // Clear the search word text box (to avoid having to search for a keyword in order to optimize search speed)
   document.getElementById('textbox-keyword').value = '';
   
@@ -96,8 +94,9 @@ function eventCheckboxSelected(event) {
     textToSetInDropdown = "Multiple " + unitToUse[dropdownNumber] + "s";
   }
 
-  // Update the dropdown value
-  event.target.parentElement.parentElement.parentElement.firstElementChild.innerText = textToSetInDropdown;
+  // Update the dropdown
+  event.target.parentElement.parentElement.parentElement.firstElementChild.innerText = textToSetInDropdown; //Add the text to the dropdown
+  event.target.parentElement.parentElement.parentNode.classList.remove('visible') // Close the dropdown
 
   // Filter datasets to only include lines matching from the 3 dropdown selections
   updateDataSetToMatchSearchCriteria(); 
@@ -116,7 +115,7 @@ function eventKeywordEntered() {
   // Gather user inputs
   retrieveDataFromTopPane();
 
-  // Filter datasets to only include lines matching from the search word
+  // Filter datasets to only include lines matching the search word
   updateDataSetToMatchSearchCriteria(); 
 
   // Check which display option user chose in order to call the corresponding function
