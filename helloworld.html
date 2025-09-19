@@ -48,19 +48,19 @@
       <div class="dropdown-criteria-list" id="yearDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
         <span class="anchor">All Years</span>
         <ul class="items" id="timeItems">
-          <li><input type="checkbox" onchange="eventCheckboxSelected()" />Place Holder </li>
+          <li><input type="checkbox" onchange="filterCheckboxSelected()" />Place Holder </li>
         </ul>
       </div>
       <div class="dropdown-criteria-list" id="locationDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
         <span class="anchor">All Locations</span>
         <ul class="items" id="locationItems">
-          <li><input type="checkbox" onchange="eventCheckboxSelected()" />Place Holder </li>
+          <li><input type="checkbox" onchange="filterCheckboxSelected()" />Place Holder </li>
         </ul>
       </div>
       <div class="dropdown-criteria-list" id="eventDropdownDiv" onclick="eventCriteriaDropdownClicked(event)">
         <span class="anchor">All Events</span>
         <ul class="items" id="eventItems">
-          <li><input type="checkbox" onchange="eventCheckboxSelected(event)" />Place Holder </li>
+          <li><input type="checkbox" onchange="filterCheckboxSelected(event)" />Place Holder </li>
         </ul>
       </div>
       <div><input type="text" id="textbox-keyword" placeholder="(Search Criteria)" oninput="eventKeywordEntered()"></div>
