@@ -1,18 +1,18 @@
 /*Colors*/
 :root{
-  --text-color: rgb(222, 222, 222);
-  --text-color-header: black;
-  --background-color: rgb(22, 22, 22);
-  --section-color: red;
-  --border-color: #1c87c9;
+  --text-color: #E0E0E0;
+  --text-color-header: #E0E0E0;
+  --background-color: #1E1E1E;
+  --section-color: #444444;
+  --border-color: #444444;
 }
 
 .lightmode{
-  --text-color: rgb(22, 22, 22);
-  --text-color-header: white;
-  --background-color: rgb(222, 222, 222); 
-  --section-color: blue;
-  --border-color: #1c87c9;
+  --text-color: #000000;
+  --text-color-header: #333333;
+  --background-color: #F9F9F9;
+  --section-color: #708090;
+  --border-color: #708090;
 }
 
 body, 
