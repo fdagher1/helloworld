@@ -21,7 +21,8 @@ function eventUploadButtonClicked(event) {
   // Enable HTML elements again
   document.getElementById("button-modetoggle").removeAttribute("disabled");
   document.getElementById("filter-grid").style.display = "grid";
-  document.getElementById("output-table").style.display = "grid";
+  document.getElementById("display-grid").style.display = "grid";
+  document.getElementById("output-grid").style.display = "grid";
   document.getElementById("switch-mode-section").style.display = "grid";
 }
 
@@ -129,7 +130,15 @@ function eventKeywordEntered() {
 }
 
 function eventAppModeButtonClicked() {
-  if (darkModeBtnValue = document.getElementById("label-button-mode").innerText == "Switch to Write Mode") { 
+  // Switch to Write mode
+  if (document.getElementById("label-button-mode").innerText == "Switch to Write Mode") { 
+    
+    // Update element visibility
+    document.getElementById("filter-grid").style.display = "none";
+    document.getElementById("output-grid").style.display = "none";
+    document.getElementById("input-grid").style.display = "grid";
+    document.getElementById("label-button-mode").innerText = "Switch to Read Mode";
+    document.getElementById("select-displayoption").setAttribute("disabled", "true");
     
     // Retrieve default values for date, location, country, and event from file
     retrieveDefaultInputValues();
@@ -140,10 +149,12 @@ function eventAppModeButtonClicked() {
     // Switch to Read mode
     // Update element visibility
     document.getElementById("filter-grid").style.display = "grid";
-    document.getElementById("output-table").style.display = "grid";
+    document.getElementById("display-grid").style.display = "grid";
+    document.getElementById("output-grid").style.display = "grid";
     document.getElementById("input-grid").style.display = "none";
 
     // Update element values
+    document.getElementById("select-displayoption").removeAttribute("disabled");
     document.getElementById("label-button-mode").innerText = "Switch to Write Mode";
   }
 }
@@ -153,6 +164,13 @@ function eventSaveButtonClicked() {
 }
 
 function eventInputDateChanged(event, comingFrom) { // This can be done from either the input form or the output table
+  // Update element visibility for write mode
+  document.getElementById("filter-grid").style.display = "none";
+  document.getElementById("output-grid").style.display = "none";
+  document.getElementById("input-grid").style.display = "grid";
+  document.getElementById("label-button-mode").innerText = "Switch to Read Mode";
+  document.getElementById("select-displayoption").setAttribute("disabled", "true");
+  
   // Set the date to search for in the right format 
   let dateToSearchFor;
   if (comingFrom == "inputForm") { 
