@@ -91,13 +91,6 @@ function displayDataInTable(columnHeaders, dataSetToDisplay) {
 }
 
 function displayUserInputForm(dateToDisplay, locationToDisplay, eventLinesToDisplay) {
-  // Switch to Write mode
-  // Update element visibility
-  document.getElementById("filter-grid").style.display = "none";
-  document.getElementById("output-table").style.display = "none";
-  document.getElementById("input-grid").style.display = "grid";
-  document.getElementById("label-button-mode").innerText = "Switch to Read Mode";
-
   // display the values in the input form
   document.getElementById("input-date").valueAsDate = new Date(new Date(dateToDisplay));
   document.getElementById("input-location").value = locationToDisplay;

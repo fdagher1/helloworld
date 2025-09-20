@@ -23,9 +23,8 @@ body,
   font-size: 17px;
 }
 
-#label-header,
+.label-seperator,
 #label-button-upload, #label-button-theme, #label-button-mode, #textbox-password, 
-#label-filters,
 .anchor, #select-displayoption, #label-button-display, #textbox-keyword, 
 #input-date, #input-location, #input-events, #label-button-submit
 {
@@ -37,7 +36,7 @@ body,
   width: 98vw;
 }
 
-#label-header, #label-filters {
+.label-seperator {
   text-align: center;
   font-size: xx-large;
   font-family: Arial, Helvetica, sans-serif;
@@ -45,9 +44,9 @@ body,
   background-color: var(--section-color);
 }
 
-#label-header, 
+.label-seperator,
 #label-button-upload, #label-button-theme, #label-button-mode, 
-#label-filters, #label-button-display,
+#label-button-display,
 #label-button-submit,
 .anchor {
   display: flex;
