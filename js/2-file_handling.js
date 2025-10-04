@@ -24,7 +24,7 @@ async function readFileAndValidate(event) {
     retrieveDataFromTopPane();
 
     // Display Data in Table
-    retrieveDataForListTable();
+    retrieveDataForListView();
 
     // Clear validity errors if any
     clearFileValidityError();
@@ -95,7 +95,7 @@ async function saveContentToFile() {
   clearFileValidityError(); // Clear validity errors in case of any from previous save attemps attemps
   eventAppModeButtonClicked(); // Switch back to read mode
   retrieveDataForTopPane(); // Update top pane
-  retrieveDataForListTable();;  // Redisplay the table 
+  retrieveDataForListView();;  // Redisplay the table 
 }
 
 async function decrypt(encryptedCsvData, enteredPassword) { 

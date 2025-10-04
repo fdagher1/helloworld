@@ -48,7 +48,7 @@ function displayDataInTopPane() {
   console.log(`displayDataInTopPane executed in: ${performance.now() - startTime} milliseconds`);
 }
 
-function displayDatasetInBody(dataSetToDisplay) {
+function displayListOutput(dataSetToDisplay) {
   let startTime = performance.now();
 
   // Clear the previous events or table
@@ -66,22 +66,20 @@ function displayDatasetInBody(dataSetToDisplay) {
     const section = document.createElement("section");
     
     // Create the child HTML elements
-    const dateDiv = document.createElement("div");
-    const locationDiv = document.createElement("div");
+    const dateAndLocationDiv = document.createElement("div");
     const eventDiv = document.createElement("div");
     const seperatorDiv = document.createElement("div");
     
     // Add the text to the elements
-    dateDiv.innerHTML = `<a onclick="eventInputDateChanged(event, 'outputTable')" style="font-weight: bold; text-decoration: underline;">` + dataSetToDisplay[i][0] + `</a>`;
-    locationDiv.textContent = dataSetToDisplay[i][1];
+    dateAndLocationDiv.innerHTML = `<a onclick="eventInputDateChanged(event, 'outputTable')" style="font-weight: bold; text-decoration: underline; font-size: large;">` + 
+                                    dataSetToDisplay[i][0] + `</a>` + ': ' + '<em>' + dataSetToDisplay[i][1] + '</em></br></br>';
     eventDiv.textContent = dataSetToDisplay[i][2];
-    seperatorDiv.innerHTML = `<hr style="border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">`;
+    seperatorDiv.innerHTML = `</br><hr style="border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">`;
 
     // Append the HTML
-    section.appendChild(dateDiv);
-    section.appendChild(locationDiv);
-    section.appendChild(eventDiv);
     section.appendChild(seperatorDiv);
+    section.appendChild(dateAndLocationDiv);
+    section.appendChild(eventDiv);
     fragment.appendChild(section);
   }
 
@@ -89,7 +87,7 @@ function displayDatasetInBody(dataSetToDisplay) {
   console.log(`displayEventsInBody executed in: ${performance.now() - startTime} milliseconds`);
 }
 
-function displayTableInBody(columnHeaders, dataSetToDisplay) {
+function displayTableOutput(columnHeaders, dataSetToDisplay) {
   let startTime = performance.now();
   
   // Clear the previous events or table
@@ -128,7 +126,7 @@ function displayTableInBody(columnHeaders, dataSetToDisplay) {
       cell.innerHTML = textToInsert;
     }
   }
-  console.log(`displayTableInBody executed in: ${performance.now() - startTime} milliseconds`);
+  console.log(`displayTableOutput executed in: ${performance.now() - startTime} milliseconds`);
 }
 
 function displayUserInputForm(dateToDisplay, locationToDisplay, eventLinesToDisplay) {
