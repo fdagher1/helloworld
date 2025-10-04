@@ -24,7 +24,7 @@ function eventUploadButtonClicked(event) {
   // Enable HTML elements again
   document.getElementById("button-modetoggle").removeAttribute("disabled");
   document.getElementById("filter-grid").style.display = "grid";
-  document.getElementById("display-grid").style.display = "grid";
+  document.getElementById("displayoptions-grid").style.display = "grid";
   document.getElementById("output-grid").style.display = "grid";
   document.getElementById("switch-mode-section").style.display = "grid";
 }
@@ -69,7 +69,7 @@ function eventDisplayOptionSelected() {
   }
 }
 
-function filterCheckboxSelected(event) {
+function eventFilterCheckboxSelected(event) {
   // Clear the search word text box (to avoid having to search for a keyword in order to optimize search speed)
   document.getElementById('textbox-keyword').value = '';
   
@@ -157,7 +157,7 @@ function eventAppModeButtonClicked() {
 
     // Update element visibility
     document.getElementById("filter-grid").style.display = "grid";
-    document.getElementById("display-grid").style.display = "grid";
+    document.getElementById("displayoptions-grid").style.display = "grid";
     document.getElementById("output-grid").style.display = "grid";
     document.getElementById("input-grid").style.display = "none";
 
@@ -196,14 +196,13 @@ function eventInputDateChanged(event, comingFrom) { // This can be done from eit
   // Set found values as the user's input
   if (result == "Date not found.") { // If this is a new date, then insert new line
     // Get default values for location and event from the file
-    var defaultValues = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn").split("\n");
-    var locationToDisplay = defaultValues[0];
+    var locationToDisplay = defaultValues[0].split("\n");
     var eventLinesToDisplay = defaultValues.slice(2).join("\n");
 
     // Display the default location and event values
     displayUserInputForm(dateToSearchFor, locationToDisplay, eventLinesToDisplay);
   
   } else { // If this is an existing date, then update
-    displayUserInputForm(result[0], result[1], helperSetBeaklineCharacter(result[2], "<br>tobackslashn"));
+    displayUserInputForm(result[0], result[1], result[2]);
   }
 }

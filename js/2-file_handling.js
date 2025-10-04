@@ -44,7 +44,6 @@ async function saveContentToFile() {
   // Format input correctly
   enteredDate = helperSetDateFormat(enteredDate); // Convert date to format Mon, 12/1/2024
   enteredLocation = helperCheckCountrySuffixAndAddIfMissing(enteredLocation); // Add a default country if underscore is missing 
-  enteredEvents = helperSetBeaklineCharacter(enteredEvents, "backslashnto<br>"); // Replace all \n with <br> as the code currently depends on that
   
   // Create array from properly formatted input
   var userInput = [enteredDate, enteredLocation, enteredEvents];
