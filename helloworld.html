@@ -32,12 +32,12 @@
     <div id="top-grid">   
       <div><label class="label-seperator">Hello World</label></div>
       <div>
-        <label for="button-themetoggle" id="label-button-theme" >Switch to Light Theme</label>
-        <input type="button" id="button-themetoggle" onclick="eventDarkModeButtonClicked()" hidden>
+        <label for="button-themetoggle" id="label-button-theme" class="button-default">Switch to Light Theme</label>
+        <input type="button" id="button-themetoggle" onclick="eventThemeButtonClicked()" hidden>
       </div>
-      <div><input type="password" id="textbox-password" placeholder="(Enter Password)"></div>
+      <div><input type="password" id="textbox-password" class="textbox-default" placeholder="(Enter Password)"></div>
       <div>
-        <label for="button-upload" id="label-button-upload" >Load File</label>
+        <label for="button-upload" class="button-default">Load File</label>
         <input type=file name="files[]" id="button-upload" accept=".csv" hidden onchange="eventUploadButtonClicked(event)">
       </div>
     </div>
@@ -62,19 +62,19 @@
           <li><input type="checkbox" onchange="filterCheckboxSelected(event)" />Place Holder </li>
         </ul>
       </div>
-      <div><input type="text" id="textbox-keyword" placeholder="(Search Criteria)" oninput="eventKeywordEntered()"></div>
+      <div><input type="text" id="textbox-keyword" class ="textbox-default" placeholder="(Search Criteria)" oninput="eventKeywordEntered()"></div>
     </div>
     
     <div id="display-grid" style="display: none;">
       <div>
         <div><label class="label-seperator">Display Options</label></div>
-        <select id="select-displayoption" onchange="eventDisplayOptionSelected()">
+        <select id="select-displayoption" class="select-default" onchange="eventDisplayOptionSelected()">
           <option value="List: All Lines">List: All Lines</option>
         </select>
       </div>
       <div id ="switch-mode-section" style="display: none;">
         <div>
-          <label for="button-modetoggle" id="label-button-mode" >Switch to Write Mode</label>
+          <label for="button-modetoggle" id="label-button-mode" class="button-default">Switch to Write Mode</label>
           <input type="button" id="button-modetoggle" hidden onclick="eventAppModeButtonClicked()">
         </div>
       </div>
@@ -96,12 +96,12 @@
     <div id="input-grid" style="display: none;">
       <div><label class="label-seperator">Input</label></div>
       <div>
-        <div><input id="input-date" type="date" onchange="eventInputDateChanged(event, 'inputForm')"></div>
-        <div><input id="input-location" type="text" ></div>
-        <div><textarea id="input-events" rows="8" ></textarea></div>
+        <div><input id="input-date" class ="input-default" type="date" onchange="eventInputDateChanged(event, 'inputForm')"></div>
+        <div><input id="input-location" class ="input-default" type="text" ></div>
+        <div><textarea id="input-events" class ="input-default" rows="8" ></textarea></div>
       </div>
       <div>
-        <label for="button-submit" id="label-button-submit" >Save File</label>
+        <label for="button-submit" class="button-default" >Save File</label>
         <input type="button" id="button-submit" onclick="eventSaveButtonClicked()" hidden>
       </div>
     </div>
