@@ -61,7 +61,7 @@ function eventDisplayOptionSelected() {
 
   // Check which display option user chose in order to call the corresponding function
   if (selectedDisplayOption.includes("List:")) {
-    retrieveDataForListTable();
+    retrieveDataForListView();
   } else if (selectedDisplayOption.includes("GroupBy:")) {
     retrieveDataForGroupByTable();
   } else if (selectedDisplayOption.includes("Summary:")) {
@@ -109,7 +109,7 @@ function eventFilterCheckboxSelected(event) {
 
   // Check which display option user chose in order to call the corresponding function
   if (selectedDisplayOption.includes("List:")) {
-    retrieveDataForListTable();
+    retrieveDataForListView();
   } else if (selectedDisplayOption.includes("GroupBy:")) {
     retrieveDataForGroupByTable();
   } else if (selectedDisplayOption.includes("Summary:")) {
@@ -126,7 +126,7 @@ function eventKeywordEntered() {
 
   // Check which display option user chose in order to call the corresponding function
   if (selectedDisplayOption.includes("List:")) {
-    retrieveDataForListTable();
+    retrieveDataForListView();
   } else if (selectedDisplayOption.includes("GroupBy:")) {
     retrieveDataForGroupByTable();
   } else if (selectedDisplayOption.includes("Summary:")) {

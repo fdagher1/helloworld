@@ -116,16 +116,16 @@ function retrieveDataFromTopPane() {
   console.log(`retrieveDataFromTopPane executed in: ${performance.now() - startTime} milliseconds`);
 }
 
-function retrieveDataForListTable() {
+function retrieveDataForListView() {
   let startTime = performance.now();
   
   // Provide the column names for table to display data: 1- "Data", 2- "Location", and 3- Number of rows
   var columnHeaders = ["Date", "Location", "(" + datasetArrayForDisplay.length + " rows)"];
 
-  console.log(`retrieveDataForListTable executed in: ${performance.now() - startTime} milliseconds`);
+  console.log(`retrieveDataForListView executed in: ${performance.now() - startTime} milliseconds`);
   
   // Display the data
-  displayDatasetInBody(datasetArrayForDisplay);
+  displayListOutput(datasetArrayForDisplay);
 }
 
 function retrieveDataForGroupByTable() {
@@ -181,7 +181,7 @@ function retrieveDataForGroupByTable() {
 
   console.log(`retrieveDataforGroupByLocationTable executed in: ${performance.now() - startTime} milliseconds`);
   // Display the group table
-  displayTableInBody(columnHeaders, groupbyDataToDisplay);
+  displayTableOutput(columnHeaders, groupbyDataToDisplay);
 }
 
 function retrieveDataforSummaryTable() {
@@ -285,7 +285,7 @@ function retrieveDataforSummaryTable() {
   console.log(`retrieveDataforSummaryTable executed in: ${performance.now() - startTime} milliseconds`);
   
   // DISPLAY THE DATA
-  displayTableInBody(columnHeaders, summaryDataset);
+  displayTableOutput(columnHeaders, summaryDataset);
 }
 
 function updateDataSetToMatchSearchCriteria() {
