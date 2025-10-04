@@ -1,39 +1,41 @@
 /*Colors*/
 :root{
+  --background-color: #1E1E1E;
+  --border-color: #444444;
+  --section-color: #444444;
   --text-color: #E0E0E0;
   --text-color-header: #E0E0E0;
-  --background-color: #1E1E1E;
-  --section-color: #444444;
-  --border-color: #444444;
 }
 
 .lightmode{
+  --background-color: #F9F9F9;
+  --border-color: #708090;
+  --section-color: #708090;
   --text-color: #000000;
   --text-color-header: #333333;
-  --background-color: #F9F9F9;
-  --section-color: #708090;
-  --border-color: #708090;
 }
 
-body, 
-#textbox-password, #textbox-keyword, #select-displayoption, 
-#input-date, #input-location, #input-events {
+body, .textbox-default, .select-default, .input-default {
   background-color: var(--background-color);
   color: var(--text-color);
   font-size: 17px;
 }
 
-.label-seperator,
-#label-button-upload, #label-button-theme, #label-button-mode, #textbox-password, 
-.anchor, #select-displayoption, #label-button-display, #textbox-keyword, 
-#input-date, #input-location, #input-events, #label-button-submit
-{
+.label-seperator, .anchor, .button-default, .textbox-default, .select-default, .input-default {
   position: relative;
   cursor: pointer;
   display: inline-grid;
   border: 1px solid var(--border-color);
   height: 4vh;
   width: 98vw;
+}
+
+.label-seperator, .anchor, .button-default
+ {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .label-seperator {
@@ -44,18 +46,7 @@ body,
   background-color: var(--section-color);
 }
 
-.label-seperator,
-#label-button-upload, #label-button-theme, #label-button-mode, 
-#label-button-display,
-#label-button-submit,
-.anchor {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-#textbox-password, #select-displayoption, #textbox-keyword, #select-displayoption {
+.textbox-default, .select-default{
   text-align: center;
   text-align-last: center;
 }

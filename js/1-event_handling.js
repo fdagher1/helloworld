@@ -2,15 +2,18 @@
 
 // Input from excel file
 var datasetArray = []; // Data from excel file, program never changes it
-var datasetArrayForDisplay = []; // Holds the data to display in the output after the filter is applied
-var allDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
 var allDisplayOptions = []; // All Display Options in the Display Options dropdown
 var defaultInputValues = []; // Holds the default values for date, location, country to append, and event, which will be used later in the app
 
 // Input from webpage
+var datasetArrayForDisplay = []; // Holds the data to display in the output after the filter is applied
+var allDropdownValues = [[], [], []]; // Holds the values of all the checkboxes from Time, Locations, and Events dropdowns
 var selectedDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
 var selectedDisplayOption; // Value of the user selected drop down
 var searchWord = ""; // Value of the user entered keyword
+var themeMode = "darkMode"; // Set default value to dark mode
+var appMode = "readMode"; // Set default value to read mode
+
 
 // DEFINE RESPONSE FUNCTIONS
 
@@ -26,14 +29,16 @@ function eventUploadButtonClicked(event) {
   document.getElementById("switch-mode-section").style.display = "grid";
 }
 
-function eventDarkModeButtonClicked() {
-  // If dark theme was not set, then set it
-  if (darkModeBtnValue = document.getElementById("label-button-theme").innerText == "Switch to Dark Theme") {
-    document.getElementById("label-button-theme").innerText = "Switch to Light Theme";
-    document.getElementById("body").classList.remove("lightmode");
-  } else { // otherwise, unset it
+function eventThemeButtonClicked() {
+  // If dark theme is set, then change theme to light
+  if (themeMode == "darkMode") {
+    themeMode = "lightMode";
     document.getElementById("label-button-theme").innerText = "Switch to Dark Theme";
     document.getElementById("body").classList.add("lightmode");
+  } else { // otherwise, change to dark mode
+    themeMode = "darkMode";
+    document.getElementById("label-button-theme").innerText = "Switch to Light Theme";
+    document.getElementById("body").classList.remove("lightmode");
   }
 }
 
@@ -130,16 +135,17 @@ function eventKeywordEntered() {
 }
 
 function eventAppModeButtonClicked() {
-  // Switch to Write mode
-  if (document.getElementById("label-button-mode").innerText == "Switch to Write Mode") { 
-    
+  if (appMode == "readMode") { 
+    // Switch to Write mode
+    appMode = "writeMode";
+
     // Update element visibility
     document.getElementById("filter-grid").style.display = "none";
     document.getElementById("output-grid").style.display = "none";
     document.getElementById("input-grid").style.display = "grid";
     document.getElementById("label-button-mode").innerText = "Switch to Read Mode";
     document.getElementById("select-displayoption").setAttribute("disabled", "true");
-    
+
     // Retrieve default values for date, location, country, and event from file
     retrieveDefaultInputValues();
 
@@ -147,6 +153,8 @@ function eventAppModeButtonClicked() {
     displayUserInputForm(defaultInputValues[0], defaultInputValues[1], defaultInputValues[3]);
   } else { 
     // Switch to Read mode
+    appMode = "readMode";
+
     // Update element visibility
     document.getElementById("filter-grid").style.display = "grid";
     document.getElementById("display-grid").style.display = "grid";
