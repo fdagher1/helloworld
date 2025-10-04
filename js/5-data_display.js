@@ -27,7 +27,7 @@ function displayDataInTopPane() {
       var inputElement = document.createElement("input");
       inputElement.type = "checkbox";
       inputElement.value = dataValue;
-      inputElement.addEventListener("change", e => {filterCheckboxSelected(e);});
+      inputElement.addEventListener("change", e => {eventFilterCheckboxSelected(e);});
       var liElement = document.createElement("li");
       liElement.appendChild(inputElement);
       liElement.appendChild(labelElement);
@@ -48,12 +48,57 @@ function displayDataInTopPane() {
   console.log(`displayDataInTopPane executed in: ${performance.now() - startTime} milliseconds`);
 }
 
-function displayDataInTable(columnHeaders, dataSetToDisplay) {
+function displayDatasetInBody(dataSetToDisplay) {
   let startTime = performance.now();
-  
-  // Clear the table header element
+
+  // Clear the previous events or table
+  const datasetContainer = document.getElementById("dataset-container");
+  datasetContainer.replaceChildren();
   const thead_HTML_Element = document.getElementById("thead");
   thead_HTML_Element.replaceChildren();
+  const new_tbody_HTML_Element = document.getElementById("tbody"); // Get tbody HTML element
+  new_tbody_HTML_Element.replaceChildren() // Clear content
+
+  // Create the section elements to display the events in body
+  const fragment = document.createDocumentFragment();
+  for (var i = 0; i < dataSetToDisplay.length; i++) {
+    // Create the parent/section HTML element
+    const section = document.createElement("section");
+    
+    // Create the child HTML elements
+    const dateDiv = document.createElement("div");
+    const locationDiv = document.createElement("div");
+    const eventDiv = document.createElement("div");
+    const seperatorDiv = document.createElement("div");
+    
+    // Add the text to the elements
+    dateDiv.innerHTML = `<a onclick="eventInputDateChanged(event, 'outputTable')" style="font-weight: bold; text-decoration: underline;">` + dataSetToDisplay[i][0] + `</a>`;
+    locationDiv.textContent = dataSetToDisplay[i][1];
+    eventDiv.textContent = dataSetToDisplay[i][2];
+    seperatorDiv.innerHTML = `<hr style="border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">`;
+
+    // Append the HTML
+    section.appendChild(dateDiv);
+    section.appendChild(locationDiv);
+    section.appendChild(eventDiv);
+    section.appendChild(seperatorDiv);
+    fragment.appendChild(section);
+  }
+
+  datasetContainer.appendChild(fragment);
+  console.log(`displayEventsInBody executed in: ${performance.now() - startTime} milliseconds`);
+}
+
+function displayTableInBody(columnHeaders, dataSetToDisplay) {
+  let startTime = performance.now();
+  
+  // Clear the previous events or table
+  const datasetContainer = document.getElementById("dataset-container");
+  datasetContainer.replaceChildren();
+  const thead_HTML_Element = document.getElementById("thead");
+  thead_HTML_Element.replaceChildren();
+  const new_tbody_HTML_Element = document.getElementById("tbody"); // Get tbody HTML element
+  new_tbody_HTML_Element.replaceChildren() // Clear content
 
   // Add a new header row and iterate over the column headers array to add them to that row
   let row = thead_HTML_Element.insertRow();
@@ -68,10 +113,6 @@ function displayDataInTable(columnHeaders, dataSetToDisplay) {
       cell.style.width = "150px";
     }
   }
-
-  // Clear the table body element
-  const new_tbody_HTML_Element = document.getElementById("tbody"); // Get tbody HTML element
-  new_tbody_HTML_Element.replaceChildren() // Clear content
   
   // Then iterate over each array line to first add a new row, then new cells within that row 
   for (var i = 0; i < dataSetToDisplay.length; i++) {
@@ -80,14 +121,14 @@ function displayDataInTable(columnHeaders, dataSetToDisplay) {
       let cell = row.insertCell(j);
       let textToInsert = '';
       if (j == 0) { // If data is date, then make it clickable 
-        textToInsert = `<a onclick="eventInputDateChanged(event, 'outputTable')" style="font-weight: bold; text-decoration: underline;">` + dataSetToDisplay[i][j] + `</a>`;
+        textToInsert = `<bold>` + dataSetToDisplay[i][j] + `</bold>`;
       } else {
         textToInsert = dataSetToDisplay[i][j];
       }
       cell.innerHTML = textToInsert;
     }
   }
-  console.log(`displayDataInTable executed in: ${performance.now() - startTime} milliseconds`);
+  console.log(`displayTableInBody executed in: ${performance.now() - startTime} milliseconds`);
 }
 
 function displayUserInputForm(dateToDisplay, locationToDisplay, eventLinesToDisplay) {

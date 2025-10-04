@@ -21,6 +21,10 @@ body, .textbox-default, .select-default, .input-default {
   font-size: 17px;
 }
 
+#output-grid {
+  white-space: pre-line; /* This makes sure that \n characters are interpreted as line breaks */
+}
+
 .label-seperator, .anchor, .button-default, .textbox-default, .select-default, .input-default {
   position: relative;
   cursor: pointer;

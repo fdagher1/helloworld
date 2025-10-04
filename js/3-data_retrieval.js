@@ -32,8 +32,8 @@ function retrieveDataForTopPane() {
 
   // Then remove the breakline characters at the end of each entry
   for (let i=0; i < allDropdownValues[2].length; i++) {
-    if (allDropdownValues[2][i].includes("<br>")) {
-      allDropdownValues[2][i] = allDropdownValues[2][i].split("<br>")[1];
+    if (allDropdownValues[2][i].includes("\n")) {
+      allDropdownValues[2][i] = allDropdownValues[2][i].split("\n")[1];
     }
   }
   
@@ -125,7 +125,7 @@ function retrieveDataForListTable() {
   console.log(`retrieveDataForListTable executed in: ${performance.now() - startTime} milliseconds`);
   
   // Display the data
-  displayDataInTable(columnHeaders, datasetArrayForDisplay);
+  displayDatasetInBody(datasetArrayForDisplay);
 }
 
 function retrieveDataForGroupByTable() {
@@ -181,7 +181,7 @@ function retrieveDataForGroupByTable() {
 
   console.log(`retrieveDataforGroupByLocationTable executed in: ${performance.now() - startTime} milliseconds`);
   // Display the group table
-  displayDataInTable(columnHeaders, groupbyDataToDisplay);
+  displayTableInBody(columnHeaders, groupbyDataToDisplay);
 }
 
 function retrieveDataforSummaryTable() {
@@ -229,7 +229,7 @@ function retrieveDataforSummaryTable() {
     var month_year = (cell_date.getMonth()+1).toString() +"/" + cell_date.getFullYear().toString();
     
     // Iterate over each line in the row's event cell 
-    var linesFromEventsCell = datasetArrayForDisplay[i][2].split("<br>");
+    var linesFromEventsCell = datasetArrayForDisplay[i][2].split("\n");
     for (lineFromEventsCell of linesFromEventsCell) {
       // Check if line has hashtag sign first to save time from iterating for each selected event later
       if (lineFromEventsCell.includes("#")) {
@@ -285,7 +285,7 @@ function retrieveDataforSummaryTable() {
   console.log(`retrieveDataforSummaryTable executed in: ${performance.now() - startTime} milliseconds`);
   
   // DISPLAY THE DATA
-  displayDataInTable(columnHeaders, summaryDataset);
+  displayTableInBody(columnHeaders, summaryDataset);
 }
 
 function updateDataSetToMatchSearchCriteria() {
@@ -353,11 +353,11 @@ function updateDataSetToMatchSearchCriteria() {
     var tempDataSet = []; // This will hold the data that will be displayed
     for (var row of datasetArrayForDisplay) {
       var eventLinesToAdd = ""; // will hold all the events of that cell
-      var brIndices = getIndicesOf("<br>", row[2]) // Get all the indices of <br> in that cell
+      var brIndices = getIndicesOf("\n", row[2]) // Get all the indices of \n in that cell
       brIndices.unshift(0); // Add 0 to the beginning for ease of looping over each line in that cell
       for (var i = 0; i < brIndices.length ; i++) { // Loop over the different lines in that cell
         for (var event of selectedDropdownValues[2]) { // Loop over every selected event to check if it's present in that line
-          var line = row[2].substring(brIndices[i],brIndices[i+1]) + "<br>"; // Extract the line.
+          var line = row[2].substring(brIndices[i],brIndices[i+1]) + "\n"; // Extract the line.
           if (line.includes("#" + event)) { // Now check if the line contains the event
             if (!eventLinesToAdd.includes(line)) { // If so then check if that line is not already there (useful for lines that have multiple tags)
               eventLinesToAdd += line; // If not then add it
@@ -391,7 +391,7 @@ function retrieveDefaultInputValues() {
   let defaultDate = datasetArray[0][0].split(', ')[1];
   defaultDate = new Date((new Date(defaultDate)).setDate((new Date(new Date(defaultDate))).getDate() + 1));
   
-  let defaultValues = helperSetBeaklineCharacter(datasetArray[datasetArray.length-2][2], "<br>tobackslashn").split("\n");
+  let defaultValues = datasetArray[datasetArray.length-2][2].split("\n");
   let defaultLocation = defaultValues[0]; // First line has the locations
   let defaultCountrySuffix = defaultValues[1]; // Second line has the default country suffix
   let defaultEventLine = defaultValues.slice(2).join("\n"); // Afterwards it's the default events

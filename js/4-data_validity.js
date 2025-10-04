@@ -28,7 +28,7 @@ function helperValidateEvent(eventCell, SliceddatasetArray) {
   } 
 
   // CHECK IF EVENT CELL DOES NOT END WITH A BREAK LINE
-  if (eventCell.slice(-4) != "<br>") {
+  if (eventCell.slice(-1) != "\n") {
     return "The event cell does not end with a line break.";
   }
 
@@ -60,7 +60,7 @@ function helperValidateEvent(eventCell, SliceddatasetArray) {
     if (eventName.includes(",")) { 
       eventName = eventName.slice(0, eventName.indexOf(",")); // Remove the "," from the tag name if it happens to be linked to it. 
     }
-    // Should we handle other cases than . and , like <br> perhaps?
+    // Should we handle other cases than . and , like \n perhaps?
 
     // Check if event name is not in the provided event list
     var event_is_in_list = false;

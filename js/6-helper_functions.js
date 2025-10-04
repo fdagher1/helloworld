@@ -22,9 +22,7 @@ function helperCsvToArray(csvString) {
           currentRow = [];
           currentField = '';
       } else { // Regular character
-          if (char === '\n') { // Replace any \n, present at the end of each break line within a cell, with <br>, to remain compliant with my other code
-            currentField += '<br>';
-          } else if (char === '\r') { // Ignore any \r, present at the end of each cell in the 4th column, as it's not needed
+          if (char === '\r') { // Ignore any \r, present at the end of each cell in the 4th column, as it's not needed
             // Don't do anything
           } else if (char === '�') {
             currentField += "'";
@@ -56,7 +54,6 @@ function helperArrayToCSV(datasetArray) {
   }
   datasetCSV = datasetCSV.substring(0, datasetCSV.length - 1); // Remove the last command breakline
   datasetCSV = datasetCSV + "\n"; // Add a breakline to match the current file structure
-  datasetCSV = datasetCSV.replace(/<br>/g, "\n"); // Replace all <br> entries with \n instead
   return datasetCSV;
 }
 
@@ -149,15 +146,6 @@ function helperSetDateFormat(enteredDate) {
     return `${month}/${day}/${year}`;
   }
   return weekdays[dayOfWeek].slice(0,3) + ", " + formatDate(enteredDate);
-}
-
-// Function replaces all the \n characters with <br> or vice versa
-function helperSetBeaklineCharacter(inputString, direction) {
-  if (direction == "backslashnto<br>") {
-    return inputString.replace(/\n/g, "<br>");
-  } else if (direction == "<br>tobackslashn") {
-    return inputString.replace(/<br>/g, "\n");
-  }
 }
 
 // Function that returns splits a string on last occurance of a character then returns the string after the split (needed for retrieving state names)
