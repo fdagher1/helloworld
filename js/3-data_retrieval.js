@@ -245,6 +245,7 @@ function retrieveDataforSummaryTable() {
     }
   }
 
+  // For the events that have the average keyword in them, replace the count with the average value calculated
   for (const outerKey in countByMonth) {
     if (averageByMonth.hasOwnProperty(outerKey)) {
       for (const innerKey in countByMonth[outerKey]) {
@@ -274,10 +275,12 @@ function retrieveDataforSummaryTable() {
   var columnHeaders = ["Month"];
   var totalCount;
   for (tag of eventsToQuery) { // Iterate over every column (i.e. tag) 
-    // Iterate over every row (i.e. month) in this column in order to sum the total to later display it in the header
     totalCount = 0;
-    for (let monthYearDictionaryKey in countByMonth) {
+    for (let monthYearDictionaryKey in countByMonth) { // Iterate over every row (i.e. month) in this column in order to sum the total to later display it in the header
       totalCount += Number(countByMonth[monthYearDictionaryKey][tag]);
+    }
+    if (totalCount % 1 != 0) { // If totalCount is not an integer (which is the case for the avg columns) then make it toFixed(2)
+      totalCount = totalCount.toFixed(2);
     }
     columnHeaders.push(tag + "(" + totalCount.toString() + ")");
   }
