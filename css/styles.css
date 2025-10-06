@@ -19,13 +19,14 @@ body, .textbox-default, .select-default, .input-default {
   background-color: var(--background-color);
   color: var(--text-color);
   font-size: 17px;
+  padding: 10px;
 }
 
 #output-grid {
   white-space: pre-line; /* This makes sure that \n characters are interpreted as line breaks */
 }
 
-.label-seperator, .anchor, .button-default, .textbox-default, .select-default, .input-default {
+.label-seperator, .button-default, .textbox-default, .select-default, .input-default {
   position: relative;
   cursor: pointer;
   display: inline-grid;
@@ -34,7 +35,7 @@ body, .textbox-default, .select-default, .input-default {
   width: 98vw;
 }
 
-.label-seperator, .anchor, .button-default
+.label-seperator, .button-default
  {
   display: flex;
   justify-content: center;
@@ -69,41 +70,4 @@ td {
   vertical-align: top;
 }
 
-/*DROPDOWN STYLING*/
 
-.anchor::after {
-  content: "";
-  position: absolute;
-  border-left: 2px solid white;
-  border-top: 2px solid white;
-  padding: 5px;
-  right: 10px;
-  top: 20%;
-  -moz-transform: rotate(-135deg);
-  -ms-transform: rotate(-135deg);
-  -o-transform: rotate(-135deg);
-  -webkit-transform: rotate(-135deg);
-  transform: rotate(-135deg);
-}
-
-.anchor:active::after {
-  right: 8px;
-  top: 21%;
-}
-
-ul.items {
-  padding: 2px;
-  display: none;
-  margin: 0;
-  border: 1px solid #ccc;
-  border-top: none;
-  font-size: 20px;
-}
-
-li {
-  list-style: none;
-}
-
-.dropdown-criteria-list.visible .items {
-  display: block;
-}

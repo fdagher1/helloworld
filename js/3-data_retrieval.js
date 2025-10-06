@@ -69,32 +69,17 @@ function retrieveDataFromTopPane() {
   selectedDropdownValues[0].length = 0;
   selectedDropdownValues[1].length = 0;
   selectedDropdownValues[2].length = 0;
-
-  // Define new variables to use
-  var elementIdsToGetDataFrom = ["timeItems", "locationItems", "eventItems"];
   
-  // Loop over the 3 criteria dropdowns to get their corresponding: 1- values, and 2- select status (i.e., whether selected or not)
-  for (let i=0; i < elementIdsToGetDataFrom.length; i++) {
-    // Get an array of all the <li> children of the dropdown 
-    var liElements = document.getElementById(elementIdsToGetDataFrom[i]).children;
-    // Loop over each <li> entry to get its <input> child and then check if it's checked or unchecked
-    for (const liElement of liElements) {
-      var inputElement = liElement.children[0]; // the first child of the <li> element is the <input> element
-      
-      // Fill the selectedDropdownValues array with only selected values
-      if (inputElement.checked) {
-        if (inputElement.value.includes("_")) { // i.e., events
-          selectedDropdownValues[i].push(inputElement.value.split("_")[1]); 
-        } else { // i.e., times and locations 
-          selectedDropdownValues[i].push(inputElement.value); 
-        }
-      }
-    }
+  // Loop over the 3 criteria dropdowns to get their corresponding values
+  for (let i=0; i < selectedDropdownValues.length; i++) {
+    selectedDropdownValues[0][0] = selectedDisplayOption = document.getElementById("select-year").value;
+    selectedDropdownValues[1][0] = selectedDisplayOption = document.getElementById("select-location").value;
+    selectedDropdownValues[2][0] = selectedDisplayOption = document.getElementById("select-event").value;
   }
 
-  // If any of the selections are blank then fill the array with all of options (as if they were all selected)
+  // If any of the selections are "All " then fill the array with all of options (as if they were all selected)
   for (let i=0; i < selectedDropdownValues.length; i++) {
-    if (selectedDropdownValues[i].length == 0) { // Meaning no values were selected
+    if (selectedDropdownValues[i][0].includes("All ")) { // Meaning no values were selected
       if (i != 2) { // Meaning it's not events, then copy the data as is
         selectedDropdownValues[i] = allDropdownValues[i].slice();
       } else { // Meaning it's events, then only display the part after the _ sign
@@ -102,6 +87,8 @@ function retrieveDataFromTopPane() {
           selectedDropdownValues[i].push(allDropdownValues[i][j].split("_")[1]);
         }
       }
+    } else if (i == 2) { // Meaning it's events, then only display the part after the _ sign
+      selectedDropdownValues[i][0] = selectedDropdownValues[i][0].split("_")[1];
     }
   }
 
