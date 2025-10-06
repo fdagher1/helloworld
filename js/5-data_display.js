@@ -15,26 +15,37 @@ function displayDataInTopPane() {
   let startTime = performance.now();
   var elementIdsToFill = ["timeItems", "locationItems", "eventItems"];
   var dataToFillElementsWith = [allDropdownValues[0], allDropdownValues[1], allDropdownValues[2]];
-  
-  // Loop over the 3 criteria dropdowns to fill them with their corresponding data
-  for (let i=0; i < elementIdsToFill.length; i++) {
-    var htmlElement = document.getElementById(elementIdsToFill[i]);
-    htmlElement.replaceChildren(); // Clear what's already there
-    for (var dataValue of dataToFillElementsWith[i]) {
-      var labelElement = document.createElement("label");
-      labelElement.innerText = dataValue;
 
-      var inputElement = document.createElement("input");
-      inputElement.type = "checkbox";
-      inputElement.value = dataValue;
-      inputElement.addEventListener("change", e => {eventFilterCheckboxSelected(e);});
-      var liElement = document.createElement("li");
-      liElement.appendChild(inputElement);
-      liElement.appendChild(labelElement);
+  // Fill the 3 criteria checkboxes with their options
+  // Year
+  var selectYear = document.getElementById("select-year");
+  selectYear.replaceChildren(); // Clear what's already there
+  for (var year of ["All Years"].concat(allDropdownValues[0])) {
+    var optionElement = document.createElement("option");
+    optionElement.value = year;
+    optionElement.text = year;
+    selectYear.appendChild(optionElement);
+  }
 
-      htmlElement.appendChild(liElement);
-    }
-``}
+  // Location
+  var selectLocation = document.getElementById("select-location");
+  selectLocation.replaceChildren(); // Clear what's already there
+  for (var year of ["All Locations"].concat(allDropdownValues[1])) {
+    var optionElement = document.createElement("option");
+    optionElement.value = year;
+    optionElement.text = year;
+    selectLocation.appendChild(optionElement);
+  }
+
+  // Event
+  var selectEvent = document.getElementById("select-event");
+  selectEvent.replaceChildren(); // Clear what's already there
+  for (var year of ["All Events"].concat(allDropdownValues[2])) {
+    var optionElement = document.createElement("option");
+    optionElement.value = year;
+    optionElement.text = year;
+    selectEvent.appendChild(optionElement);
+  }
   
   // Fill the Display Options dropdown with its options
   var selectDisplayOptionElement = document.getElementById("select-displayoption");
