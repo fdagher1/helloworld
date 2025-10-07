@@ -19,11 +19,12 @@ body, .textbox-default, .select-default, .input-default {
   background-color: var(--background-color);
   color: var(--text-color);
   font-size: 17px;
-  padding: 10px;
 }
 
 #output-grid {
   white-space: pre-line; /* This makes sure that \n characters are interpreted as line breaks */
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .label-seperator, .button-default, .textbox-default, .select-default, .input-default {
