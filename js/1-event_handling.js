@@ -135,19 +135,18 @@ function eventInputDateChanged(event, comingFrom) { // This can happen either fr
     // This scenario does not exist, keeping this here for future-proofing
   }
 
-  // Find the row with that date to get the corresponding location and event values
+  // Check if date already exists in dataset and if so retrieve its values
   var result = helperReturnRowThatMatchesDate(datasetArray, dateToSearchFor, comingFrom);
   
-  // Set found values as the user's input
-  if (result == "Date not found.") { // If this is a new date, then insert new line
+  // Update the input form with either the default values (if date exists) or empty values (if date does not exist)
+  if (result != "Date not found.") { // If this is an existing date, then update the input form with its values
+    displayUserInputForm(result[0], result[1], result[2]);
+  } else {  //Otherwise, display default values
     // Get default values for location and event from the file
-    var locationToDisplay = defaultValues[0].split("\n");
-    var eventLinesToDisplay = defaultValues.slice(2).join("\n");
+    var locationToDisplay = defaultInputValues[1];
+    var eventLinesToDisplay = defaultInputValues[3];
 
     // Display the default location and event values
     displayUserInputForm(dateToSearchFor, locationToDisplay, eventLinesToDisplay);
-  
-  } else { // If this is an existing date, then update
-    displayUserInputForm(result[0], result[1], result[2]);
   }
 }
