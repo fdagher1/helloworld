@@ -13,8 +13,6 @@ function clearFileValidityError() {
 
 function displayDataInTopPane() {
   let startTime = performance.now();
-  var elementIdsToFill = ["timeItems", "locationItems", "eventItems"];
-  var dataToFillElementsWith = [allDropdownValues[0], allDropdownValues[1], allDropdownValues[2]];
 
   // Fill the 3 criteria checkboxes with their options
   // Year
