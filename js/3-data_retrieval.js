@@ -47,7 +47,7 @@ function retrieveDataForTopPane() {
   allDropdownValues[2] = cleanupArray.slice(); // Set existing array equal to the new/cleaned one
 
   // RETRIEVE THE DISPLAY OPTIONS LIST
-  var displayOptionsText = ["List: All Lines", "List: Event Lines", "GroupBy: Country", "GroupBy: State", "GroupBy: City"]; // This holds the options to display in the Display Options dropdown 
+  var displayOptionsText = ["List: All Lines", "List: Event Lines", "GroupBy: Country", "GroupBy: State", "GroupBy: City", "Enter: New Day"]; // This holds the options to display in the Display Options dropdown 
   var eventCategories = []; // This will hold the variable event categories to be used in the display
   for (eventName of allDropdownValues[2]) {
     var eventCategory = eventName.split("_")[0];

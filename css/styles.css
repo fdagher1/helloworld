@@ -27,29 +27,31 @@ body, .textbox-default, .select-default, .input-default {
   padding-right: 10px;
 }
 
-.label-seperator, .button-default, .textbox-default, .select-default, .input-default {
+.label-title, .label-seperator, .button-default, .textbox-default, .select-default, .input-default {
   position: relative;
   cursor: pointer;
   display: inline-grid;
   border: 1px solid var(--border-color);
   height: 4vh;
   width: 98vw;
-}
-
-.label-seperator, .button-default
- {
   display: flex;
   justify-content: center;
   align-items: center;
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.label-seperator {
+.label-title, .label-seperator {
   text-align: center;
   font-size: xx-large;
   font-family: Arial, Helvetica, sans-serif;
   color: var(--text-color-header);
   background-color: var(--section-color);
+}
+
+.label-title {
+  font-size: xxx-large;
+  background-color: var(--background-color);
+  padding-bottom: 10px;
 }
 
 .textbox-default, .select-default{
