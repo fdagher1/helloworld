@@ -41,31 +41,38 @@ async function saveContentToFile() {
   var enteredLocation = document.getElementById("input-location").value; // Read Location
   var enteredEvents = document.getElementById("input-events").value; // Read events
   
-  // Format input correctly
-  enteredDate = helperSetDateFormat(enteredDate); // Convert date to format Mon, 12/1/2024
-  enteredLocation = helperCheckCountrySuffixAndAddIfMissing(enteredLocation); // Add a default country if underscore is missing 
-  
-  // Create array from properly formatted input
-  var userInput = [enteredDate, enteredLocation, enteredEvents];
+  // If there's a date value, then check if it already exists or if it's a new line and update dataset accordingly, 
+  // but if there's no date value, then there's no change to input (i.e., no change to the dataset) and simply save the file 
+  if (enteredDate != "") {
+    // Format input correctly
+    enteredDate = helperSetDateFormat(enteredDate); // Convert date to format Mon, 12/1/2024
+    enteredLocation = helperCheckCountrySuffixAndAddIfMissing(enteredLocation); // Add a default country if underscore is missing 
+    
+    // Create array from properly formatted input
+    var userInput = [enteredDate, enteredLocation, enteredEvents];
 
-  // Check if operation is to insert new line or to update existing line
-  var result = helperReturnRowThatMatchesDate(datasetArray, enteredDate) 
+    // Check if operation is to insert new line or to update existing line
+    var result = helperReturnRowThatMatchesDate(datasetArray, enteredDate) 
 
-  // VALIDATE USER INPUT ARRAY IF ENTRY IS NOT FOR THE VERY FIRST DAY AS IT WOULD FAIL FOR THAT DAY
-  if (enteredDate != datasetArray[datasetArray.length-1][0]) {
-    var validationResult = validateUserInputFormatAndData(datasetArray, userInput, result);
-    if (validationResult != "No errors found.") {
-      displayFileValidityError(validationResult);
-      return;
+    // VALIDATE USER INPUT ARRAY IF ENTRY IS NOT FOR THE VERY FIRST DAY AS IT WOULD FAIL FOR THAT DAY
+    if (enteredDate != datasetArray[datasetArray.length-1][0]) {
+      var validationResult = validateUserInputFormatAndData(datasetArray, userInput, result);
+      if (validationResult != "No errors found.") {
+        displayFileValidityError(validationResult);
+        return;
+      }
+    }
+
+    // Insert data into datasetArray
+    if (result == "Date not found.") {
+      datasetArray.unshift(userInput);  // If date already exists, insert user data as a new line
+    } else {
+      datasetArray = helperUpdateRowInDataset(datasetArray, userInput).slice(); // Otherwise, update existing line
     }
   }
 
+
   // CREATE FILE CONTENT
-  if (result == "Date not found.") {
-    datasetArray.unshift(userInput);  // If date already exists, insert user data as a new line
-  } else {
-    datasetArray = helperUpdateRowInDataset(datasetArray, userInput).slice(); // Otherwise, update existing line
-  }
   var datasetCSV = helperArrayToCSV(datasetArray); // Convert dataset to CSV 
   datasetCSV = "Day,Locations,Events\n" + datasetCSV; // Add headset to CSV
   datasetArrayForDisplay = datasetArray.slice(); // Update the output dataset array
@@ -93,7 +100,6 @@ async function saveContentToFile() {
 
   // UPDATE USER INTERFACE
   clearFileValidityError(); // Clear validity errors in case of any from previous save attemps attemps
-  eventAppModeButtonClicked(); // Switch back to read mode
   retrieveDataForTopPane(); // Update top pane
   retrieveDataForListView();;  // Redisplay the table 
 }

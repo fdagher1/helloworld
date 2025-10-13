@@ -30,44 +30,44 @@
   <body id="body" class="darkclass">
     
     <div id="top-grid">   
-      <div><label class="label-seperator">Hello World</label></div>
+      <div><label class="label-title">Hello World</label></div>
+      <div><label class="label-seperator">Display Options</label></div>
       <div>
         <label for="button-themetoggle" id="label-button-theme" class="button-default">Switch to Light Theme</label>
         <input type="button" id="button-themetoggle" onclick="eventThemeButtonClicked()" hidden>
       </div>
       <div><input type="password" id="textbox-password" class="textbox-default" placeholder="(Enter Password)"></div>
       <div>
-        <label for="button-upload" class="button-default">Load File</label>
-        <input type=file name="files[]" id="button-upload" accept=".csv" hidden onchange="eventUploadButtonClicked(event)">
+        <label for="button-filehandling" id ="button-filehandling-id" class="button-default">Load File</label>
+        <input type=file name="files[]" id="button-filehandling" accept=".csv" hidden onchange="eventFileHandlingButtonClicked(event)">
+      </div>
+      <div>
+        <select id="select-displayoption" class="select-default" disabled onchange="eventDisplayOptionSelected()">
+          <option value="List: All Lines">List: All Lines</option>
+        </select>
       </div>
     </div>
 
     <div id="filter-grid" style="display: none;">
       <div><label class="label-seperator">Filters</label></div>
-      <select id="select-year" class="select-default" onchange="eventDisplayOptionSelected()">
+      <select id="select-year" class="select-default select-filter" onchange="eventDisplayOptionSelected()">
         <option value="All Years">All Years</option>
       </select>
-      <select id="select-location" class="select-default" onchange="eventDisplayOptionSelected()">
+      <select id="select-location" class="select-default select-filter" onchange="eventDisplayOptionSelected()">
         <option value="All Locations">All Locations</option>
       </select>
-      <select id="select-event" class="select-default" onchange="eventDisplayOptionSelected()">
+      <select id="select-event" class="select-default select-filter" onchange="eventDisplayOptionSelected()">
         <option value="All Events">All Events</option>
       </select>
       <div><input type="text" id="textbox-keyword" class ="textbox-default" placeholder="(Search Criteria)" oninput="eventKeywordEntered()"></div>
     </div>
-    
-    <div id="displayoptions-grid" style="display: none;">
+
+    <div id="input-grid" style="display: none;">
+      <div><label class="label-seperator">Input</label></div>
       <div>
-        <div><label class="label-seperator">Display Options</label></div>
-        <select id="select-displayoption" class="select-default" onchange="eventDisplayOptionSelected()">
-          <option value="List: All Lines">List: All Lines</option>
-        </select>
-      </div>
-      <div id ="switch-mode-section" style="display: none;">
-        <div>
-          <label for="button-modetoggle" id="label-button-mode" class="button-default">Switch to Write Mode</label>
-          <input type="button" id="button-modetoggle" hidden onclick="eventAppModeButtonClicked()">
-        </div>
+        <div><input id="input-date" class ="input-default" type="date" onchange="eventInputDateChanged(event, 'inputForm')"></div>
+        <div><input id="input-location" class ="input-default" type="text" ></div>
+        <div><textarea id="input-events" class ="input-default" rows="8" ></textarea></div>
       </div>
     </div>
 
@@ -83,19 +83,6 @@
         <tbody id="tbody">
         </tbody>
       </table>
-    </div>
-
-    <div id="input-grid" style="display: none;">
-      <div><label class="label-seperator">Input</label></div>
-      <div>
-        <div><input id="input-date" class ="input-default" type="date" onchange="eventInputDateChanged(event, 'inputForm')"></div>
-        <div><input id="input-location" class ="input-default" type="text" ></div>
-        <div><textarea id="input-events" class ="input-default" rows="8" ></textarea></div>
-      </div>
-      <div>
-        <label for="button-submit" class="button-default" >Save File</label>
-        <input type="button" id="button-submit" onclick="eventSaveButtonClicked()" hidden>
-      </div>
     </div>
     
     <div>
