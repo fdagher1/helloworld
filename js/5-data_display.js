@@ -75,19 +75,21 @@ function displayListOutput(dataSetToDisplay) {
     const section = document.createElement("section");
     
     // Create the child HTML elements
-    const dateAndLocationDiv = document.createElement("div");
+    const dateDiv = document.createElement("div");
+    const locationDiv = document.createElement("div");
     const eventDiv = document.createElement("div");
     const seperatorDiv = document.createElement("div");
     
     // Add the text to the elements
-    dateAndLocationDiv.innerHTML = `<a onclick="eventInputDateChanged(event, 'outputTable')" style="font-weight: bold; text-decoration: underline; font-size: large;">` + 
-                                    dataSetToDisplay[i][0] + `</a>` + ': ' + '<em>' + dataSetToDisplay[i][1] + '</em></br></br>';
+    dateDiv.innerHTML = `<a onclick="eventInputDateChanged(event, 'outputTable')" style="font-weight: bold; text-decoration: underline; font-size: large;">` + dataSetToDisplay[i][0] + `</a></br>`;
+    locationDiv.innerHTML = '<em>' + dataSetToDisplay[i][1] + '</em></br></br>';
     eventDiv.textContent = dataSetToDisplay[i][2];
     seperatorDiv.innerHTML = `</br><hr style="border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">`;
 
     // Append the HTML
     section.appendChild(seperatorDiv);
-    section.appendChild(dateAndLocationDiv);
+    section.appendChild(dateDiv);
+    section.appendChild(locationDiv);
     section.appendChild(eventDiv);
     fragment.appendChild(section);
   }
@@ -138,9 +140,14 @@ function displayTableOutput(columnHeaders, dataSetToDisplay) {
   console.log(`displayTableOutput executed in: ${performance.now() - startTime} milliseconds`);
 }
 
-function displayUserInputForm(dateToDisplay, locationToDisplay, eventLinesToDisplay) {
+function displayDataInUserInputForm(dateToDisplay, locationToDisplay, eventLinesToDisplay) {
+  let startTime = performance.now();
+
   // display the values in the input form
   document.getElementById("input-date").valueAsDate = new Date(new Date(dateToDisplay));
   document.getElementById("input-location").value = locationToDisplay;
   document.getElementById("input-events").value = eventLinesToDisplay;
+
+  console.log(`displayDataInUserInputForm executed in: ${performance.now() - startTime} milliseconds`);
+
 }

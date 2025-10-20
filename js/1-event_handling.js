@@ -23,8 +23,9 @@ function eventFileHandlingButtonClicked(event) {
     
     // Enable HTML elements again
     document.getElementById("select-displayoption").removeAttribute("disabled");
-    document.getElementById("filter-grid").style.display = "grid";
-    document.getElementById("output-grid").style.display = "grid";
+    document.querySelectorAll('.select-filter').forEach(el => el.disabled = false);
+    document.getElementById("textbox-keyword").removeAttribute("disabled");
+    document.getElementById("output-list").style.display = "grid";
 
     // Change button functionality from Upload File to Save To File
     document.getElementById("button-filehandling").setAttribute("type", "button");
@@ -40,20 +41,19 @@ function eventFileHandlingButtonClicked(event) {
     saveContentToFile();
 
     // Refresh the output display after saving the new event
+    document.getElementById("select-displayoption").value = "List: All Lines";
     eventDisplayOptionSelected(); 
 
   }
 }
 
-function eventThemeButtonClicked() {
+function eventThemeCheckboxChanged() {
   // If dark theme is set, then change theme to light
   if (themeMode == "darkMode") {
     themeMode = "lightMode";
-    document.getElementById("label-button-theme").innerText = "Switch to Dark Theme";
     document.getElementById("body").classList.add("lightmode");
   } else { // otherwise, change to dark mode
     themeMode = "darkMode";
-    document.getElementById("label-button-theme").innerText = "Switch to Light Theme";
     document.getElementById("body").classList.remove("lightmode");
   }
 }
@@ -71,22 +71,25 @@ function eventDisplayOptionSelected() {
   // Check which display option user chose in order to call the corresponding function
   if (selectedDisplayOption.includes("Enter: New Day")) {
     // Update element visibility/activity
-    document.querySelectorAll('.select-filter').forEach(el => el.disabled = true);
+    document.getElementById("select-year").setAttribute("disabled", "true");
+    document.getElementById("select-location").setAttribute("disabled", "true");
     document.getElementById("textbox-keyword").setAttribute("disabled", "true");
-    document.getElementById("input-grid").style.display = "grid";
-    document.getElementById("output-grid").style.display = "none";
+    document.getElementById("select-displayoption").value = "Enter: New Day";
+    document.getElementById("input-form").style.display = "flex";
+    document.getElementById("output-list").style.display = "none";
 
     // Retrieve default values for date, location, country, and event from file
     retrieveDefaultInputValues();
 
     // display the values in the input form
-    displayUserInputForm(defaultInputValues[0], defaultInputValues[1], defaultInputValues[3]);
+    displayDataInUserInputForm(defaultInputValues[0], defaultInputValues[1], defaultInputValues[3]);
   } else {
     // Update element visibility
-    document.querySelectorAll('.select-filter').forEach(el => el.disabled = false);
+    document.getElementById("select-year").removeAttribute("disabled");
+    document.getElementById("select-location").removeAttribute("disabled");
     document.getElementById("textbox-keyword").removeAttribute("disabled");
-    document.getElementById("input-grid").style.display = "none";
-    document.getElementById("output-grid").style.display = "grid";
+    document.getElementById("input-form").style.display = "none";
+    document.getElementById("output-list").style.display = "grid";
 
     if (selectedDisplayOption.includes("List:")) {
       retrieveDataForListView();
@@ -116,18 +119,24 @@ function eventKeywordEntered() {
 }
 
 function eventInputDateChanged(event, comingFrom) { // This can happen either from the input form or the output table
-  // Update element visibility/activity
-  document.getElementById("input-grid").style.display = "grid";
-  document.getElementById("filter-grid").setAttribute("disabled", "true");
-  
+
   // Set the date to search for in the right format 
   let dateToSearchFor;
   if (comingFrom == "inputForm") { 
     dateToSearchFor = event.target.value; // Get the date from the input type=date element
   } else if (comingFrom == "outputTable") { 
     dateToSearchFor = event.target.innerText; // Get the date from the clicked element
+    
+    // Update element visibility/activity
+    document.getElementById("select-year").setAttribute("disabled", "true");
+    document.getElementById("select-location").setAttribute("disabled", "true");
+    document.getElementById("textbox-keyword").setAttribute("disabled", "true");
+    document.getElementById("select-displayoption").value = "Enter: New Day";
+    document.getElementById("input-form").style.display = "flex";
+    document.getElementById("output-list").style.display = "none";
   } else {
     // This scenario does not exist, keeping this here for future-proofing
+    console.log("incorrect input");
   }
 
   // Check if date already exists in dataset and if so retrieve its values
@@ -135,13 +144,13 @@ function eventInputDateChanged(event, comingFrom) { // This can happen either fr
   
   // Update the input form with either the default values (if date exists) or empty values (if date does not exist)
   if (result != "Date not found.") { // If this is an existing date, then update the input form with its values
-    displayUserInputForm(result[0], result[1], result[2]);
+    displayDataInUserInputForm(result[0], result[1], result[2]);
   } else {  //Otherwise, display default values
     // Get default values for location and event from the file
     var locationToDisplay = defaultInputValues[1];
     var eventLinesToDisplay = defaultInputValues[3];
 
     // Display the default location and event values
-    displayUserInputForm(dateToSearchFor, locationToDisplay, eventLinesToDisplay);
+    displayDataInUserInputForm(dateToSearchFor, locationToDisplay, eventLinesToDisplay);
   }
 }
