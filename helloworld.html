@@ -28,70 +28,82 @@
   </head>
 
   <body id="body" class="darkclass">
-    
-    <div id="top-grid">   
-      <div><label class="label-title">Hello World</label></div>
-      <div><label class="label-seperator">Display Options</label></div>
-      <div>
-        <label for="button-themetoggle" id="label-button-theme" class="button-default">Switch to Light Theme</label>
-        <input type="button" id="button-themetoggle" onclick="eventThemeButtonClicked()" hidden>
+    <div id="app-grid">   
+      <!-- Row 1: Title and Theme Toggle -->
+      <div class="row row-1">
+        <h1 class="app-title">Hello World</h1>
+        <label class="theme-toggle">
+          <input type="checkbox" if ="mode-checkbox" checked="checked" onchange="eventThemeCheckboxChanged()" />
+          <span>🌙 mode</span>
+        </label>
       </div>
-      <div><input type="password" id="textbox-password" class="textbox-default" placeholder="(Enter Password)"></div>
-      <div>
-        <label for="button-filehandling" id ="button-filehandling-id" class="button-default">Load File</label>
-        <input type=file name="files[]" id="button-filehandling" accept=".csv" hidden onchange="eventFileHandlingButtonClicked(event)">
+
+      <!-- Row 2: password and file import -->
+      <div class="row row-2">
+        <input type="password" id="textbox-password" class="textbox-default" placeholder="(Enter Password)">
+        <div>
+          <label for="button-filehandling" id ="button-filehandling-id" class="button-default">Load File</label>
+          <input type=file name="files[]" id="button-filehandling" accept=".csv" hidden onchange="eventFileHandlingButtonClicked(event)">
+        </div>
       </div>
-      <div>
+
+      <!-- Row 3: Filters -->
+      <div class="row row-3">
+        <select id="select-year" class="select-default select-filter" disabled onchange="eventDisplayOptionSelected()">
+          <option value="All Years">All Years</option>
+        </select>
+        <select id="select-location" class="select-default select-filter" disabled onchange="eventDisplayOptionSelected()">
+          <option value="All Locations">All Locations</option>
+        </select>
+        <select id="select-event" class="select-default select-filter" disabled onchange="eventDisplayOptionSelected()">
+          <option value="All Events">All Events</option>
+        </select>
+      </div>
+
+      <!-- Row 4: Keyword search-->
+      <div class="row row-4">
+        <input type="text" id="textbox-keyword" class ="textbox-default" placeholder="(Search Criteria)" disabled oninput="eventKeywordEntered()">
+      </div>
+      
+      <!-- Row 5: Display options-->
+      <div class="row row-5">
         <select id="select-displayoption" class="select-default" disabled onchange="eventDisplayOptionSelected()">
           <option value="List: All Lines">List: All Lines</option>
         </select>
       </div>
-    </div>
 
-    <div id="filter-grid" style="display: none;">
-      <div><label class="label-seperator">Filters</label></div>
-      <select id="select-year" class="select-default select-filter" onchange="eventDisplayOptionSelected()">
-        <option value="All Years">All Years</option>
-      </select>
-      <select id="select-location" class="select-default select-filter" onchange="eventDisplayOptionSelected()">
-        <option value="All Locations">All Locations</option>
-      </select>
-      <select id="select-event" class="select-default select-filter" onchange="eventDisplayOptionSelected()">
-        <option value="All Events">All Events</option>
-      </select>
-      <div><input type="text" id="textbox-keyword" class ="textbox-default" placeholder="(Search Criteria)" oninput="eventKeywordEntered()"></div>
-    </div>
-
-    <div id="input-grid" style="display: none;">
-      <div><label class="label-seperator">Input</label></div>
-      <div>
-        <div><input id="input-date" class ="input-default" type="date" onchange="eventInputDateChanged(event, 'inputForm')"></div>
-        <div><input id="input-location" class ="input-default" type="text" ></div>
-        <div><textarea id="input-events" class ="input-default" rows="8" ></textarea></div>
+      <!-- Row 6: Output grid-->
+      <div class="row row-6">
+        <div id="output-list">
+          <div id="dataset-container"></div>
+          <table>
+            <thead id="thead">
+              <tr>
+                <th>Please upload your file!</th>
+              </tr>
+          </thead>
+            <tbody id="tbody">
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
 
-    <div id="output-grid">
-      <div><label class="label-seperator">Output</label></div>
-      <div id="dataset-container"></div>
-      <table>
-        <thead id="thead">
-          <tr>
-            <th>Please upload your file!</th>
-          </tr>
-      </thead>
-        <tbody id="tbody">
-        </tbody>
-      </table>
-    </div>
+      <!-- Row 7: Input grid-->
+      <div class="row row-7" id="input-form" style="display: none;">
+        <input id="input-date" class ="input-default" type="date" onchange="eventInputDateChanged(event, 'inputForm')">
+        <input id="input-location" class ="input-default" type="text" >
+        <textarea id="input-events" class ="input-default" rows="8" ></textarea>
+      </div>
     
-    <div>
-      <table>
-        <tbody id="errorcontent">
-        </tbody>
-      </table>
-    </div>
-
+      <!-- Row 8: Error output grid-->
+      <div class="row row-8">
+        <div>
+          <table>
+            <tbody id="errorcontent">
+            </tbody>
+          </table>
+        </div>
+      </div>
   </body>
 
 </html>
