@@ -80,10 +80,13 @@ function displayListOutput(dataSetToDisplay) {
     const eventDiv = document.createElement("div");
     const seperatorDiv = document.createElement("div");
     
-    // Add the text to the elements
+    // Add the text to the elements and style them
     dateDiv.innerHTML = `<a onclick="eventInputDateChanged(event, 'outputTable')" style="font-weight: bold; text-decoration: underline; font-size: large;">` + dataSetToDisplay[i][0] + `</a></br>`;
-    locationDiv.innerHTML = '<em>' + dataSetToDisplay[i][1] + '</em></br></br>';
+    dateDiv.style.cursor = "pointer"; // needed so that the date is clickbale in iOS Safari (otherwise it only works in Edge)
+    locationDiv.innerHTML = '<em>' + dataSetToDisplay[i][1].replace(/,/g, '\n') + '</em></br></br>'; // in order to put each location in a new line
+    locationDiv.style.marginLeft = "10px";
     eventDiv.textContent = dataSetToDisplay[i][2];
+    eventDiv.style.marginLeft = "10px";
     seperatorDiv.innerHTML = `</br><hr style="border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">`;
 
     // Append the HTML
