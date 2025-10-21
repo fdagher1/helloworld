@@ -107,3 +107,19 @@ body {
   box-sizing: border-box;
 }
 
+.row-7 textarea {
+  min-height: 10em;
+  max-height: 40em;
+}
+
+.row-7 input[type="date"],
+#input-date {
+  cursor: pointer;
+}
+
+.row-7 input[type="text"],
+.row-7 textarea,
+#input-location,
+#input-events {
+  margin-left: 10px;
+}
