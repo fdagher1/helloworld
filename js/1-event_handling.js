@@ -12,9 +12,22 @@ var selectedDropdownValues = [[], [], []]; // Holds the values of the selected c
 var selectedDisplayOption; // Value of the user selected drop down
 var searchWord = ""; // Value of the user entered keyword
 var datasetLoaded = false; // Flag to indicate if dataset has been loaded
-var themeMode = "darkMode"; // Set default value to dark mode
+var themeMode; // Used to set the dark mode
 
 // DEFINE RESPONSE FUNCTIONS
+
+// Function to execute when app is loaded
+function appLoaded() {
+  // Check time and set dark mode accordingly
+  let currentHour = new Date().getHours();
+  if (  currentHour >= 8 && currentHour <= 20 ) { // If time is between 8am and 8pm, set light mode
+    themeMode = "lightMode";
+    document.getElementById("body").classList.add("lightmode");
+  } else {
+    themeMode = "darkMode";
+    document.getElementById("body").classList.remove("lightmode");
+  }
+}
 
 function eventFileHandlingButtonClicked(event) {
   if (!datasetLoaded) { //If dataset has not been loaded yet, then treat button click as file upload
@@ -36,7 +49,7 @@ function eventFileHandlingButtonClicked(event) {
     document.getElementById("button-filehandling-id").innerText = "Save To File";
     datasetLoaded = true;
 
-  } else { // Otherwise, conssider button click as used for Save To File
+  } else { // Otherwise, consider button click as used for Save To File
     // Save content to file
     saveContentToFile();
 
@@ -154,3 +167,5 @@ function eventInputDateChanged(event, comingFrom) { // This can happen either fr
     displayDataInUserInputForm(dateToSearchFor, locationToDisplay, eventLinesToDisplay);
   }
 }
+
+appLoaded();
