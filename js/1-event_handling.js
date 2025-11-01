@@ -16,19 +16,6 @@ var themeMode; // Used to set the dark mode
 
 // DEFINE RESPONSE FUNCTIONS
 
-// Function to execute when app is loaded
-function appLoaded() {
-  // Check time and set dark mode accordingly
-  let currentHour = new Date().getHours();
-  if (  currentHour >= 8 && currentHour <= 20 ) { // If time is between 8am and 8pm, set light mode
-    themeMode = "lightMode";
-    document.getElementById("body").classList.add("lightmode");
-  } else {
-    themeMode = "darkMode";
-    document.getElementById("body").classList.remove("lightmode");
-  }
-}
-
 function eventFileHandlingButtonClicked(event) {
   if (!datasetLoaded) { //If dataset has not been loaded yet, then treat button click as file upload
     // Get file content
@@ -167,5 +154,3 @@ function eventInputDateChanged(event, comingFrom) { // This can happen either fr
     displayDataInUserInputForm(dateToSearchFor, locationToDisplay, eventLinesToDisplay);
   }
 }
-
-appLoaded();
