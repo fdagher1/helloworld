@@ -102,6 +102,10 @@ async function saveContentToFile() {
   clearFileValidityError(); // Clear validity errors in case of any from previous save attemps attemps
   retrieveDataForTopPane(); // Update top pane
   retrieveDataForListView();;  // Redisplay the table 
+
+  // Refresh the output display after saving the new event
+  document.getElementById("select-displayoption").value = "List: All Lines";
+  eventDisplayOptionSelected(); 
 }
 
 async function decrypt(encryptedCsvData, enteredPassword) { 

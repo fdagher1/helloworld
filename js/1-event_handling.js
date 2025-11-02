@@ -39,11 +39,6 @@ function eventFileHandlingButtonClicked(event) {
   } else { // Otherwise, consider button click as used for Save To File
     // Save content to file
     saveContentToFile();
-
-    // Refresh the output display after saving the new event
-    document.getElementById("select-displayoption").value = "List: All Lines";
-    eventDisplayOptionSelected(); 
-
   }
 }
 
