@@ -20,6 +20,7 @@ body {
   font-family: Arial, sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
+  font-size:large;
 }
 
 .textbox-default, .select-default, .input-default {

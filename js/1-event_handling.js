@@ -12,7 +12,7 @@ var selectedDropdownValues = [[], [], []]; // Holds the values of the selected c
 var selectedDisplayOption; // Value of the user selected drop down
 var searchWord = ""; // Value of the user entered keyword
 var datasetLoaded = false; // Flag to indicate if dataset has been loaded
-var themeMode; // Used to set the dark mode
+var themeMode = "darkMode"; // Default to dark mode
 
 // DEFINE RESPONSE FUNCTIONS
 
