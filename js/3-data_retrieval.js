@@ -47,7 +47,7 @@ function retrieveDataForTopPane() {
   allDropdownValues[2] = cleanupArray.slice(); // Set existing array equal to the new/cleaned one
 
   // RETRIEVE THE DISPLAY OPTIONS LIST
-  var displayOptionsText = ["List: All Lines", "List: Event Lines", "GroupBy: Country", "GroupBy: State", "GroupBy: City", "Enter: New Day"]; // This holds the options to display in the Display Options dropdown 
+  var displayOptionsText = ["List: All Lines", "List: Event Lines", "GroupBy: Country", "GroupBy: State", "GroupBy: City"]; // This holds the options to display in the Display Options dropdown 
   var eventCategories = []; // This will hold the variable event categories to be used in the display
   for (eventName of allDropdownValues[2]) {
     var eventCategory = eventName.split("_")[0];
@@ -56,6 +56,7 @@ function retrieveDataForTopPane() {
       displayOptionsText.push("Summary: " + eventCategory);
     }
   }
+  displayOptionsText.push("Enter: New Day"); // Add the last option to enter new day
   allDisplayOptions = displayOptionsText.slice();
 
   console.log(`retrieveDataForTopPane executed in: ${performance.now() - startTime} milliseconds`);
@@ -72,9 +73,9 @@ function retrieveDataFromTopPane() {
   
   // Loop over the 3 criteria dropdowns to get their corresponding values
   for (let i=0; i < selectedDropdownValues.length; i++) {
-    selectedDropdownValues[0][0] = selectedDisplayOption = document.getElementById("select-year").value;
-    selectedDropdownValues[1][0] = selectedDisplayOption = document.getElementById("select-location").value;
-    selectedDropdownValues[2][0] = selectedDisplayOption = document.getElementById("select-event").value;
+    selectedDropdownValues[0][0] = document.getElementById("select-year").value;
+    selectedDropdownValues[1][0] = document.getElementById("select-location").value;
+    selectedDropdownValues[2][0] = document.getElementById("select-event").value;
   }
 
   // If any of the selections are "All " then fill the array with all of options (as if they were all selected)

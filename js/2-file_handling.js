@@ -105,7 +105,7 @@ async function saveContentToFile() {
 
   // Refresh the output display after saving the new event
   document.getElementById("select-displayoption").value = "List: All Lines";
-  eventDisplayOptionSelected(); 
+  eventFilterOrDisplayOptionChanged('displayOption'); 
 }
 
 async function decrypt(encryptedCsvData, enteredPassword) { 

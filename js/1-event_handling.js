@@ -53,7 +53,7 @@ function eventThemeCheckboxChanged() {
   }
 }
 
-function eventDisplayOptionSelected() {
+function eventFilterOrDisplayOptionChanged(whatChanged) {
   // Clear the search word text box (to avoid having to search for a keyword in order to optimize search speed)
   document.getElementById('textbox-keyword').value = '';
 
@@ -85,6 +85,11 @@ function eventDisplayOptionSelected() {
     document.getElementById("textbox-keyword").removeAttribute("disabled");
     document.getElementById("input-form").style.display = "none";
     document.getElementById("output-list").style.display = "grid";
+
+    // If the user chose to only show events then change the display mode to event lines only 
+    if (whatChanged == 'event' && selectedDisplayOption.includes("List: All Lines")) {
+      document.getElementById("select-displayoption").value = "List: Event Lines";
+    }
 
     if (selectedDisplayOption.includes("List:")) {
       retrieveDataForListView();
