@@ -49,13 +49,13 @@
 
       <!-- Row 3: Filters -->
       <div class="row row-3">
-        <select id="select-year" class="select-default select-filter" disabled onchange="eventDisplayOptionSelected()">
+        <select id="select-year" class="select-default select-filter" disabled onchange="eventFilterOrDisplayOptionChanged('year')">
           <option value="All Years">All Years</option>
         </select>
-        <select id="select-location" class="select-default select-filter" disabled onchange="eventDisplayOptionSelected()">
+        <select id="select-location" class="select-default select-filter" disabled onchange="eventFilterOrDisplayOptionChanged('location')">
           <option value="All Locations">All Locations</option>
         </select>
-        <select id="select-event" class="select-default select-filter" disabled onchange="eventDisplayOptionSelected()">
+        <select id="select-event" class="select-default select-filter" disabled onchange="eventFilterOrDisplayOptionChanged('event')">
           <option value="All Events">All Events</option>
         </select>
       </div>
@@ -67,7 +67,7 @@
       
       <!-- Row 5: Display options-->
       <div class="row row-5">
-        <select id="select-displayoption" class="select-default" disabled onchange="eventDisplayOptionSelected()">
+        <select id="select-displayoption" class="select-default" disabled onchange="eventFilterOrDisplayOptionChanged('displayOption')">
           <option value="List: All Lines">List: All Lines</option>
         </select>
       </div>
