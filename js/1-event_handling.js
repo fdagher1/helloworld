@@ -60,9 +60,6 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
   // Gather user inputs
   retrieveDataFromTopPane();
 
-  // Filter dataset to only include lines matching from the search word
-  updateDataSetToMatchSearchCriteria(); 
-
   // Check which display option user chose in order to call the corresponding function
   if (selectedDisplayOption.includes("Enter: New Day")) {
     // Update element visibility/activity
@@ -89,7 +86,13 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
     // If the user chose to only show events then change the display mode to event lines only 
     if (whatChanged == 'event' && selectedDisplayOption.includes("List: All Lines")) {
       document.getElementById("select-displayoption").value = "List: Event Lines";
+
+      // Gather user inputs again since display option changed
+      retrieveDataFromTopPane();
     }
+
+    // Filter dataset to only include lines matching from the search word
+    updateDataSetToMatchSearchCriteria(); 
 
     if (selectedDisplayOption.includes("List:")) {
       retrieveDataForListView();
