@@ -11,7 +11,7 @@
   --background-color: #F9F9F9;
   --border-color: #708090;
   --section-color: #708090;
-  --text-color: #000000;
+  --text-color: #010101;
   --text-color-header: #333333;
 }
 
@@ -21,6 +21,29 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
   font-size:large;
+}
+
+.date-class {
+  font-weight: bold;
+  font-style: underline;
+  display: inline-block;   /* improves touch target on iOS */
+  padding: 4px 2px;
+  color: #4F8CFF;
+}
+
+a {
+  text-decoration: inherit; /* to remove the default underline from a elements */
+  color: inherit; /* Inherits the color from the parent element */
+}
+
+.location-class {
+  font-style: italic;
+  margin-left: 10px;
+  color: #4F8CFF;
+}
+
+.event-class {
+  margin-left: 10px;
 }
 
 .textbox-default, .select-default, .input-default {

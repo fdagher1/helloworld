@@ -74,19 +74,29 @@ function displayListOutput(dataSetToDisplay) {
     // Create the parent/section HTML element
     const section = document.createElement("section");
     
-    // Create the child HTML elements
-    const dateDiv = document.createElement("div");
+    // Create the date child elements
+    /*const dateDiv = document.createElement("div");
+    dateDiv.innerHTML = `<a onclick="eventInputDateChanged(event, 'outputTable')" style="font-weight: bold; text-decoration: underline; font-size: large;">` + dataSetToDisplay[i][0] + `</a></br>`;
+    dateDiv.style.cursor = "pointer"; // needed so that the date is clickbale in iOS Safari (otherwise it only works in Edge)*/
+    const a = document.createElement('a');
+    a.href = '#';
+    a.textContent = dataSetToDisplay[i][0] || '';
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      eventInputDateChanged(e, 'outputTable');
+    });
+    let dateDiv = document.createElement("div");
+    dateDiv.replaceChildren(a, document.createElement('br'));
+    dateDiv.classList.add("date-class");
+
+    // Create the location, event and seperator child elements
     const locationDiv = document.createElement("div");
     const eventDiv = document.createElement("div");
     const seperatorDiv = document.createElement("div");
-    
-    // Add the text to the elements and style them
-    dateDiv.innerHTML = `<a onclick="eventInputDateChanged(event, 'outputTable')" style="font-weight: bold; text-decoration: underline; font-size: large;">` + dataSetToDisplay[i][0] + `</a></br>`;
-    dateDiv.style.cursor = "pointer"; // needed so that the date is clickbale in iOS Safari (otherwise it only works in Edge)
-    locationDiv.innerHTML = '<em>' + dataSetToDisplay[i][1].replace(/,/g, '\n') + '</em></br></br>'; // in order to put each location in a new line
-    locationDiv.style.marginLeft = "10px";
+    locationDiv.innerHTML = dataSetToDisplay[i][1].replace(/,/g, '\n') + '</br></br>'; // in order to put each location in a new line
+    locationDiv.classList.add("location-class");
     eventDiv.textContent = dataSetToDisplay[i][2];
-    eventDiv.style.marginLeft = "10px";
+    locationDiv.classList.add("event-class");
     seperatorDiv.innerHTML = `</br><hr style="border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">`;
 
     // Append the HTML
