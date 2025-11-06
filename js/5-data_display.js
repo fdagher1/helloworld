@@ -69,15 +69,11 @@ function displayListOutput(dataSetToDisplay) {
   new_tbody_HTML_Element.replaceChildren() // Clear content
 
   // Create the section elements to display the events in body
-  //const fragment = document.createDocumentFragment();
   for (var i = 0; i < dataSetToDisplay.length; i++) {
     // Create the parent/section HTML element
     const section = document.createElement("section");
     
     // Create the date child elements
-    /*const dateDiv = document.createElement("div");
-    dateDiv.innerHTML = `<a onclick="eventInputDateChanged(event, 'outputTable')" style="font-weight: bold; text-decoration: underline; font-size: large;">` + dataSetToDisplay[i][0] + `</a></br>`;
-    dateDiv.style.cursor = "pointer"; // needed so that the date is clickbale in iOS Safari (otherwise it only works in Edge)*/
     const a = document.createElement('a');
     a.href = '#';
     a.textContent = dataSetToDisplay[i][0] || '';
@@ -104,7 +100,6 @@ function displayListOutput(dataSetToDisplay) {
     section.appendChild(dateDiv);
     section.appendChild(locationDiv);
     section.appendChild(eventDiv);
-    //fragment.appendChild(section);
     datasetContainer.appendChild(section);
   }
 
