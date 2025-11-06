@@ -36,6 +36,9 @@ function eventFileHandlingButtonClicked(event) {
     document.getElementById("button-filehandling-id").innerText = "Save To File";
     datasetLoaded = true;
 
+    // Retrieve default values for date, location, country, and event from file (needed for input form)
+    retrieveDefaultInputValues();
+
   } else { // Otherwise, consider button click as used for Save To File
     // Save content to file
     saveContentToFile();
@@ -69,9 +72,6 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
     document.getElementById("select-displayoption").value = "Enter: New Day";
     document.getElementById("input-form").style.display = "flex";
     document.getElementById("output-list").style.display = "none";
-
-    // Retrieve default values for date, location, country, and event from file
-    retrieveDefaultInputValues();
 
     // display the values in the input form
     displayDataInUserInputForm(defaultInputValues[0], defaultInputValues[1], defaultInputValues[3]);
