@@ -31,6 +31,9 @@ async function readFileAndValidate(event) {
   } else {
     displayFileValidityError(validationResult);
   }
+
+  // Retrieve default values for date, location, country, and event from file (needed for input form)
+    retrieveDefaultInputValues();
 }
 
 async function saveContentToFile() {
