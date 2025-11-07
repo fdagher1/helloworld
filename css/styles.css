@@ -4,7 +4,7 @@
   --border-color: #444444;
   --section-color: #444444;
   --text-color: #E0E0E0;
-  --text-color-header: #E0E0E0;
+  --text-color-header: #4F8CFF;
 }
 
 .lightmode{
@@ -12,7 +12,7 @@
   --border-color: #708090;
   --section-color: #708090;
   --text-color: #010101;
-  --text-color-header: #333333;
+  --text-color-header: #4F8CFF;
 }
 
 body {
@@ -28,7 +28,7 @@ body {
   font-style: underline;
   display: inline-block;   /* improves touch target on iOS */
   padding: 4px 2px;
-  color: #4F8CFF;
+  color: var(--text-color-header);
 }
 
 a {
@@ -39,7 +39,7 @@ a {
 .location-class {
   font-style: italic;
   margin-left: 10px;
-  color: #4F8CFF;
+  color: var(--text-color-header);
 }
 
 .event-class {
@@ -80,6 +80,7 @@ a {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
+  color: var(--text-color-header);
 }
 
 .app-title {
