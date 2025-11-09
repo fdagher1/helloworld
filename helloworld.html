@@ -14,17 +14,6 @@
     <script src="js/4-data_validity.js"></script>
     <script src="js/5-data_display.js"></script>
     <script src="js/6-helper_functions.js"></script>
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(registration => {
-            console.log('Service Worker registered with scope:', registration.scope);
-          })
-          .catch(error => {
-            console.error('Service Worker registration failed:', error);
-          });
-      }
-    </script>
   </head>
 
   <body id="body" class="darkclass">
@@ -33,7 +22,7 @@
       <div class="row row-1">
         <h1 class="app-title">Hello World</h1>
         <label class="theme-toggle">
-          <input type="checkbox" if ="mode-checkbox" checked="checked" onchange="eventThemeCheckboxChanged()" />
+          <input type="checkbox" id ="mode-checkbox" checked="checked" onchange="eventThemeCheckboxChanged()" />
           <span>🌙 mode</span>
         </label>
       </div>

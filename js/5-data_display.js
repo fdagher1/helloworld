@@ -89,7 +89,8 @@ function displayListOutput(dataSetToDisplay) {
     const locationDiv = document.createElement("div");
     const eventDiv = document.createElement("div");
     const seperatorDiv = document.createElement("div");
-    locationDiv.innerHTML = dataSetToDisplay[i][1].replace(/,/g, '\n') + '</br></br>'; // in order to put each location in a new line
+    //locationDiv.innerHTML = dataSetToDisplay[i][1].replace(/,/g, '\n') + '</br></br>'; // in order to put each location in a new line
+    locationDiv.innerHTML = dataSetToDisplay[i][1] + '</br></br>';
     locationDiv.classList.add("location-class");
     eventDiv.textContent = dataSetToDisplay[i][2];
     locationDiv.classList.add("event-class");

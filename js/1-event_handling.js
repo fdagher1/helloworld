@@ -16,6 +16,16 @@ var themeMode = "darkMode"; // Default to dark mode
 
 // DEFINE RESPONSE FUNCTIONS
 
+function eventAppLoaded() {
+  
+  // SET THE THEME BASED ON TIME OF DAY
+  const h = new Date().getHours();
+  // Define day as 6:00-17:59, night 18:00-5:59
+  if (h >= 8 && h < 18) {
+    eventThemeCheckboxChanged();
+  }
+}
+
 function eventFileHandlingButtonClicked(event) {
   if (!datasetLoaded) { //If dataset has not been loaded yet, then treat button click as file upload
     // Get file content
@@ -35,9 +45,6 @@ function eventFileHandlingButtonClicked(event) {
     document.getElementById("button-filehandling").removeAttribute("onchange");
     document.getElementById("button-filehandling-id").innerText = "Save To File";
     datasetLoaded = true;
-
-    // Retrieve default values for date, location, country, and event from file (needed for input form)
-    retrieveDefaultInputValues();
 
   } else { // Otherwise, consider button click as used for Save To File
     // Save content to file
@@ -157,3 +164,8 @@ function eventInputDateChanged(event, comingFrom) { // This can happen either fr
     displayDataInUserInputForm(dateToSearchFor, locationToDisplay, eventLinesToDisplay);
   }
 }
+
+// Initialize on DOM load
+document.addEventListener('DOMContentLoaded', function () {
+  eventAppLoaded();
+});
