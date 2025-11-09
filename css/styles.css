@@ -1,16 +1,12 @@
 /*Colors*/
 :root{
   --background-color: #1E1E1E;
-  --border-color: #444444;
-  --section-color: #444444;
   --text-color: #E0E0E0;
-  --text-color-header: #4F8CFF;
+  --text-color-header: #bd6151;
 }
 
 .lightmode{
   --background-color: #F9F9F9;
-  --border-color: #708090;
-  --section-color: #708090;
   --text-color: #010101;
   --text-color-header: #4F8CFF;
 }
