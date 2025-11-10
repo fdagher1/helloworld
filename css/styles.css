@@ -129,8 +129,7 @@ a {
 }
 
 .row-7 textarea {
-  min-height: 10em;
-  max-height: 40em;
+  height: 300px;
 }
 
 .row-7 input[type="date"],
