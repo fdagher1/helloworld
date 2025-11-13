@@ -159,8 +159,17 @@ function displayDataInUserInputForm(dateToDisplay, locationToDisplay, eventLines
   let startTime = performance.now();
 
   // display the values in the input form
-  document.getElementById("input-date").valueAsDate = new Date(new Date(dateToDisplay));
+  if (dateToDisplay.includes(",")) {
+    var parts = dateToDisplay.split(", ")[1].split("/");
+    var utcDate = new Date(Date.UTC(parts[2], parts[0] - 1, parts[1]));
+  } else {
+    var parts = dateToDisplay.split("-");
+    var utcDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+  }
+  document.getElementById("input-date").valueAsDate = utcDate;
+  
   document.getElementById("input-location").value = locationToDisplay;
+
   document.getElementById("input-events").value = eventLinesToDisplay;
 
   console.log(`displayDataInUserInputForm executed in: ${performance.now() - startTime} milliseconds`);
