@@ -69,6 +69,7 @@ function displayListOutput(dataSetToDisplay) {
   new_tbody_HTML_Element.replaceChildren() // Clear content
 
   // Create the section elements to display the events in body
+  const fragment = document.createDocumentFragment();
   for (var i = 0; i < dataSetToDisplay.length; i++) {
     // Create the parent/section HTML element
     const section = document.createElement("section");
@@ -101,12 +102,14 @@ function displayListOutput(dataSetToDisplay) {
     section.appendChild(dateDiv);
     section.appendChild(locationDiv);
     section.appendChild(eventDiv);
-    datasetContainer.appendChild(section);
+    fragment.appendChild(section);
+    //datasetContainer.appendChild(section);
   }
 
-  datasetArrayForDisplay.length = 0; // to reduce the size of variables in the app
+  datasetContainer.appendChild(fragment);
 
-  //datasetContainer.appendChild(fragment);
+  datasetArrayForDisplay.length = 0; // to reduce the size of variables in the app
+  
   console.log(`displayEventsInBody executed in: ${performance.now() - startTime} milliseconds`);
 }
 
