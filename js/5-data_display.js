@@ -104,6 +104,8 @@ function displayListOutput(dataSetToDisplay) {
     datasetContainer.appendChild(section);
   }
 
+  datasetArrayForDisplay = []; // to reduce the size of variables in the app
+
   //datasetContainer.appendChild(fragment);
   console.log(`displayEventsInBody executed in: ${performance.now() - startTime} milliseconds`);
 }
