@@ -80,7 +80,8 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
     document.getElementById("input-form").style.display = "flex";
     document.getElementById("output-list").style.display = "none";
 
-    // display the values in the input form
+    // Retrieve default values to display in new input form, then display it
+    retrieveDefaultInputValues();
     displayDataInUserInputForm(defaultInputValues[0], defaultInputValues[1], defaultInputValues[3]);
   } else {
     // Update element visibility
