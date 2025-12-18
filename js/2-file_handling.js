@@ -12,25 +12,29 @@ async function readFileAndValidate(event) {
   datasetArray = helperCsvToArray(decryptedCsvData); // Convert content from string format to array
   datasetArrayForDisplay = datasetArray.slice(); // Set this array as this is one used for the display
 
+  // Display Data in Top Pane
+  retrieveDataForTopPane();
+
+  // Retrieve date from top pane
+  retrieveDataFromTopPane();
+
+  // Display Data in Table
+  retrieveDataForListView();
+
+  // Clear validity errors if any
+  clearFileValidityError();
+
+  /*
   // CHECK FILE VALIDITY
   var validationResult = validateFileFormatAndData(datasetArray.slice(0,-2)); // Remove the last 2 lines before validating as they contain event data in wrong format
 
   // IF VALID THEN UPDATE APP, OTHERWISE DISPLAY ERROR
   if (validationResult == "No errors found.") {
-    // Display Data in Top Pane
-    retrieveDataForTopPane();
 
-    // Retrieve date from top pane
-    retrieveDataFromTopPane();
-
-    // Display Data in Table
-    retrieveDataForListView();
-
-    // Clear validity errors if any
-    clearFileValidityError();
   } else {
     displayFileValidityError(validationResult);
   }
+  */
 
 }
 
