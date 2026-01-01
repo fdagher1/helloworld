@@ -380,7 +380,7 @@ function updateDataSetToMatchSearchCriteria() {
 function retrieveDefaultInputValues() {
   // Retrieve the default values for date, location, country to append, and event, which will be used later in the app
   let defaultDate = datasetArray[0][0].split(', ')[1];
-  defaultDate = new Date((new Date(defaultDate)).setDate((new Date(new Date(defaultDate))).getDate() + 2)).toISOString().split('T')[0]
+  defaultDate = new Date((new Date(defaultDate)).setDate((new Date(new Date(defaultDate))).getDate() + 1)).toISOString().split('T')[0]
 
   let defaultValues = datasetArray[datasetArray.length-2][2].split("\n");
   let defaultLocation = defaultValues[0]; // First line has the locations
