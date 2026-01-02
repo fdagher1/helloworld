@@ -80,6 +80,10 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
     document.getElementById("input-form").style.display = "flex";
     document.getElementById("output-list").style.display = "none";
 
+    // Clear the output table to reduce risk of app hanging
+    const datasetContainer = document.getElementById("dataset-container");
+    datasetContainer.replaceChildren();    
+
     // Retrieve default values to display in new input form, then display it
     retrieveDefaultInputValues();
     displayDataInUserInputForm(defaultInputValues[0], defaultInputValues[1], defaultInputValues[3]);
