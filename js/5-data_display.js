@@ -77,7 +77,7 @@ function displayListOutput(dataSetToDisplay) {
     // Create the date child elements
     const a = document.createElement('a');
     a.href = '#';
-    a.textContent = dataSetToDisplay[i][0] || '';
+    a.textContent = ("Day " + (dataSetToDisplay.length-i).toString() + ": " + dataSetToDisplay[i][0] || '');
     a.addEventListener('click', function (e) {
       e.preventDefault();
       eventInputDateChanged(e, 'outputTable');
