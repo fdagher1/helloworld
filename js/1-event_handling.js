@@ -149,6 +149,10 @@ function eventInputDateChanged(event, comingFrom) { // This can happen either fr
     document.getElementById("select-displayoption").value = "Enter: New Day";
     document.getElementById("input-form").style.display = "flex";
     document.getElementById("output-list").style.display = "none";
+
+    // Clear the output table to reduce risk of app hanging
+    const datasetContainer = document.getElementById("dataset-container");
+    datasetContainer.replaceChildren();
   } else {
     // This scenario does not exist, keeping this here for future-proofing
     console.log("incorrect input");
