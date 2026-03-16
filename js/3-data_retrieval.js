@@ -267,8 +267,18 @@ function retrieveDataforSummaryTable() {
     for (let monthYearDictionaryKey in countByMonth) { // Iterate over every row (i.e. month) in this column in order to sum the total to later display it in the header
       totalCount += Number(countByMonth[monthYearDictionaryKey][tag]);
     }
-    if (totalCount % 1 != 0) { // If totalCount is not an integer (which is the case for the avg columns) then make it toFixed(2)
-      totalCount = totalCount.toFixed(2);
+
+    // If the tag has the average keyword, then calculate the average value across the different months and display that in the header instead of the total count
+    if (tag.includes("(avg)")) {
+      let nonzeromonth_year_arr = []; // This will hold the month_year entries that have a non zero value for this tag, which will be used to calculate the average value across the different months
+      for (let monthYearDictionaryKey in countByMonth) {
+        if (Number(countByMonth[monthYearDictionaryKey][tag]) != 0) {
+          nonzeromonth_year_arr.push(monthYearDictionaryKey);
+        }
+      }
+      let averageValue = totalCount / nonzeromonth_year_arr.length; // Calculate the average value across the different months
+      averageValue = averageValue.toFixed(2); // Limit to 2 decimals
+      totalCount = averageValue;
     }
     columnHeaders.push(tag + "(" + totalCount.toString() + ")");
   }
