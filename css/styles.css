@@ -102,6 +102,7 @@ a {
 .row-3 select,
 .row-4 input[type="text"],
 .row-5 select,
+.date-row,
 .row-7 input[type="date"],
 .row-7 input[type="text"],
 .row-7 textarea {
@@ -156,6 +157,7 @@ a {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  cursor: pointer;
 }
 
 .date-row input[type="date"] {
