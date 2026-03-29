@@ -389,9 +389,13 @@ function updateDataSetToMatchSearchCriteria() {
 
 function retrieveDefaultInputValues() {
   // Retrieve the default values for date, location, country to append, and event, which will be used later in the app
-  let defaultDate = datasetArray[0][0].split(', ')[1];
-  defaultDate = new Date((new Date(defaultDate)).setDate((new Date(new Date(defaultDate))).getDate() + 1)).toISOString().split('T')[0]
 
+  // Date
+  let defaultDate = new Date(datasetArray[0][0].split(', ')[1]); // Get default date string and convert it to actual date (in order to more easily increment it later) 
+  defaultDate.setDate(defaultDate.getDate() + 1); // increase the date by 1
+  defaultDate = new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(defaultDate); // Format date back to YYYY-MM-DD
+
+  // Location and events
   let defaultValues = datasetArray[datasetArray.length-2][2].split("\n");
   let defaultLocation = defaultValues[0]; // First line has the locations
   let defaultCountrySuffix = defaultValues[1]; // Second line has the default country suffix

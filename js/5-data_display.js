@@ -161,12 +161,15 @@ function displayDataInUserInputForm(dateToDisplay, locationToDisplay, eventLines
   // display the values in the input form
   if (dateToDisplay.includes(",")) {
     var parts = dateToDisplay.split(", ")[1].split("/");
-    var utcDate = new Date(Date.UTC(parts[2], parts[0] - 1, parts[1]));
+    dateToDisplay = new Date(parts[2], parts[0] - 1, parts[1]);
   } else {
     var parts = dateToDisplay.split("-");
-    var utcDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+    dateToDisplay = new Date(parts[0], parts[1] - 1, parts[2]);
   }
-  document.getElementById("input-date").valueAsDate = utcDate;
+
+  document.getElementById("date-weekday").textContent = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(dateToDisplay); // Get the weekday from the date and display it in the span element next to the date input
+
+  document.getElementById("input-date").valueAsDate = dateToDisplay;
   
   document.getElementById("input-location").value = locationToDisplay;
 
