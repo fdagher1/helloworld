@@ -90,7 +90,14 @@ a {
   justify-self: end;
 }
 
+/* This section is needed in order to stretch the password field until it reaches the Load button */
+.row-2 form {
+  flex: 1;
+  margin-right: 1rem;
+}
+
 .row-2 input[type="password"], 
+.row-2 form input[type="password"],
 .row-2 button,
 .row-3 select,
 .row-4 input[type="text"],
@@ -102,6 +109,7 @@ a {
   min-width: 0;
   padding: 0.5rem;
   font-size: 1rem;
+  width: 100%; /* This attribute is needed in order to stretch the password field until it reaches the Load button */
 }
 
 #output-list {
