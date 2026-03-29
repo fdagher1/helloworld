@@ -80,10 +80,10 @@
 
       <!-- Row 7: Input grid-->
       <div class="row row-7" id="input-form" style="display: none;">
-        <div class="date-row">
+        <label class="date-row" for="input-date" onclick="document.getElementById('input-date').showPicker();">
           <span id="date-weekday" class="weekday-label"></span>  <!-- the date input element cannot display the weekday so adding a span to display it -->
           <input id="input-date" class="input-default" type="date" onchange="eventInputDateChanged(event, 'inputForm')"> 
-        </div>
+        </label>
         <input id="input-location" class ="input-default" type="text" >
         <textarea id="input-events" class ="input-default" ></textarea>
       </div>
