@@ -108,10 +108,12 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
 
     if (selectedDisplayOption.includes("List:")) {
       retrieveDataForListView();
-    } else if (selectedDisplayOption.includes("GroupBy:")) {
+    } else if (selectedDisplayOption.includes("Count Days")) {
       retrieveDataForGroupByTable();
     } else if (selectedDisplayOption.includes("Summary:")) {
       retrieveDataforSummaryTable();
+    } else if (selectedDisplayOption.includes("Places Visited By Month")) {
+      retrieveDataForPlacesVisitedByMonth();
     }
   }
 }
@@ -126,7 +128,7 @@ function eventKeywordEntered() {
   // Check which display option user chose in order to call the corresponding function
   if (selectedDisplayOption.includes("List:")) {
     retrieveDataForListView();
-  } else if (selectedDisplayOption.includes("GroupBy:")) {
+  } else if (selectedDisplayOption.includes("Count Days")) {
     retrieveDataForGroupByTable();
   } else if (selectedDisplayOption.includes("Summary:")) {
     retrieveDataforSummaryTable();
