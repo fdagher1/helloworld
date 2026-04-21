@@ -47,7 +47,7 @@ function retrieveDataForTopPane() {
   allDropdownValues[2] = cleanupArray.slice(); // Set existing array equal to the new/cleaned one
 
   // RETRIEVE THE DISPLAY OPTIONS LIST
-  var displayOptionsText = ["List: All Lines", "List: Event Lines", "GroupBy: Country", "GroupBy: State", "GroupBy: City"]; // This holds the options to display in the Display Options dropdown 
+  var displayOptionsText = ["List: All Lines", "List: Event Lines", "Count Days (Country)", "Count Days (State)", "Count Days (City)", "Places Visited By Month (Country)", "Places Visited By Month (State)", "Places Visited By Month (City)"]; // This holds the options to display in the Display Options dropdown 
   var eventCategories = []; // This will hold the variable event categories to be used in the display
   for (eventName of allDropdownValues[2]) {
     var eventCategory = eventName.split("_")[0];
@@ -156,11 +156,11 @@ function retrieveDataForGroupByTable() {
   }
   
   // Check which display option the user selected in order to determine what to sort and then to output it 
-  if (selectedDisplayOption == "GroupBy: Country") {
+  if (selectedDisplayOption == "Count Days (Country)") {
     groupbyDataToDisplay = helperReturnSortedArrayFromDictionary(countOfLocationDictionaryArray[2]);
-  } else if (selectedDisplayOption == "GroupBy: State") {
+  } else if (selectedDisplayOption == "Count Days (State)") {
     groupbyDataToDisplay = helperReturnSortedArrayFromDictionary(countOfLocationDictionaryArray[1]);
-  } else if (selectedDisplayOption == "GroupBy: City") {
+  } else if (selectedDisplayOption == "Count Days (City)") {
     groupbyDataToDisplay = helperReturnSortedArrayFromDictionary(countOfLocationDictionaryArray[0]);
   }
   
@@ -287,6 +287,101 @@ function retrieveDataforSummaryTable() {
   
   // DISPLAY THE DATA
   displayTableOutput(columnHeaders, summaryDataset);
+}
+
+function retrieveDataForPlacesVisitedByMonth() {
+  let startTime = performance.now();
+  // This function is similar to the retrieveDataforSummaryTable function but it is specific for the "Places Visited By Month" display option, which has a different format than the other summary options
+
+  // Determine which type of places to display (cities, states, or countries) based on user selection
+  var displayType = "city"; // Default to city
+  var placesTypeLabel = "Cities";
+  if (selectedDisplayOption.includes("(Country)")) {
+    displayType = "country";
+    placesTypeLabel = "Countries";
+  } else if (selectedDisplayOption.includes("(State)")) {
+    displayType = "state";
+    placesTypeLabel = "States";
+  }
+
+  // Compile the month/year array based on the dates in the dataset
+  var month_year_arr = []; // holds the month/year array
+  for (var row of datasetArrayForDisplay) { // Loop over the filtered datasheet to identify the different months needed to be covered
+    var month_year = (new Date(row[0]).getMonth()+1).toString() +"/" + new Date(row[0]).getFullYear().toString(); //Adding 1 to month as it starts from 0
+    if (!month_year_arr.includes(month_year)) {
+      month_year_arr.push(month_year);
+    }
+  }
+
+  // Build the dictionary that will hold the places visited for each month
+  var placesbyMonth = {};
+  for (let month_year of month_year_arr) {
+    placesbyMonth[month_year] = [];
+  }
+
+  // Iterate over the dataset to compile the places visited in each month
+  for (let i = 0; i < datasetArrayForDisplay.length; i++) {
+    
+    // Get that row's date
+    var cell_date = new Date(datasetArrayForDisplay[i][0]);
+    var month_year = (cell_date.getMonth()+1).toString() +"/" + cell_date.getFullYear().toString();
+    
+    // Extract places from the location cell (column 1)
+    let rowLocationValueArray = datasetArrayForDisplay[i][1].split(","); // Place each location from that day in an array
+    for (let j = 0; j < rowLocationValueArray.length; j++) {
+      var cityCountrySplitArray = rowLocationValueArray[j].split("_"); // Split city and country into an array
+      let placeName = "";
+      
+      if (displayType === "country") {
+        // Extract country name
+        placeName = cityCountrySplitArray[1].trim();
+        if (placeName.includes(")")) {
+          placeName = ""; // Skip invalid entries
+        }
+      } else if (displayType === "state") {
+        // Extract state name (only for USA)
+        retrieveDefaultInputValues(); // Retrieve default country suffix
+        let countryName = cityCountrySplitArray[1].trim();
+        if (countryName == defaultInputValues[2].slice(1)) { // Check if country is USA
+          let cityName = cityCountrySplitArray[0].trim();
+          placeName = helperSplitStringLastOccurrence(cityName, " "); // Extract state from city name
+        }
+      } else {
+        // Extract city name (default)
+        placeName = cityCountrySplitArray[0].trim();
+        if (placeName.includes("(")) {
+          placeName = ""; // Skip invalid entries
+        }
+      }
+      
+      // Add place name to the month's array if not already there and if valid
+      if (placeName != "" && !placesbyMonth[month_year].includes(placeName)) {
+        placesbyMonth[month_year].push(placeName);
+      }
+    }
+  }
+
+  // PREPARE DATA FOR OUTPUT
+  
+  // Convert the placesbyMonth dictionary to an array of arrays for use in the display data function
+  var placesDataset = [];
+  for (let monthYearDictionaryKey in placesbyMonth) {
+    var rowToAdd = [];
+    // First push the month/year as the first value
+    rowToAdd.push(monthYearDictionaryKey);
+    // Then push the count of places and the place names
+    rowToAdd.push(placesbyMonth[monthYearDictionaryKey].length); // Count of unique places
+    rowToAdd.push(placesbyMonth[monthYearDictionaryKey].join(", ")); // Comma-separated list of places
+    placesDataset.push(rowToAdd);
+  }
+
+  // Create the table header with dynamic labels
+  var columnHeaders = ["Month", placesTypeLabel + " Count", placesTypeLabel + " Visited"];
+
+  console.log(`retrieveDataForPlacesVisitedByMonth executed in: ${performance.now() - startTime} milliseconds`);
+  
+  // DISPLAY THE DATA
+  displayTableOutput(columnHeaders, placesDataset);
 }
 
 function updateDataSetToMatchSearchCriteria() {
