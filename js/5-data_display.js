@@ -167,7 +167,8 @@ function displayDataInUserInputForm(dateToDisplay, locationToDisplay, eventLines
     dateToDisplay = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2])); // Needed to add .UTC to avoid timezone issues that cause the date to be displayed as the day before the actual date
   }
 
-  document.getElementById("date-weekday").textContent = new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: 'UTC' }).format(dateToDisplay); // Get the weekday from the date and display it in the span element next to the date input
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  document.getElementById("date-weekday").textContent = daysOfWeek[dateToDisplay.getUTCDay()]; // Get the weekday from the UTC date and display it
 
   document.getElementById("input-date").valueAsDate = dateToDisplay;
   
