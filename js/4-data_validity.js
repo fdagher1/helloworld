@@ -81,16 +81,18 @@ function helperValidateEvent(eventCell, SliceddatasetArray) {
 
 // Returns a string confirming if the thoughts cell is properly formatted based on various criteria
 function helperValidateThoughts(thoughtsCell, SliceddatasetArray) {
-  // CHECK IF THOUGHTS CELL HAS ANY BACKSLASHES AS THAT CAN BREAK THE CSV STRUCTURE
-  if (thoughtsCell.includes("\\")) {
-    return "The thoughts cell contains a backslash character, which is not permitted";
-  }
+  if (thoughtsCell !== undefined) { // If the thoughts cell is not undefined, that means cell is empty, no need to validate, otherwise code breaks
+    // CHECK IF THOUGHTS CELL HAS ANY BACKSLASHES AS THAT CAN BREAK THE CSV STRUCTURE
+    if (thoughtsCell.includes("\\")) {
+      return "The thoughts cell contains a backslash character, which is not permitted";
+    }
 
-  // CHECK IF THOUGHTS CELL HAS ANY DOUBLE QUOTES AS THAT CAN BREAK THE CSV STRUCTURE
-  if (thoughtsCell.includes('"')) {
-    return "The thoughts cell contains a double quote character, which is not permitted";
+    // CHECK IF THOUGHTS CELL HAS ANY DOUBLE QUOTES AS THAT CAN BREAK THE CSV STRUCTURE
+    if (thoughtsCell.includes('"')) {
+      return "The thoughts cell contains a double quote character, which is not permitted";
+    }
   }
-
+  
   return "No errors found.";
 }
 
