@@ -165,14 +165,14 @@ function eventInputDateChanged(event, comingFrom) { // This can happen either fr
   
   // Update the input form with either the default values (if date exists) or empty values (if date does not exist)
   if (result != "Date not found.") { // If this is an existing date, then update the input form with its values
-    displayDataInUserInputForm(result[0], result[1], result[2]);
+    displayDataInUserInputForm(result[0], result[1], result[2], result[3] || "");
   } else {  //Otherwise, display default values
     // Get default values for location and event from the file
     var locationToDisplay = defaultInputValues[1];
     var eventLinesToDisplay = defaultInputValues[3];
 
     // Display the default location and event values
-    displayDataInUserInputForm(dateToSearchFor, locationToDisplay, eventLinesToDisplay);
+    displayDataInUserInputForm(dateToSearchFor, locationToDisplay, eventLinesToDisplay, thoughtsToDisplay);
   }
 }
 
