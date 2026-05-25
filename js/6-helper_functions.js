@@ -32,10 +32,6 @@ function helperCsvToArray(csvString) {
       }
   }
 
-  // Add the last field and row, and remove the very first row as it only has the table headers
-  //currentRow.push(currentField);
-  //rows.push(currentRow);
-  rows.shift();
   return rows;
 }
 
