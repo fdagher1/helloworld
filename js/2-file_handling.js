@@ -1,4 +1,4 @@
-async function readFileAndValidate(event) {
+async function readFileAndDisplay(event) {
   // GET FILE CONTENT, AND PASSWORD (IF ANY)
   var enteredPassword = document.getElementById("textbox-password").value; // Get user entered password, if any
   const file = event.target.files[0]; 
@@ -10,32 +10,31 @@ async function readFileAndValidate(event) {
     var decryptedCsvData = await decrypt(reader, enteredPassword); // decrypt file
   }
   datasetArray = helperCsvToArray(decryptedCsvData); // Convert content from string format to array
-  datasetArrayForDisplay = datasetArray.slice(); // Set this array as this is one used for the display
+  datasetArray.shift(); //Remove the very first row as it only has the table headers
 
-  // Display Data in Top Pane
-  retrieveDataForTopPane();
-
-  // Retrieve date from top pane
-  retrieveDataFromTopPane();
-
-  // Display Data in Table
-  retrieveDataForListView();
-
-  // Clear validity errors if any
-  clearFileValidityError();
-
-  /*
   // CHECK FILE VALIDITY
-  var validationResult = validateFileFormatAndData(datasetArray.slice(0,-2)); // Remove the last 2 lines before validating as they contain event data in wrong format
+ validationResult = validateFileFormatAndData(datasetArray.slice(0,-2)); // Remove the last 2 lines before validating as they contain event data in wrong format
+ 
+  if (validationResult == "No errors found.") { 
+    // Set data in this array as it's the one used for the display
+    datasetArrayForDisplay = datasetArray.slice(); 
 
-  // IF VALID THEN UPDATE APP, OTHERWISE DISPLAY ERROR
-  if (validationResult == "No errors found.") {
+    // Display Data in Top Pane
+    retrieveDataForTopPane();
+
+    // Retrieve date from top pane
+    retrieveDataFromTopPane();
+
+    // Display Data in Table
+    retrieveDataForListView();
+
+    // Clear old validity errors if any
+    clearFileValidityError();
 
   } else {
     displayFileValidityError(validationResult);
-  }
-  */
 
+  }
 }
 
 async function saveContentToFile() {
@@ -57,26 +56,25 @@ async function saveContentToFile() {
     // Create array from properly formatted input
     var userInput = [enteredDate, enteredLocation, enteredEvents, enteredThoughts];
 
-    // Check if operation is to insert new line or to update existing line
-    var result = helperReturnRowThatMatchesDate(datasetArray, enteredDate) 
+    // Check if the data already exists and if so get the row that matches the date, otherwise indicate that the date was not found
+    var rowMatchForDate = helperReturnRowThatMatchesDate(datasetArray, enteredDate) 
 
-    // VALIDATE USER INPUT ARRAY IF ENTRY IS NOT FOR THE VERY FIRST DAY AS IT WOULD FAIL FOR THAT DAY
+    // Validate user input after ensuring that the date is not the first date in the dataset
     if (enteredDate != datasetArray[datasetArray.length-1][0]) {
-      var validationResult = validateUserInputFormatAndData(datasetArray, userInput, result);
+      var validationResult = validateUserInputFormatAndData(datasetArray, userInput, rowMatchForDate);
       if (validationResult != "No errors found.") {
         displayFileValidityError(validationResult);
         return;
       }
     }
 
-    // Insert data into datasetArray
-    if (result == "Date not found.") {
-      datasetArray.unshift(userInput);  // If date already exists, insert user data as a new line
+    // If new date is being added, add it to the beginning of the dataset, otherwise, update existing line
+    if (rowMatchForDate == "Date not found.") {
+      datasetArray.unshift(userInput);
     } else {
-      datasetArray = helperUpdateRowInDataset(datasetArray, userInput).slice(); // Otherwise, update existing line
+      datasetArray = helperUpdateRowInDataset(datasetArray, userInput).slice();
     }
   }
-
 
   // CREATE FILE CONTENT
   var datasetCSV = helperArrayToCSV(datasetArray); // Convert dataset to CSV 

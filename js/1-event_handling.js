@@ -29,7 +29,7 @@ function eventAppLoaded() {
 function eventFileHandlingButtonClicked(event) {
   if (!datasetLoaded) { //If dataset has not been loaded yet, then treat button click as file upload
     // Get file content
-    readFileAndValidate(event);
+    readFileAndDisplay(event);
     
     // Enable HTML elements again
     document.getElementById("select-displayoption").removeAttribute("disabled");

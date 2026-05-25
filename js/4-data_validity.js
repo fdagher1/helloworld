@@ -20,7 +20,7 @@ function helperValidateLocation(locationString) {
   return "No errors found.";
 }
 
-// Returns a string confirming if eventCell is properly formatted (various different checks)
+// Returns a string confirming if eventCell is properly formatted based on various criteria
 function helperValidateEvent(eventCell, SliceddatasetArray) {
   // CHECK IF EVENT CELL IS BLANK
   if (eventCell === '') {
@@ -37,12 +37,12 @@ function helperValidateEvent(eventCell, SliceddatasetArray) {
     return "The event cell does not have any events. It should have at least one.";
   }
 
-  // CHECK IF EVENT CELL HAS NO HASHTAGS
+  // CHECK IF EVENT CELL HAS ANY BACKSLASHES AS THAT CAN BREAK THE CSV STRUCTURE
   if (eventCell.includes("\\")) {
     return "The event cell contains a backslash character, which is not permitted";
   }
 
-  // CHECK IF EVENT CELL HAS NO HASHTAGS
+  // CHECK IF EVENT CELL HAS ANY DOUBLE QUOTES AS THAT CAN BREAK THE CSV STRUCTURE
   if (eventCell.includes('"')) {
     return "The event cell contains a double quote character, which is not permitted";
   }
@@ -79,49 +79,19 @@ function helperValidateEvent(eventCell, SliceddatasetArray) {
   return "No errors found.";
 }
 
-// Validates the file input by calling all the validation helper functions
-function validateFileFormatAndData(SliceddatasetArray){
-  let startTime = performance.now();
-  let validationResult = "No errors found."; 
-  var previousCellDate = new Date(SliceddatasetArray[0][0]); // Used further down by the validity check code 
-  
-  // ITERATE OVER EVERY ROW TO INSPECT IT
-  for (let i = 0; i < SliceddatasetArray.length; i++) { 
-    
-    // CHECK THAT DATES ARE IN DESCENDING ORDER
-    var currentCellDate = new Date(SliceddatasetArray[i][0]); 
-    if (i == 0){ 
-      // Do nothing as that means we're still in the first row and it's too early to check
-    } else {
-      validationResult = helperValidateDate(currentCellDate.toString(), previousCellDate.toString());
-      if (validationResult != "No errors found.") {
-        validationResult = validationResult + " Row: " + ++i;
-        break;
-      }
-    }
-    previousCellDate = currentCellDate;
-
-    // CHECK THAT LOCATIONS HAVE UNDERSCORES IN THEM
-    validationResult = helperValidateLocation(SliceddatasetArray[i][1]);
-    if (validationResult != "No errors found.") {
-      validationResult = validationResult + " Row: " + ++i;
-      break;
-    }
-    
-    // CHECK EVENT ENTRY VALIDITY: 
-    // 1- is not blank, 
-    // 2- ends with a break line,
-    // 3- has at least 1 hashtag, and
-    // 4- all its hashtags are in the list
-    validationResult = helperValidateEvent(SliceddatasetArray[i][2], SliceddatasetArray);
-    if (validationResult != "No errors found.") {
-      validationResult = validationResult + " Row: " + ++i;
-      break;
-    }
+// Returns a string confirming if the thoughts cell is properly formatted based on various criteria
+function helperValidateThoughts(thoughtsCell, SliceddatasetArray) {
+  // CHECK IF THOUGHTS CELL HAS ANY BACKSLASHES AS THAT CAN BREAK THE CSV STRUCTURE
+  if (thoughtsCell.includes("\\")) {
+    return "The thoughts cell contains a backslash character, which is not permitted";
   }
 
-  console.log(`validateFileFormatAndData executed in: ${performance.now() - startTime} milliseconds`);
-  return validationResult;
+  // CHECK IF THOUGHTS CELL HAS ANY DOUBLE QUOTES AS THAT CAN BREAK THE CSV STRUCTURE
+  if (thoughtsCell.includes('"')) {
+    return "The thoughts cell contains a double quote character, which is not permitted";
+  }
+
+  return "No errors found.";
 }
 
 // Adds the default country to add to all locations that don't have a country suffix
@@ -138,12 +108,60 @@ function helperCheckCountrySuffixAndAddIfMissing(locationString) {
   return locationString;
 }
 
+// Validates the file input by calling all the validation helper functions
+function validateFileFormatAndData(SliceddatasetArray){
+  let startTime = performance.now();
+  let validationResult = "No errors found."; 
+  var previousCellDate = new Date(SliceddatasetArray[0][0]); // Used further down by the validity check code 
+  
+  // ITERATE OVER EVERY ROW TO INSPECT IT
+  for (let i = 0; i < SliceddatasetArray.length; i++) { 
+    
+    // CHECK THAT ROW's DATE IS IN DESCENDING ORDER
+    var currentCellDate = new Date(SliceddatasetArray[i][0]); 
+    if (i == 0){ 
+      // Do nothing as that means we're still in the first row and it's too early to check
+    } else {
+      validationResult = helperValidateDate(currentCellDate.toString(), previousCellDate.toString());
+      if (validationResult != "No errors found.") {
+        validationResult = validationResult + " Row: " + ++i;
+        break;
+      }
+    }
+    previousCellDate = currentCellDate;
+
+    // CHECK THE ROW'S LOCATIONS VALIDITY
+    validationResult = helperValidateLocation(SliceddatasetArray[i][1]);
+    if (validationResult != "No errors found.") {
+      validationResult = validationResult + " Row: " + ++i;
+      break;
+    }
+    
+    // CHECK THE ROW'S EVENTS VALIDITY
+    validationResult = helperValidateEvent(SliceddatasetArray[i][2], SliceddatasetArray);
+    if (validationResult != "No errors found.") {
+      validationResult = validationResult + " Row: " + ++i;
+      break;
+    }
+
+    // CHECK THE ROW'S THOUGHTS VALIDITY
+    validationResult = helperValidateThoughts(SliceddatasetArray[i][3], SliceddatasetArray);
+    if (validationResult != "No errors found.") {
+      validationResult = validationResult + " Row: " + ++i;
+      break;
+    }
+  }
+
+  console.log(`validateFileFormatAndData executed in: ${performance.now() - startTime} milliseconds`);
+  return validationResult;
+}
+
 // Validates the user input by calling all the validation helper functions
-function validateUserInputFormatAndData(datasetArray, userInput, result) {
+function validateUserInputFormatAndData(datasetArray, userInput, rowMatchForDate) {
   var validationResult = "No errors found.";
 
   // CHECK THAT THE DATE IS IN INCREMENTAL ORDER BUT ONLY IF IT'S NOT ALREADY THERE
-  if (result == "Date not found.") {
+  if (rowMatchForDate == "Date not found.") {
     var latestDateInFile = new Date(datasetArray[0][0]);
     var dateFromUserInput = new Date(userInput[0]);
     validationResult = helperValidateDate(latestDateInFile, dateFromUserInput);
@@ -152,16 +170,23 @@ function validateUserInputFormatAndData(datasetArray, userInput, result) {
     }
   }
 
-  // CHECK THAT LOCATIONS ALL HAVE UNDERSCORES IN THEM
+  // CHECK LOCATIONS CELL FORMAT VALIDITY
   var locationFromUserInput = userInput[1];
   validationResult = helperValidateLocation(locationFromUserInput);
   if (validationResult != "No errors found.") {
     return validationResult;
   }
 
-  // CHECK THAT EVENT FORMAT IS CORRECT
+  // CHECK EVENT CELL FORMATVALIDITY
   var eventsFromUserInput = userInput[2];
   validationResult = helperValidateEvent(eventsFromUserInput, datasetArray);
+  if (validationResult != "No errors found.") {
+    return validationResult;
+  }
+
+  // CHECK THOUGHTS CELL FORMATVALIDITY
+  var thoughtsFromUserInput = userInput[3];
+  validationResult = helperValidateThoughts(thoughtsFromUserInput, datasetArray);
   if (validationResult != "No errors found.") {
     return validationResult;
   }
