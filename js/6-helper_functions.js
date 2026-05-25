@@ -44,7 +44,7 @@ function helperArrayToCSV(datasetArray) {
   var datasetCSV = "";
   for (const row of datasetArray) {
     for (const rowNumber in row) {
-      if (rowNumber != 2) {
+      if (rowNumber != row.length - 1) {
         datasetCSV += "\"" + row[rowNumber] + "\"" + ",";
       } else {
         datasetCSV += "\"" + row[rowNumber] + "\"";
@@ -120,8 +120,10 @@ function helperUpdateRowInDataset(datasetArray, userInput) {
   // Check if date exists already and if so return that row
   for (var i = 0; i < datasetArray.length; i++) {
     if (datasetArray[i][0] == userInput[0]) {
-      datasetArray[i][1] = userInput[1];
-      datasetArray[i][2] = userInput[2];
+      // Update all columns starting from column 1 (preserve the date in column 0)
+      for (var j = 1; j < userInput.length; j++) {
+        datasetArray[i][j] = userInput[j];
+      }
       return datasetArray;
     }
   }

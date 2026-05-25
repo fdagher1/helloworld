@@ -45,6 +45,7 @@ async function saveContentToFile() {
   var enteredDate = document.getElementById("input-date").value; // Read date
   var enteredLocation = document.getElementById("input-location").value; // Read Location
   var enteredEvents = document.getElementById("input-events").value; // Read events
+  var enteredThoughts = document.getElementById("input-thoughts").value; // Read thoughts
   
   // If there's a date value, then check if it already exists or if it's a new line and update dataset accordingly, 
   // but if there's no date value, then there's no change to input (i.e., no change to the dataset) and simply save the file 
@@ -54,7 +55,7 @@ async function saveContentToFile() {
     enteredLocation = helperCheckCountrySuffixAndAddIfMissing(enteredLocation); // Add a default country if underscore is missing 
     
     // Create array from properly formatted input
-    var userInput = [enteredDate, enteredLocation, enteredEvents];
+    var userInput = [enteredDate, enteredLocation, enteredEvents, enteredThoughts];
 
     // Check if operation is to insert new line or to update existing line
     var result = helperReturnRowThatMatchesDate(datasetArray, enteredDate) 
@@ -79,7 +80,7 @@ async function saveContentToFile() {
 
   // CREATE FILE CONTENT
   var datasetCSV = helperArrayToCSV(datasetArray); // Convert dataset to CSV 
-  datasetCSV = "Day,Locations,Events\n" + datasetCSV; // Add headset to CSV
+  datasetCSV = "Day,Locations,Events,Thoughts\n" + datasetCSV; // Add header to CSV
   datasetArrayForDisplay = datasetArray.slice(); // Update the output dataset array
   
   // SAVE FILE

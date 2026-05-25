@@ -155,7 +155,7 @@ function displayTableOutput(columnHeaders, dataSetToDisplay) {
   console.log(`displayTableOutput executed in: ${performance.now() - startTime} milliseconds`);
 }
 
-function displayDataInUserInputForm(dateToDisplay, locationToDisplay, eventLinesToDisplay) {
+function displayDataInUserInputForm(dateToDisplay, locationToDisplay, eventLinesToDisplay, thoughtsToDisplay = "") {
   let startTime = performance.now();
 
   // display the values in the input form
@@ -175,6 +175,8 @@ function displayDataInUserInputForm(dateToDisplay, locationToDisplay, eventLines
   document.getElementById("input-location").value = locationToDisplay;
 
   document.getElementById("input-events").value = eventLinesToDisplay;
+  
+  document.getElementById("input-thoughts").value = thoughtsToDisplay;
 
   console.log(`displayDataInUserInputForm executed in: ${performance.now() - startTime} milliseconds`);
 
