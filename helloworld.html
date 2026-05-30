@@ -49,17 +49,17 @@
           <option value="All Events">All Events</option>
         </select>
       </div>
-
-      <!-- Row 4: Keyword search-->
-      <div class="row row-4">
-        <input type="text" id="textbox-keyword" class ="textbox-default" placeholder="(Search Criteria)" disabled oninput="eventKeywordEntered()">
-      </div>
       
-      <!-- Row 5: Display options-->
+      <!-- Row 4: Display options-->
       <div class="row row-5">
         <select id="select-displayoption" class="select-default" disabled onchange="eventFilterOrDisplayOptionChanged('displayOption')">
-          <option value="List: All Lines">List: All Lines</option>
+          <option value="List: All Events Lines">List: Events (All)</option>
         </select>
+      </div>
+
+      <!-- Row 5 Keyword search-->
+      <div class="row row-4">
+        <input type="text" id="textbox-keyword" class ="textbox-default" placeholder="(Search Criteria)" disabled oninput="eventKeywordEntered()">
       </div>
 
       <!-- Row 6: Output grid-->

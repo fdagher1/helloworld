@@ -95,9 +95,9 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
     document.getElementById("input-form").style.display = "none";
     document.getElementById("output-list").style.display = "grid";
 
-    // If the user chose to only show events then change the display mode to event lines only 
-    if (whatChanged == 'event' && selectedDisplayOption.includes("List: All Lines")) {
-      document.getElementById("select-displayoption").value = "List: Event Lines";
+    // If the user chose to only show events then change the display mode to tagged lines only 
+    if (whatChanged == 'event' && selectedDisplayOption.includes("List: Events (All)")) {
+      document.getElementById("select-displayoption").value = "List: Events (Tagged)";
 
       // Gather user inputs again since display option changed
       retrieveDataFromTopPane();
@@ -108,11 +108,11 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
 
     if (selectedDisplayOption.includes("List:")) {
       retrieveDataForListView();
-    } else if (selectedDisplayOption.includes("Count Days")) {
+    } else if (selectedDisplayOption.includes("Number of Days:")) {
       retrieveDataForGroupByTable();
     } else if (selectedDisplayOption.includes("Summary:")) {
       retrieveDataforSummaryTable();
-    } else if (selectedDisplayOption.includes("Places Visited By Month")) {
+    } else if (selectedDisplayOption.includes("Places Visited By Month:")) {
       retrieveDataForPlacesVisitedByMonth();
     }
   }
@@ -128,7 +128,7 @@ function eventKeywordEntered() {
   // Check which display option user chose in order to call the corresponding function
   if (selectedDisplayOption.includes("List:")) {
     retrieveDataForListView();
-  } else if (selectedDisplayOption.includes("Count Days")) {
+  } else if (selectedDisplayOption.includes("Number of Days:")) {
     retrieveDataForGroupByTable();
   } else if (selectedDisplayOption.includes("Summary:")) {
     retrieveDataforSummaryTable();

@@ -88,12 +88,16 @@ function displayListOutput(dataSetToDisplay) {
 
     // Create the location, event and seperator child elements
     const locationDiv = document.createElement("div");
-    const eventDiv = document.createElement("div");
+    const eventOrThoughtDiv = document.createElement("div");
     const seperatorDiv = document.createElement("div");
     //locationDiv.innerHTML = dataSetToDisplay[i][1].replace(/,/g, '\n') + '</br></br>'; // in order to put each location in a new line
     locationDiv.innerHTML = dataSetToDisplay[i][1] + '</br></br>';
     locationDiv.classList.add("location-class");
-    eventDiv.textContent = dataSetToDisplay[i][2];
+    if (selectedDisplayOption.includes("List: Thoughts")) {
+      eventOrThoughtDiv.textContent = dataSetToDisplay[i][3];
+    } else {
+      eventOrThoughtDiv.textContent = dataSetToDisplay[i][2];
+    }
     locationDiv.classList.add("event-class");
     seperatorDiv.innerHTML = `</br><hr style="border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">`;
 
@@ -101,7 +105,7 @@ function displayListOutput(dataSetToDisplay) {
     section.appendChild(seperatorDiv);
     section.appendChild(dateDiv);
     section.appendChild(locationDiv);
-    section.appendChild(eventDiv);
+    section.appendChild(eventOrThoughtDiv);
     fragment.appendChild(section);
     //datasetContainer.appendChild(section);
   }
