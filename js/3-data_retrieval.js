@@ -47,7 +47,7 @@ function retrieveDataForTopPane() {
   allDropdownValues[2] = cleanupArray.slice(); // Set existing array equal to the new/cleaned one
 
   // RETRIEVE THE DISPLAY OPTIONS LIST
-  var displayOptionsText = ["List: All Lines", "List: Event Lines", "Count Days (Country)", "Count Days (State)", "Count Days (City)", "Places Visited By Month (Country)", "Places Visited By Month (State)", "Places Visited By Month (City)"]; // This holds the options to display in the Display Options dropdown 
+  var displayOptionsText = ["List: Events (All)", "List: Events (Tagged)", "List: Thoughts (All)","Number of Days: (Country)", "Number of Days: (State)", "Number of Days: (City)", "Places Visited By Month: (Country)", "Places Visited By Month: (State)", "Places Visited By Month: (City)"]; // This holds the options to display in the Display Options dropdown 
   var eventCategories = []; // This will hold the variable event categories to be used in the display
   for (eventName of allDropdownValues[2]) {
     var eventCategory = eventName.split("_")[0];
@@ -106,7 +106,7 @@ function retrieveDataFromTopPane() {
 
 function retrieveDataForListView() {
   let startTime = performance.now();
-  
+
   // Provide the column names for table to display data: 1- "Data", 2- "Location", and 3- Number of rows
   var columnHeaders = ["Date", "Location", "(" + datasetArrayForDisplay.length + " rows)"];
 
@@ -156,11 +156,11 @@ function retrieveDataForGroupByTable() {
   }
   
   // Check which display option the user selected in order to determine what to sort and then to output it 
-  if (selectedDisplayOption == "Count Days (Country)") {
+  if (selectedDisplayOption == "Number of Days: (Country)") {
     groupbyDataToDisplay = helperReturnSortedArrayFromDictionary(countOfLocationDictionaryArray[2]);
-  } else if (selectedDisplayOption == "Count Days (State)") {
+  } else if (selectedDisplayOption == "Number of Days: (State)") {
     groupbyDataToDisplay = helperReturnSortedArrayFromDictionary(countOfLocationDictionaryArray[1]);
-  } else if (selectedDisplayOption == "Count Days (City)") {
+  } else if (selectedDisplayOption == "Number of Days: (City)") {
     groupbyDataToDisplay = helperReturnSortedArrayFromDictionary(countOfLocationDictionaryArray[0]);
   }
   
@@ -443,8 +443,8 @@ function updateDataSetToMatchSearchCriteria() {
     }
   }
 
-  // IF USER ONLY WANTS TO LIST EVENTS THEN REMOVE THE OTHER ENTRIES  
-  if (selectedDisplayOption == "List: Event Lines") {
+  // IF USER ONLY WANTS TO LIST TAGGED EVENTS THEN REMOVE THE OTHER ENTRIES NON TAGGED LINES FROM THE EVENTS CELL 
+  if (selectedDisplayOption == "List: Events (Tagged)") {
     // Retrieve the selected events from the events fields 
     var tempDataSet = []; // This will hold the data that will be displayed
     for (var row of datasetArrayForDisplay) {
@@ -472,7 +472,7 @@ function updateDataSetToMatchSearchCriteria() {
   if (searchWord != '') {
     var tempArray = []; // Array to hold rows that match the searchword criteria
     for (const row of datasetArrayForDisplay) {
-      if (row[0].toLowerCase().includes(searchWord.toLowerCase()) || row[1].toLowerCase().includes(searchWord.toLowerCase()) || row[2].toLowerCase().includes(searchWord.toLowerCase())) {
+      if (row[0].toLowerCase().includes(searchWord.toLowerCase()) || row[1].toLowerCase().includes(searchWord.toLowerCase()) || row[2].toLowerCase().includes(searchWord.toLowerCase()) || row[2].toLowerCase().includes(searchWord.toLowerCase())) {
         tempArray.push(row);
       }
     }
