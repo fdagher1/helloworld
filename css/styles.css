@@ -177,3 +177,20 @@ a {
   flex: 1;
   min-width: 0;
 }
+
+.keyword-highlight {
+  background-color: yellow;
+  color: black;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.lightmode .keyword-highlight {
+  background-color: #FFFF00;
+  color: black;
+}
+
+.darkclass .keyword-highlight {
+  background-color: #FFD700;
+  color: #000;
+}

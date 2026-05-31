@@ -91,12 +91,12 @@ function displayListOutput(dataSetToDisplay) {
     const eventOrThoughtDiv = document.createElement("div");
     const seperatorDiv = document.createElement("div");
     //locationDiv.innerHTML = dataSetToDisplay[i][1].replace(/,/g, '\n') + '</br></br>'; // in order to put each location in a new line
-    locationDiv.innerHTML = dataSetToDisplay[i][1] + '</br></br>';
+    locationDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][1], searchWord) + '</br></br>';
     locationDiv.classList.add("location-class");
     if (selectedDisplayOption.includes("List: Thoughts")) {
-      eventOrThoughtDiv.textContent = dataSetToDisplay[i][3];
+      eventOrThoughtDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][3], searchWord);
     } else {
-      eventOrThoughtDiv.textContent = dataSetToDisplay[i][2];
+      eventOrThoughtDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][2], searchWord);
     }
     locationDiv.classList.add("event-class");
     seperatorDiv.innerHTML = `</br><hr style="border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">`;
