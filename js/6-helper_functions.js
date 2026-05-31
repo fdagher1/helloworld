@@ -35,6 +35,16 @@ function helperCsvToArray(csvString) {
   return rows;
 }
 
+// Highlights occurrences of a keyword in text by wrapping them in a span with keyword-highlight class
+function helperHighlightKeyword(text, keyword) {
+  if (!keyword || keyword.trim() === '') {
+    return text; // Return original text if no keyword provided
+  }
+  
+  const regex = new RegExp(`(${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'); // Case-insensitive global search with escaped special characters
+  return text.replace(regex, '<span class="keyword-highlight">$1</span>');
+}
+
 // Converts an Array to a CSV formatted string
 function helperArrayToCSV(datasetArray) {
   var datasetCSV = "";
