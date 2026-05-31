@@ -472,7 +472,7 @@ function updateDataSetToMatchSearchCriteria() {
   if (searchWord != '') {
     var tempArray = []; // Array to hold rows that match the searchword criteria
     for (const row of datasetArrayForDisplay) {
-      if (row[0].toLowerCase().includes(searchWord.toLowerCase()) || row[1].toLowerCase().includes(searchWord.toLowerCase()) || row[2].toLowerCase().includes(searchWord.toLowerCase()) || row[2].toLowerCase().includes(searchWord.toLowerCase())) {
+      if (row[0].toLowerCase().includes(searchWord.toLowerCase()) || row[1].toLowerCase().includes(searchWord.toLowerCase()) || row[2].toLowerCase().includes(searchWord.toLowerCase()) || row[3].toLowerCase().includes(searchWord.toLowerCase())) {
         tempArray.push(row);
       }
     }
