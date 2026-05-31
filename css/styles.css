@@ -45,6 +45,11 @@ a {
 .textbox-default, .select-default, .input-default {
   background-color: var(--background-color);
   color: var(--text-color);
+  border-radius: 12px;
+}
+
+.button-default {
+  border-radius: 12px;
 }
 
 ::placeholder {
@@ -60,7 +65,7 @@ a {
   max-width: 600px;
   margin: auto;
   background-color: var(--background-color);
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 0 10px var(--section-color)
 }
 
@@ -88,6 +93,14 @@ a {
 .theme-toggle {
   grid-column: 3; /* right-aligned */
   justify-self: end;
+}
+
+.row-1,
+.row-2,
+.row-3,
+.row-4,
+.row-5 {
+  margin-bottom: 0.25rem;
 }
 
 /* This section is needed in order to stretch the password field until it reaches the Load button */
@@ -124,7 +137,7 @@ a {
   flex-direction: column;    /* stack inputs vertically so each gets full width */
   align-items: stretch;
   width: 100%;
-  gap: 0; 
+  gap: 0.5rem; 
 }
 
 .row-7 input[type="date"],
