@@ -37,7 +37,7 @@ function helperCsvToArray(csvString) {
 
 // Highlights occurrences of a keyword in text by wrapping them in a span with keyword-highlight class
 function helperHighlightKeyword(text, keyword) {
-  if (!keyword || keyword.trim() === '') {
+  if (!keyword || keyword.trim() === '' || keyword.length < 3) { // Only highlight if the keyword has more than 2 characters to avoid over highlighting from short common words
     return text; // Return original text if no keyword provided
   }
   
