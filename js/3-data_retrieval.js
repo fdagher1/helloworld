@@ -468,8 +468,8 @@ function updateDataSetToMatchSearchCriteria() {
     datasetArrayForDisplay = tempDataSet.slice(0);
   }
 
-  // FILTER BASED ON SEARCH WORD VALUE
-  if (searchWord != '') {
+  // FILTER BASED ON SEARCH WORD VALUE, ONLY IF THE SEARCH WORD HAS MORE THAN 2 CHARACTERS TO AVOID OVER FILTERING FROM SHORT COMMON WORDS
+  if (searchWord.length > 2) { 
     var tempArray = []; // Array to hold rows that match the searchword criteria
     for (const row of datasetArrayForDisplay) {
       if (row[0].toLowerCase().includes(searchWord.toLowerCase()) || row[1].toLowerCase().includes(searchWord.toLowerCase()) || row[2].toLowerCase().includes(searchWord.toLowerCase()) || row[3].toLowerCase().includes(searchWord.toLowerCase())) {
