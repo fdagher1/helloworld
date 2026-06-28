@@ -47,7 +47,7 @@ function retrieveDataForTopPane() {
   allDropdownValues[2] = cleanupArray.slice(); // Set existing array equal to the new/cleaned one
 
   // RETRIEVE THE DISPLAY OPTIONS LIST
-  var displayOptionsText = ["List: Events (All)", "List: Events (Tagged)", "List: Thoughts (All)","Number of Days: (Country)", "Number of Days: (State)", "Number of Days: (City)", "Places Visited By Month: (Country)", "Places Visited By Month: (State)", "Places Visited By Month: (City)"]; // This holds the options to display in the Display Options dropdown 
+  var displayOptionsText = ["List: Events & Thoughts", "List: Events (Tagged)", "List: Thoughts (All)","Number of Days: (Country)", "Number of Days: (State)", "Number of Days: (City)", "Places Visited By Month: (Country)", "Places Visited By Month: (State)", "Places Visited By Month: (City)"]; // This holds the options to display in the Display Options dropdown 
   var eventCategories = []; // This will hold the variable event categories to be used in the display
   for (eventName of allDropdownValues[2]) {
     var eventCategory = eventName.split("_")[0];
@@ -106,9 +106,6 @@ function retrieveDataFromTopPane() {
 
 function retrieveDataForListView() {
   let startTime = performance.now();
-
-  // Provide the column names for table to display data: 1- "Data", 2- "Location", and 3- Number of rows
-  var columnHeaders = ["Date", "Location", "(" + datasetArrayForDisplay.length + " rows)"];
 
   console.log(`retrieveDataForListView executed in: ${performance.now() - startTime} milliseconds`);
   

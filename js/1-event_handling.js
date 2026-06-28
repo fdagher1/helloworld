@@ -87,7 +87,7 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
     // Retrieve default values to display in new input form, then display it
     retrieveDefaultInputValues();
     displayDataInUserInputForm(defaultInputValues[0], defaultInputValues[1], defaultInputValues[3]);
-  } else {
+  } else { // If the user chose any other display option than New Day, then update the output table accordingly
     // Update element visibility
     document.getElementById("select-year").removeAttribute("disabled");
     document.getElementById("select-location").removeAttribute("disabled");
@@ -95,8 +95,8 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
     document.getElementById("input-form").style.display = "none";
     document.getElementById("output-list").style.display = "grid";
 
-    // If the user chose to only show events then change the display mode to tagged lines only 
-    if (whatChanged == 'event' && selectedDisplayOption.includes("List: Events (All)")) {
+    // If the user selected an event then change the display mode to tagged lines only 
+    if (whatChanged == 'event' && selectedDisplayOption.includes("List: Events & Thoughts")) {
       document.getElementById("select-displayoption").value = "List: Events (Tagged)";
 
       // Gather user inputs again since display option changed
