@@ -82,30 +82,42 @@ function displayListOutput(dataSetToDisplay) {
       e.preventDefault();
       eventInputDateChanged(e, 'outputTable');
     });
-    let dateDiv = document.createElement("div");
+    const dateDiv = document.createElement("div");
     dateDiv.replaceChildren(a, document.createElement('br'));
     dateDiv.classList.add("date-class");
 
-    // Create the location, event and seperator child elements
+    // Create the location child element
     const locationDiv = document.createElement("div");
-    const eventOrThoughtDiv = document.createElement("div");
-    const seperatorDiv = document.createElement("div");
     //locationDiv.innerHTML = dataSetToDisplay[i][1].replace(/,/g, '\n') + '</br></br>'; // in order to put each location in a new line
     locationDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][1], searchWord) + '</br></br>';
     locationDiv.classList.add("location-class");
-    if (selectedDisplayOption.includes("List: Thoughts")) {
-      eventOrThoughtDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][3], searchWord);
-    } else {
-      eventOrThoughtDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][2], searchWord);
-    }
-    locationDiv.classList.add("event-class");
-    seperatorDiv.innerHTML = `</br><hr style="border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">`;
 
+    // Create the event and thought child elements
+    const eventDiv = document.createElement("div");
+    const thoughtDiv = document.createElement("div");
+    thoughtDiv.classList.add("thought-class");
+    if (selectedDisplayOption.includes("List: Events & Thoughts")) {
+      eventDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][2], searchWord);
+      if (dataSetToDisplay[i][3] != "") { // If thoughts for is not blank, then add it  along with a line break before it to the display
+        eventDiv.innerHTML += "<br>";
+        thoughtDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][3], searchWord);
+      }
+    } else if (selectedDisplayOption.includes("List: Events (Tagged)")) {
+      eventDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][2], searchWord);
+    } else if (selectedDisplayOption.includes("List: Thoughts (All)")) {
+      thoughtDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][3], searchWord);
+    }
+    
+    // Create a separator line between each section
+    const seperatorDiv = document.createElement("div");
+    seperatorDiv.innerHTML = `</br><hr style="border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">`;
+    
     // Append the HTML
     section.appendChild(seperatorDiv);
     section.appendChild(dateDiv);
     section.appendChild(locationDiv);
-    section.appendChild(eventOrThoughtDiv);
+    section.appendChild(eventDiv);
+    section.appendChild(thoughtDiv);
     fragment.appendChild(section);
     //datasetContainer.appendChild(section);
   }
