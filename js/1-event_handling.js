@@ -13,6 +13,9 @@ var selectedDisplayOption; // Value of the user selected drop down
 var searchWord = ""; // Value of the user entered keyword
 var datasetLoaded = false; // Flag to indicate if dataset has been loaded
 var themeMode = "darkMode"; // Default to dark mode
+let activeEditableOutputCell = null; // Holds the currently active editable output cell, if any
+let activeEditableOutputCellValue = ""; // Holds the value of the currently active editable output cell. 
+let datasetDisplayRowSourceIndexMap = []; // Map to track the source row index for each displayed row in datasetArrayForDisplay
 
 // DEFINE RESPONSE FUNCTIONS
 
@@ -26,7 +29,7 @@ function eventAppLoaded() {
   }
 }
 
-function eventFileHandlingButtonClicked(event) {
+function eventFileLoadSaveClicked(event) {
   if (!datasetLoaded) { //If dataset has not been loaded yet, then treat button click as file upload
     // Get file content
     readFileAndDisplay(event);
@@ -39,16 +42,18 @@ function eventFileHandlingButtonClicked(event) {
 
     // Change button functionality from Upload File to Save To File
     document.getElementById("button-filehandling").setAttribute("type", "button");
-    document.getElementById("button-filehandling").setAttribute("onclick", "eventFileHandlingButtonClicked()");
+    document.getElementById("button-filehandling").setAttribute("onclick", "eventFileLoadSaveClicked()");
     document.getElementById("button-filehandling").removeAttribute("name");
     document.getElementById("button-filehandling").removeAttribute("accept");
     document.getElementById("button-filehandling").removeAttribute("onchange");
     document.getElementById("button-filehandling-id").innerText = "Save To File";
     datasetLoaded = true;
 
+    clearErrorMessages(); // Clear error messages in case of any from previous save attemps attemps
+
   } else { // Otherwise, consider button click as used for Save To File
     // Save content to file
-    saveContentToFile();
+    validateThenSaveContentToFile();
   }
 }
 
@@ -69,52 +74,32 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
 
   // Gather user inputs
   retrieveDataFromTopPane();
+ 
+  // Update element visibility
+  document.getElementById("select-year").removeAttribute("disabled");
+  document.getElementById("select-location").removeAttribute("disabled");
+  document.getElementById("textbox-keyword").removeAttribute("disabled");
+  document.getElementById("output-list").style.display = "grid";
 
-  // Check which display option user chose in order to call the corresponding function
-  if (selectedDisplayOption.includes("Enter: New Day")) {
-    // Update element visibility/activity
-    document.getElementById("select-year").setAttribute("disabled", "true");
-    document.getElementById("select-location").setAttribute("disabled", "true");
-    document.getElementById("textbox-keyword").setAttribute("disabled", "true");
-    document.getElementById("select-displayoption").value = "Enter: New Day";
-    document.getElementById("input-form").style.display = "flex";
-    document.getElementById("output-list").style.display = "none";
+  // If the user selected an event then change the display mode to tagged lines only 
+  if (whatChanged == 'event' && selectedDisplayOption === "List: Events & Thoughts") {
+    document.getElementById("select-displayoption").value = "List: Events (Tagged)";
 
-    // Clear the output table to reduce risk of app hanging
-    const datasetContainer = document.getElementById("dataset-container");
-    datasetContainer.replaceChildren();    
+    // Gather user inputs again since display option changed
+    retrieveDataFromTopPane();
+  }
 
-    // Retrieve default values to display in new input form, then display it
-    retrieveDefaultInputValues();
-    displayDataInUserInputForm(defaultInputValues[0], defaultInputValues[1], defaultInputValues[3]);
-  } else { // If the user chose any other display option than New Day, then update the output table accordingly
-    // Update element visibility
-    document.getElementById("select-year").removeAttribute("disabled");
-    document.getElementById("select-location").removeAttribute("disabled");
-    document.getElementById("textbox-keyword").removeAttribute("disabled");
-    document.getElementById("input-form").style.display = "none";
-    document.getElementById("output-list").style.display = "grid";
+  // Filter dataset to only include lines matching from the search word
+  updateDataSetToMatchSearchCriteria(); 
 
-    // If the user selected an event then change the display mode to tagged lines only 
-    if (whatChanged == 'event' && selectedDisplayOption.includes("List: Events & Thoughts")) {
-      document.getElementById("select-displayoption").value = "List: Events (Tagged)";
-
-      // Gather user inputs again since display option changed
-      retrieveDataFromTopPane();
-    }
-
-    // Filter dataset to only include lines matching from the search word
-    updateDataSetToMatchSearchCriteria(); 
-
-    if (selectedDisplayOption.includes("List:")) {
-      retrieveDataForListView();
-    } else if (selectedDisplayOption.includes("Number of Days:")) {
-      retrieveDataForGroupByTable();
-    } else if (selectedDisplayOption.includes("Summary:")) {
-      retrieveDataforSummaryTable();
-    } else if (selectedDisplayOption.includes("Places Visited By Month:")) {
-      retrieveDataForPlacesVisitedByMonth();
-    }
+  if (selectedDisplayOption.includes("List:")) {
+    retrieveDataForListView();
+  } else if (selectedDisplayOption.includes("Number of Days:")) {
+    retrieveDataForGroupByTable();
+  } else if (selectedDisplayOption.includes("Summary:")) {
+    retrieveDataforSummaryTable();
+  } else if (selectedDisplayOption.includes("Places Visited By Month:")) {
+    retrieveDataForPlacesVisitedByMonth();
   }
 }
 
@@ -135,45 +120,56 @@ function eventKeywordEntered() {
   }
 }
 
-function eventInputDateChanged(event, comingFrom) { // This can happen either from the input form or the output table
-
-  // Set the date to search for in the right format 
-  let dateToSearchFor;
-  if (comingFrom == "inputForm") { 
-    dateToSearchFor = event.target.value; // Get the date from the input type=date element
-  } else if (comingFrom == "outputTable") { 
-    dateToSearchFor = event.target.innerText; // Get the date from the clicked element
-    
-    // Update element visibility/activity
-    document.getElementById("select-year").setAttribute("disabled", "true");
-    document.getElementById("select-location").setAttribute("disabled", "true");
-    document.getElementById("textbox-keyword").setAttribute("disabled", "true");
-    document.getElementById("select-displayoption").value = "Enter: New Day";
-    document.getElementById("input-form").style.display = "flex";
-    document.getElementById("output-list").style.display = "none";
-
-    // Clear the output table to reduce risk of app hanging
-    const datasetContainer = document.getElementById("dataset-container");
-    datasetContainer.replaceChildren();
-  } else {
-    // This scenario does not exist, keeping this here for future-proofing
-    console.log("incorrect input");
+function eventOutputCellClicked(event, rowIndex, columnIndex, columnName, sourceRowIndex = rowIndex) {
+  if (selectedDisplayOption !== "List: Events & Thoughts") {
+    return;
   }
 
-  // Check if date already exists in dataset and if so retrieve its values
-  var result = helperReturnRowThatMatchesDate(datasetArray, dateToSearchFor, comingFrom);
-  
-  // Update the input form with either the default values (if date exists) or empty values (if date does not exist)
-  if (result != "Date not found.") { // If this is an existing date, then update the input form with its values
-    displayDataInUserInputForm(result[0], result[1], result[2], result[3] || "");
-  } else {  //Otherwise, display default values
-    // Get default values for location and event from the file
-    var locationToDisplay = defaultInputValues[1];
-    var eventLinesToDisplay = defaultInputValues[3];
+  const clickedElement = event.currentTarget;
 
-    // Display the default location and event values
-    displayDataInUserInputForm(dateToSearchFor, locationToDisplay, eventLinesToDisplay, thoughtsToDisplay);
+  // Save the value of the previously active editable output cell if it exists and is different from the newly clicked cell
+  if (activeEditableOutputCell && (activeEditableOutputCell.row !== rowIndex || activeEditableOutputCell.column !== columnIndex)) {
+    saveActiveEditableOutputCellValue();
   }
+
+  // Set the newly clicked cell as the active editable output cell
+  activeEditableOutputCell = {
+    element: clickedElement,
+    row: rowIndex,
+    sourceRow: sourceRowIndex,
+    column: columnIndex,
+    columnName: columnName
+  };
+  activeEditableOutputCellValue = helperNormalizeEditableCellValue(clickedElement.innerText || clickedElement.textContent);
+
+  console.log("Editable output cell clicked:", {
+    row: rowIndex,
+    sourceRow: sourceRowIndex,
+    column: columnIndex,
+    columnName: columnName,
+    value: activeEditableOutputCellValue
+  });
+}
+
+function saveActiveEditableOutputCellValue() {
+  if (selectedDisplayOption !== "List: Events & Thoughts" || !activeEditableOutputCell) {
+    return;
+  }
+
+  const displayRowIndex = activeEditableOutputCell.row;
+  const sourceRowIndex = activeEditableOutputCell.sourceRow ?? displayRowIndex;
+  const columnIndex = activeEditableOutputCell.column;
+
+  if (datasetArray[sourceRowIndex] && datasetArray[sourceRowIndex][columnIndex] !== undefined) {
+    datasetArray[sourceRowIndex][columnIndex] = activeEditableOutputCellValue;
+  }
+
+  if (datasetArrayForDisplay && datasetArrayForDisplay[displayRowIndex] && datasetArrayForDisplay[displayRowIndex][columnIndex] !== undefined) {
+    datasetArrayForDisplay[displayRowIndex][columnIndex] = activeEditableOutputCellValue;
+  }
+
+  activeEditableOutputCell = null;
+  activeEditableOutputCellValue = "";
 }
 
 // Initialize on DOM load

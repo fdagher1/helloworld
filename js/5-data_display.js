@@ -6,7 +6,7 @@ function displayFileValidityError(error_message) {
   cell.innerHTML = error_message; // Enter error message in the cell
 }
 
-function clearFileValidityError() {
+function clearErrorMessages() {
   const new_tbody_HTML_Element = document.getElementById("errorcontent"); // Get tbody HTML element
   new_tbody_HTML_Element.replaceChildren() // Clear content
 }
@@ -70,42 +70,62 @@ function displayListOutput(dataSetToDisplay) {
 
   // Create the section elements to display the events in body
   const fragment = document.createDocumentFragment();
-  for (var i = 0; i < dataSetToDisplay.length; i++) {
+  const isEditableDisplayMode = selectedDisplayOption === "List: Events & Thoughts";
+  for (let i = 0; i < dataSetToDisplay.length; i++) {
+    const displayRowIndex = i;
+    const sourceRowIndex = datasetDisplayRowSourceIndexMap[i] ?? i;
+
     // Create the parent/section HTML element
     const section = document.createElement("section");
     
     // Create the date child elements
-    const a = document.createElement('a');
-    a.href = '#';
-    a.textContent = (dataSetToDisplay[i][0] + " (day " + (dataSetToDisplay.length-i).toString()  +")");
-    a.addEventListener('click', function (e) {
-      e.preventDefault();
-      eventInputDateChanged(e, 'outputTable');
-    });
+    const dateText = document.createElement('span');
+    dateText.textContent = (dataSetToDisplay[i][0] + " (day " + (dataSetToDisplay.length-i).toString()  +")");
     const dateDiv = document.createElement("div");
-    dateDiv.replaceChildren(a, document.createElement('br'));
+    dateDiv.replaceChildren(dateText, document.createElement('br'));
     dateDiv.classList.add("date-class");
 
     // Create the location child element
     const locationDiv = document.createElement("div");
-    //locationDiv.innerHTML = dataSetToDisplay[i][1].replace(/,/g, '\n') + '</br></br>'; // in order to put each location in a new line
-    locationDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][1], searchWord) + '</br></br>';
+    locationDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][1], searchWord);
     locationDiv.classList.add("location-class");
+    locationDiv.contentEditable = isEditableDisplayMode ? "true" : "false";
+    if (isEditableDisplayMode) {
+      locationDiv.addEventListener("click", function (e) {eventOutputCellClicked(e, displayRowIndex, 1, "Location", sourceRowIndex);});
+      locationDiv.addEventListener("input", function () {activeEditableOutputCellValue = helperNormalizeEditableCellValue(locationDiv.innerText || locationDiv.textContent);});
+      locationDiv.addEventListener("blur", function () {if (activeEditableOutputCell && activeEditableOutputCell.element === locationDiv) {saveActiveEditableOutputCellValue();}});
+    }
 
     // Create the event and thought child elements
     const eventDiv = document.createElement("div");
     const thoughtDiv = document.createElement("div");
+    eventDiv.contentEditable = isEditableDisplayMode ? "true" : "false";
+    thoughtDiv.contentEditable = isEditableDisplayMode ? "true" : "false";
+    eventDiv.classList.add("event-class");
     thoughtDiv.classList.add("thought-class");
-    if (selectedDisplayOption.includes("List: Events & Thoughts")) {
-      eventDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][2], searchWord);
-      if (dataSetToDisplay[i][3] != "") { // If thoughts for is not blank, then add it  along with a line break before it to the display
-        eventDiv.innerHTML += "<br>";
-        thoughtDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][3], searchWord);
+    eventDiv.setAttribute("data-placeholder", "");
+    thoughtDiv.setAttribute("data-placeholder", "");
+    if (isEditableDisplayMode) {
+      eventDiv.addEventListener("click", function (e) {eventOutputCellClicked(e, displayRowIndex, 2, "Event", sourceRowIndex);});
+      eventDiv.addEventListener("input", function () {activeEditableOutputCellValue = helperNormalizeEditableCellValue(eventDiv.innerText || eventDiv.textContent);});
+      eventDiv.addEventListener("blur", function () {if (activeEditableOutputCell && activeEditableOutputCell.element === eventDiv) {saveActiveEditableOutputCellValue();}});
+      thoughtDiv.addEventListener("click", function (e) {eventOutputCellClicked(e, displayRowIndex, 3, "Thought", sourceRowIndex);});
+      thoughtDiv.addEventListener("input", function () {activeEditableOutputCellValue = helperNormalizeEditableCellValue(thoughtDiv.innerText || thoughtDiv.textContent);});
+      thoughtDiv.addEventListener("blur", function () {if (activeEditableOutputCell && activeEditableOutputCell.element === thoughtDiv) {saveActiveEditableOutputCellValue();}});
+    }
+    if (selectedDisplayOption === "List: Events & Thoughts") {
+      const eventText = helperNormalizeEditableCellValue(dataSetToDisplay[i][2]);
+      const thoughtText = helperNormalizeEditableCellValue(dataSetToDisplay[i][3]);
+      eventDiv.innerHTML = helperHighlightKeyword(eventText, searchWord);
+      if (thoughtText != "") { // If thoughts for is not blank, then add it along with a line break before it to the display
+        thoughtDiv.innerHTML = helperHighlightKeyword(thoughtText, searchWord);
       }
     } else if (selectedDisplayOption.includes("List: Events (Tagged)")) {
-      eventDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][2], searchWord);
+      const eventText = helperNormalizeEditableCellValue(dataSetToDisplay[i][2]);
+      eventDiv.innerHTML = helperHighlightKeyword(eventText, searchWord);
     } else if (selectedDisplayOption.includes("List: Thoughts (All)")) {
-      thoughtDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][3], searchWord);
+      const thoughtText = helperNormalizeEditableCellValue(dataSetToDisplay[i][3]);
+      thoughtDiv.innerHTML = helperHighlightKeyword(thoughtText, searchWord);
     }
     
     // Create a separator line between each section
@@ -169,31 +189,4 @@ function displayTableOutput(columnHeaders, dataSetToDisplay) {
     }
   }
   console.log(`displayTableOutput executed in: ${performance.now() - startTime} milliseconds`);
-}
-
-function displayDataInUserInputForm(dateToDisplay, locationToDisplay, eventLinesToDisplay, thoughtsToDisplay = "") {
-  let startTime = performance.now();
-
-  // display the values in the input form
-  if (dateToDisplay.includes(",")) {
-    var parts = dateToDisplay.split(", ")[1].split("/");
-    dateToDisplay = new Date(Date.UTC(parts[2], parts[0] - 1, parts[1])); // Needed to add .UTC to avoid timezone issues that cause the date to be displayed as the day before the actual date
-  } else {
-    var parts = dateToDisplay.split("-");
-    dateToDisplay = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2])); // Needed to add .UTC to avoid timezone issues that cause the date to be displayed as the day before the actual date
-  }
-
-  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  document.getElementById("date-weekday").textContent = daysOfWeek[dateToDisplay.getUTCDay()]; // Get the weekday from the UTC date and display it
-
-  document.getElementById("input-date").valueAsDate = dateToDisplay;
-  
-  document.getElementById("input-location").value = locationToDisplay;
-
-  document.getElementById("input-events").value = eventLinesToDisplay;
-  
-  document.getElementById("input-thoughts").value = thoughtsToDisplay;
-
-  console.log(`displayDataInUserInputForm executed in: ${performance.now() - startTime} milliseconds`);
-
 }

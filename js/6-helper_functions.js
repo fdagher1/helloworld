@@ -45,6 +45,28 @@ function helperHighlightKeyword(text, keyword) {
   return text.replace(regex, '<span class="keyword-highlight">$1</span>');
 }
 
+// Normalizes editable cell content so line breaks entered in contenteditable divs are preserved
+function helperNormalizeEditableCellValue(value) {
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  let text = String(value);
+
+  if (typeof document !== "undefined" && /<[^>]+>/.test(text)) {
+    const tempContainer = document.createElement("div");
+    tempContainer.innerHTML = text;
+    text = tempContainer.innerText || tempContainer.textContent || "";
+  }
+
+  return text
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .replace(/\u00A0/g, " ")
+    .replace(/\u200B/g, "")
+    .replace(/\n{3,}/g, "\n\n");
+}
+
 // Converts an Array to a CSV formatted string
 function helperArrayToCSV(datasetArray) {
   var datasetCSV = "";
@@ -87,27 +109,6 @@ function helperReturnSortedArrayFromDictionary(dict) {
   return items;
 }
 
-// Returns a row from the dataset with the dateToSearchFor
-function helperReturnRowThatMatchesDate(dataset, dateToSearchFor, comingFrom) {
-  if (comingFrom == "inputForm") {
-    // Convert date to below format otherwise the new Date(enteredDate) function returns GMT timezone for some reason
-    var day = dateToSearchFor.split("-")[2];
-    var month = dateToSearchFor.split("-")[1];
-    var year = dateToSearchFor.split("-")[0];
-    dateToSearchFor =  month + "/" + day + "/" + year;
-  } else if (comingFrom == "outputTable") {
-    dateToSearchFor = dateToSearchFor.split(', ')[1]; // extracts the "DD/MM/YYYY" from "DAY, DD/MM/YYYY"
-  }
-
-  // Check if date exists already and if so return that row
-  for (const row of dataset) {
-    if (new Date(row[0].split(",")[1]).toString() == new Date(dateToSearchFor).toString()) {
-      return row;
-    }
-  }
-  return "Date not found.";
-}
-
 // Returns an array of indices for the location of searchStr in wholeStr 
 function getIndicesOf(searchStr, wholeStr) {
   const searchStrLen = searchStr.length;
@@ -119,41 +120,6 @@ function getIndicesOf(searchStr, wholeStr) {
       startIndex = index + searchStrLen;
   }
   return indices;
-}
-
-// Return a new datasetArray that has the updated row in it with userInput
-function helperUpdateRowInDataset(datasetArray, userInput) {
-  // Check if date exists already and if so return that row
-  for (var i = 0; i < datasetArray.length; i++) {
-    if (datasetArray[i][0] == userInput[0]) {
-      // Update all columns starting from column 1 (preserve the date in column 0)
-      for (var j = 1; j < userInput.length; j++) {
-        datasetArray[i][j] = userInput[j];
-      }
-      return datasetArray;
-    }
-  }
-}
-
-// Function that takes a Date input and returns a string in the format of: Mon, 12/1/2024
-function helperSetDateFormat(enteredDate) {
-  // Convert date to below format otherwise the new Date(enteredDate) function returns GMT timezone for some reason
-  var day = enteredDate.split("-")[2];
-  var month = enteredDate.split("-")[1];
-  var year = enteredDate.split("-")[0];
-  enteredDate =  month + "/" + day + "/" + year;
-  enteredDate = new Date(enteredDate);
- 
-  //enteredDate = new Date(enteredDate.getTime(enteredDate) + 5 * 60 * 60 * 1000); // Add 5 hours as for some reason it thinks it's reading GMT even though the date entered doesn't say that
-  const dayOfWeek = enteredDate.getDay(); // Returns a number (0 to 6)
-  const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  function formatDate(date) {
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${month}/${day}/${year}`;
-  }
-  return weekdays[dayOfWeek].slice(0,3) + ", " + formatDate(enteredDate);
 }
 
 // Function that returns splits a string on last occurance of a character then returns the string after the split (needed for retrieving state names)
@@ -188,4 +154,29 @@ function helperAverageValue(eventLine, totalCountThisMonth, averageThisMonth){
   } else {
     return averageThisMonth; // If the value is not a number, return the previous average
   }
+}
+
+// Function that returns all the dates between a given date and today's date in the format "ddd, mm/dd/yyyy"
+function helperGetDatesBetweenGivenDateAndToday(givenDate) {
+  const today = new Date();
+  const startDate = new Date(givenDate);
+
+  if (isNaN(startDate.getTime())) {
+    return [];
+  }
+
+  const dates = [];
+  const currentDate = new Date(startDate);
+  currentDate.setDate(currentDate.getDate() + 1);
+
+  while (currentDate <= today) {
+    const dayOfWeek = currentDate.toLocaleDateString("en-US", { weekday: "short" });
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    const year = currentDate.getFullYear();
+    dates.push(`${dayOfWeek}, ${month}/${day}/${year}`);
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return dates;
 }
