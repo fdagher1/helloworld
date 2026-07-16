@@ -40,6 +40,11 @@ a {
   color: var(--text-color-dateandlocation);
 }
 
+.thought-class {
+  font-style: italic;
+  color: var(--text-color-thought);
+}
+
 .event-class,
 .thought-class {
   white-space: pre-wrap;
