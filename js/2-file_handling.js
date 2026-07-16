@@ -12,104 +12,77 @@ async function readFileAndDisplay(event) {
   datasetArray = helperCsvToArray(decryptedCsvData); // Convert content from string format to array
   datasetArray.shift(); //Remove the very first row as it only has the table headers
 
-  // CHECK FILE VALIDITY
- validationResult = validateFileFormatAndData(datasetArray.slice(0,-2)); // Remove the last 2 lines before validating as they contain event data in wrong format
- 
-  if (validationResult == "No errors found.") { 
-    // Set data in this array as it's the one used for the display
-    datasetArrayForDisplay = datasetArray.slice(); 
-
-    // Display Data in Top Pane
-    retrieveDataForTopPane();
-
-    // Retrieve date from top pane
-    retrieveDataFromTopPane();
-
-    // Display Data in Table
-    retrieveDataForListView();
-
-    // Clear old validity errors if any
-    clearFileValidityError();
-
-  } else {
-    displayFileValidityError(validationResult);
-
+  // Append any missing dates to dataset
+  retrieveDefaultInputValues();
+  let missingDates = helperGetDatesBetweenGivenDateAndToday(datasetArray[0][0]); // Get the missing dates between the last date in the dataset and today
+  for (date of missingDates) {
+    datasetArray.unshift([date, defaultInputValues[1], defaultInputValues[3], ""]); // Add the missing dates to the top of the dataset array
   }
+
+  // Set data in this array as it's the one used for the display
+  datasetArrayForDisplay = datasetArray.slice(); 
+
+  // Display Data in Top Pane
+  retrieveDataForTopPane();
+
+  // Retrieve date from top pane
+  retrieveDataFromTopPane();
+
+  // Display Data in Table
+  retrieveDataForListView();
+
+  // Clear old validity errors if any
+  clearErrorMessages();
+
 }
 
-async function saveContentToFile() {
+async function validateThenSaveContentToFile() {
   // GATHER USER INPUT AND CREATE CORRESPONDING ARRAY
   // Gather user input
   var enteredPassword = document.getElementById("textbox-password").value; // Get user entered password, if any
-  var enteredDate = document.getElementById("input-date").value; // Read date
-  var enteredLocation = document.getElementById("input-location").value; // Read Location
-  var enteredEvents = document.getElementById("input-events").value; // Read events
-  var enteredThoughts = document.getElementById("input-thoughts").value; // Read thoughts
-  
-  // If there's a date value, then check if it already exists or if it's a new line and update dataset accordingly, 
-  // but if there's no date value, then there's no change to input (i.e., no change to the dataset) and simply save the file 
-  if (enteredDate != "") {
-    // Format input correctly
-    enteredDate = helperSetDateFormat(enteredDate); // Convert date to format Mon, 12/1/2024
-    enteredLocation = helperCheckCountrySuffixAndAddIfMissing(enteredLocation); // Add a default country if underscore is missing 
+
+  // CHECK FILE VALIDITY
+  validationResult = validateDatasetArray();
+
+  if (validationResult == "No errors found.") { 
+    // CREATE FILE CONTENT
+    var datasetCSV = helperArrayToCSV(datasetArray); // Convert dataset to CSV 
+    datasetCSV = "Day,Locations,Events,Thoughts\n" + datasetCSV; // Add header to CSV
+    datasetArrayForDisplay = datasetArray.slice(); // Update the output dataset array
     
-    // Create array from properly formatted input
-    var userInput = [enteredDate, enteredLocation, enteredEvents, enteredThoughts];
-
-    // Check if the data already exists and if so get the row that matches the date, otherwise indicate that the date was not found
-    var rowMatchForDate = helperReturnRowThatMatchesDate(datasetArray, enteredDate) 
-
-    // Validate user input after ensuring that the date is not the first date in the dataset
-    if (enteredDate != datasetArray[datasetArray.length-1][0]) {
-      var validationResult = validateUserInputFormatAndData(datasetArray, userInput, rowMatchForDate);
-      if (validationResult != "No errors found.") {
-        displayFileValidityError(validationResult);
-        return;
-      }
-    }
-
-    // If new date is being added, add it to the beginning of the dataset, otherwise, update existing line
-    if (rowMatchForDate == "Date not found.") {
-      datasetArray.unshift(userInput);
+    // SAVE FILE
+    // Set file content type depending on whether it is encrypted or not  
+    if (enteredPassword == "") {
+      var contentType = "text/plain";
+      var encryptedDatasetCSV = datasetCSV;
     } else {
-      datasetArray = helperUpdateRowInDataset(datasetArray, userInput).slice();
+      var contentType = "application/octet-stream";
+      var encryptedDatasetCSV = await encrypt(datasetCSV, enteredPassword);
     }
-  }
+    var file = new Blob([encryptedDatasetCSV], { type: contentType });
+    var link = document.createElement("a");
+    var url = URL.createObjectURL(file);
+    link.href = url;
+    link.download = "helloworld.csv";
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(function () {
+      document.body.removeChild(link); 
+      window.URL.revokeObjectURL(url);
+    }, 0);
 
-  // CREATE FILE CONTENT
-  var datasetCSV = helperArrayToCSV(datasetArray); // Convert dataset to CSV 
-  datasetCSV = "Day,Locations,Events,Thoughts\n" + datasetCSV; // Add header to CSV
-  datasetArrayForDisplay = datasetArray.slice(); // Update the output dataset array
-  
-  // SAVE FILE
-  // Set file content type depending on whether it is encrypted or not  
-  if (enteredPassword == "") {
-    var contentType = "text/plain";
-    var encryptedDatasetCSV = datasetCSV;
+    // UPDATE USER INTERFACE
+    clearErrorMessages(); // Clear error messages in case of any from previous save attemps attemps
+    retrieveDataForTopPane(); // Update top pane
+    retrieveDataForListView();  // Redisplay the table 
+
+    // Refresh the output display after saving the new event
+    document.getElementById("select-displayoption").value = "List: Events & Thoughts";
+    eventFilterOrDisplayOptionChanged('displayOption'); 
+
   } else {
-    var contentType = "application/octet-stream";
-    var encryptedDatasetCSV = await encrypt(datasetCSV, enteredPassword);
+    displayFileValidityError(validationResult);
   }
-  var file = new Blob([encryptedDatasetCSV], { type: contentType });
-  var link = document.createElement("a");
-  var url = URL.createObjectURL(file);
-  link.href = url;
-  link.download = "helloworld.csv";
-  document.body.appendChild(link);
-  link.click();
-  setTimeout(function () {
-    document.body.removeChild(link); 
-    window.URL.revokeObjectURL(url);
-  }, 0);
-
-  // UPDATE USER INTERFACE
-  clearFileValidityError(); // Clear validity errors in case of any from previous save attemps attemps
-  retrieveDataForTopPane(); // Update top pane
-  retrieveDataForListView();  // Redisplay the table 
-
-  // Refresh the output display after saving the new event
-  document.getElementById("select-displayoption").value = "List: Events & Thoughts";
-  eventFilterOrDisplayOptionChanged('displayOption'); 
 }
 
 async function decrypt(encryptedCsvData, enteredPassword) { 

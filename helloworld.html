@@ -33,7 +33,7 @@
         </form>
         <div>
           <label for="button-filehandling" id ="button-filehandling-id" class="button-default">Load File</label>
-          <input type=file name="files[]" id="button-filehandling" accept=".csv" hidden onchange="eventFileHandlingButtonClicked(event)">
+          <input type=file name="files[]" id="button-filehandling" accept=".csv" hidden onchange="eventFileLoadSaveClicked(event)">
         </div>
       </div>
 
@@ -51,25 +51,36 @@
       </div>
       
       <!-- Row 4: Display options-->
-      <div class="row row-5">
+      <div class="row row-4">
         <select id="select-displayoption" class="select-default" disabled onchange="eventFilterOrDisplayOptionChanged('displayOption')">
-          <option value="List: All Events Lines">List: Events & Thoughts</option>
+          <option value="List: Events & Thoughts">List: Events & Thoughts</option>
         </select>
       </div>
 
       <!-- Row 5 Keyword search-->
-      <div class="row row-4">
+      <div class="row row-5">
         <input type="text" id="textbox-keyword" class ="textbox-default" placeholder="(Search Criteria)" disabled oninput="eventKeywordEntered()">
       </div>
 
-      <!-- Row 6: Output grid-->
+      <!-- Row 6: Error output grid-->
       <div class="row row-6">
+        <div>
+          <table>
+            <tbody id="errorcontent">
+              <tr><td>Please upload your file!</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Row 7: Output grid-->
+      <div class="row row-7">
         <div id="output-list">
           <div id="dataset-container"></div>
           <table>
             <thead id="thead">
               <tr>
-                <th>Please upload your file!</th>
+                <th></th>
               </tr>
           </thead>
             <tbody id="tbody">
@@ -77,27 +88,7 @@
           </table>
         </div>
       </div>
-
-      <!-- Row 7: Input grid-->
-      <div class="row row-7" id="input-form" style="display: none;">
-        <label class="date-row" for="input-date" onclick="document.getElementById('input-date').showPicker();">
-          <span id="date-weekday" class="weekday-label"></span>  <!-- the date input element cannot display the weekday so adding a span to display it -->
-          <input id="input-date" class="input-default" type="date" onchange="eventInputDateChanged(event, 'inputForm')"> 
-        </label>
-        <input id="input-location" class ="input-default" type="text" >
-        <textarea id="input-events" class ="input-default" ></textarea>
-        <textarea id="input-thoughts" class ="input-default" ></textarea>
-      </div>
     
-      <!-- Row 8: Error output grid-->
-      <div class="row row-8">
-        <div>
-          <table>
-            <tbody id="errorcontent">
-            </tbody>
-          </table>
-        </div>
-      </div>
   </body>
 
 </html>
