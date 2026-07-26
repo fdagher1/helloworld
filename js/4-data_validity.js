@@ -1,28 +1,3 @@
-// Returns a string confirming if date2 is after date1 by 1 day
-function helperValidateDate(date1, date2) { 
-  date1 = new Date(date1);
-  if (date2.toString() !== new Date(date1.setDate((new Date(date1)).getDate() + 1)).toString()) {
-    return "The dates are not in a chronologically descending order.";
-  } else {
-    return "No errors found.";
-  }
-}
-
-// Returns a string confirming if locationString is properly formatted: Has an undercore before and after every comma
-function helperValidateLocation(locationString) {
-  let rowLocationValueArray = locationString.split(","); // Get the city_country values in an array
-  if (rowLocationValueArray.length == 0) {
-    return "The location cell is blank.";
-  }
-  for (let j = 0; j < rowLocationValueArray.length; j++) { // Iterate over every city_country that day
-    var cityCountrySplitArray = rowLocationValueArray[j].split("_"); // Split city_country into an array
-    if (cityCountrySplitArray.length != 2) {
-      rowLocationValueArray[j] = rowLocationValueArray[j] + defaultInputValues[2]; // defaultInputValues[2] is the default country suffix 
-    }
-  }
-  return "No errors found.";
-}
-
 // Returns a string confirming if eventCell is properly formatted based on various criteria
 function helperValidateEvent(eventCell) {
   // CHECK IF EVENT CELL IS BLANK
@@ -113,7 +88,13 @@ function validateDatasetArray() {
     if (i == 0){ 
       // Do nothing as that means we're still in the first row and it's too early to check
     } else {
-      validationResult = helperValidateDate(currentCellDate.toString(), previousCellDate.toString());
+      let date1 = new Date(currentCellDate.toString());
+      let date2 = previousCellDate.toString()
+      if (date2.toString() !== new Date(date1.setDate((new Date(date1)).getDate() + 1)).toString()) {
+        validationResult = "The dates are not in a chronologically descending order.";
+      } else {
+        validationResult = "No errors found.";
+      }
       if (validationResult != "No errors found.") {
         validationResult = validationResult + " Row: " + ++i;
         break;
@@ -121,8 +102,26 @@ function validateDatasetArray() {
     }
     previousCellDate = currentCellDate;
 
-    // CHECK THE ROW'S LOCATIONS VALIDITY
-    validationResult = helperValidateLocation(datasetArray[i][1]);
+    // VALIDATE ROW LOCATION
+    let rowLocationValueArray = datasetArray[i][1].split(","); // Get the city_country values in an array
+    if (rowLocationValueArray.length == 0) {
+      validationResult = "The location cell is blank.";
+    } else if (/[\r\n]/.test(datasetArray[i][1])) { 
+      validationResult = "The location cell has a break line in it.";
+    } else { // Check if any of the city_country values are missing a country suffix, and if so, append the default country suffix to it
+      for (let j = 0; j < rowLocationValueArray.length; j++) { // Iterate over every city_country that day
+        var cityCountrySplitArray = rowLocationValueArray[j].split("_"); // Split city_country into an array
+        if (cityCountrySplitArray.length != 2) {
+          rowLocationValueArray[j] = rowLocationValueArray[j] + defaultInputValues[2]; // defaultInputValues[2] is the default country suffix 
+        }
+      }
+      // Update the datasetArray with the modified location values
+      datasetArray[i][1] = rowLocationValueArray.join(",");
+
+      // Confirm that there are no errors in the location cell after the modification
+      validationResult = "No errors found.";
+    }
+    
     if (validationResult != "No errors found.") {
       validationResult = validationResult + " Row: " + ++i;
       break;

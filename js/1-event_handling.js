@@ -30,7 +30,7 @@ function eventAppLoaded() {
 }
 
 function eventFileLoadSaveClicked(event) {
-  if (!datasetLoaded) { //If dataset has not been loaded yet, then treat button click as file upload
+  if (!datasetLoaded) { //FILE LOAD
     // Get file content
     readFileAndDisplay(event);
     
@@ -51,7 +51,7 @@ function eventFileLoadSaveClicked(event) {
 
     clearErrorMessages(); // Clear error messages in case of any from previous save attemps attemps
 
-  } else { // Otherwise, consider button click as used for Save To File
+  } else { // FILE SAVE
     // Save content to file
     validateThenSaveContentToFile();
   }
