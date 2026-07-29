@@ -136,7 +136,7 @@ function helperSplitStringLastOccurrence(str, char) {
   return partAfter;
 } 
 
-// Function that sums the second element in an 2 dimentional array
+// Function that sums the second element in a 2-dimensional array
 function helperSumSecondElement(arr) {
   var total = 0;
   for (const row of arr) {
@@ -150,7 +150,7 @@ function helperAverageValue(eventLine, totalCountThisMonth, averageThisMonth){
   var valueToday = parseInt((eventLine.split(" ")[1]));
   if (valueToday) {
     var average = ((averageThisMonth * totalCountThisMonth) + (valueToday * 1)) / (totalCountThisMonth + 1);
-    return average.toFixed(2);
+    return average.toFixed(1); // Limit to 1 decimal
   } else {
     return averageThisMonth; // If the value is not a number, return the previous average
   }
