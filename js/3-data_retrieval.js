@@ -176,10 +176,10 @@ function retrieveDataForGroupByMonthTable() {
   // Determine which type of places to display (cities, states, or countries) based on user selection
   var displayType = "city"; // Default to city
   var placesTypeLabel = "Cities";
-  if (selectedDisplayOption.includes("(Country)")) {
+  if (selectedDisplayOption.includes("Countries")) {
     displayType = "country";
     placesTypeLabel = "Countries";
-  } else if (selectedDisplayOption.includes("(State)")) {
+  } else if (selectedDisplayOption.includes("US States")) {
     displayType = "state";
     placesTypeLabel = "States";
   }
