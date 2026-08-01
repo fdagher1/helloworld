@@ -90,7 +90,7 @@ function validateDatasetArray() {
     } else {
       let date1 = new Date(currentCellDate.toString());
       let date2 = previousCellDate.toString()
-      if (date2.toString() !== new Date(date1.setDate((new Date(date1)).getDate() + 1)).toString()) {
+      if (date2.toString().slice(0, 15) !== new Date(date1.setDate((new Date(date1)).getDate() + 1)).toString().slice(0, 15)) {
         validationResult = "The dates are not in a chronologically descending order.";
       } else {
         validationResult = "No errors found.";
