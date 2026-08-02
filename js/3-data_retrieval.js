@@ -1,3 +1,38 @@
+function retrieveDefaultInputValues() {
+  // Get default dataset values
+  let defaultDate = "dummydate"; // since we dont need a default date
+  let defaultLocation = datasetArray[datasetArray.length-1][1]; 
+  let defaultEvents = datasetArray[datasetArray.length-1][2];
+  let defaultThoughts = "dummythought"; // since we dont need a default thought
+  
+  // Get default country suffix 
+  let defaultCountrySuffix = defaultLocation.match(/_([^_]+)$/)[1] // Get the country suffix from the default location (the part after the last underscore)
+  
+  // Get default validated events
+  let defaultApprovedEventsArray = datasetArray[datasetArray.length-1][3].split(";");
+  let defaultIgnoredEventsArray = []; // This will hold the events that are to be ignored when checking for errors in the event cell
+  defaultApprovedEventsArray.pop(); // Remove the last empty entry from the array
+  // Then remove the breakline characters at the beginning of each entry
+  for (let i=0; i < defaultApprovedEventsArray.length; i++) {
+    if (defaultApprovedEventsArray[i].includes("\n")) {
+      defaultApprovedEventsArray[i] = defaultApprovedEventsArray[i].split("\n")[1];
+    }
+  }
+  // Then move the events with Ignore_ in their name to a different array so that they are not considered as errors when checking the event cell 
+  let cleanupArray = [];
+  for (let i=0; i < defaultApprovedEventsArray.length; i++) {
+    if (defaultApprovedEventsArray[i].includes("Ignore_")) { //If the event category is Ignore, then add it to the Ignore array (will be used later to not consider such events as errors)
+      defaultIgnoredEventsArray.push(defaultApprovedEventsArray[i]);
+    } else {
+      cleanupArray.push(defaultApprovedEventsArray[i]);  
+    }
+  }
+  defaultApprovedEventsArray = cleanupArray.slice(); // Set existing array equal to the new/cleaned one
+  
+  // Store the default values in an array for later use
+  defaultInputValues = [defaultDate, defaultLocation, defaultEvents, defaultThoughts, defaultCountrySuffix, defaultApprovedEventsArray, defaultIgnoredEventsArray]; 
+}
+
 function retrieveDataForTopPane() {
   let startTime = performance.now();
   
@@ -27,24 +62,7 @@ function retrieveDataForTopPane() {
   allDropdownValues[1].sort();
 
   // RETRIEVE THE EVENTS LIST
-  allDropdownValues[2] = datasetArray[datasetArray.length-1][2].split(";"); // First populate it from the provided list
-  allDropdownValues[2].pop(); // The last array entry is blank due to the split function, so remove it
-
-  // Then remove the breakline characters at the end of each entry
-  for (let i=0; i < allDropdownValues[2].length; i++) {
-    if (allDropdownValues[2][i].includes("\n")) {
-      allDropdownValues[2][i] = allDropdownValues[2][i].split("\n")[1];
-    }
-  }
-  
-  // Then remove the events with Ignore_ in their name since we dont need them 
-  let cleanupArray = [];
-  for (let i=0; i < allDropdownValues[2].length; i++) {
-    if (!allDropdownValues[2][i].includes("Ignore_")) {
-      cleanupArray.push(allDropdownValues[2][i]);
-    }
-  }
-  allDropdownValues[2] = cleanupArray.slice(); // Set existing array equal to the new/cleaned one
+  allDropdownValues[2] = defaultInputValues[5].slice(); // Set the events array equal to the default validated events array
 
   // RETRIEVE THE DISPLAY OPTIONS LIST
   var displayOptionsText = ["List: Events & Thoughts", "List: Events (Tagged)", "List: Thoughts (All)","Country grouping of days", "US State grouping of days", "City grouping of days", "Monthly grouping of Countries", "Monthly grouping of US States", "Monthly grouping of Cities"]; // This holds the options to display in the Display Options dropdown 
@@ -99,18 +117,19 @@ function retrieveDataFromTopPane() {
   // RETRIEVE THE TEXTBOX CONTENT
   searchWord = document.getElementById("textbox-keyword").value;
   if (searchWord == null) {
-    searchWord == "";
+    searchWord = "";
   }
   console.log(`retrieveDataFromTopPane executed in: ${performance.now() - startTime} milliseconds`);
 }
 
-function retrieveDataForListView() {
+function retrieveDataForListView(isEditableDisplayMode) {
   let startTime = performance.now();
 
   console.log(`retrieveDataForListView executed in: ${performance.now() - startTime} milliseconds`);
-  
+
   // Display the data
-  displayListOutput(datasetArrayForDisplay);
+  displayListOutput(datasetArrayForDisplay, isEditableDisplayMode);
+  
 }
 
 function retrieveDataForGroupByLocationTable() {
@@ -140,9 +159,8 @@ function retrieveDataForGroupByLocationTable() {
         locationsAddedForThisDay[2].push(countryName);
       }
 
-      // Add state name to dictionary if country is USA and state is not already there and country is US, otherwise increment count
-      retrieveDefaultInputValues(); // needed in order to retrieve the default country suffix
-      if (countryName == defaultInputValues[2].slice(1)) { // defaultInputValues[2] is the default country suffix 
+      // Add state name to dictionary if country is USA and state is not already there, otherwise increment count
+      if (countryName == "USA") { 
         let stateName = helperSplitStringLastOccurrence(cityName, " ");
         if(!locationsAddedForThisDay[1].includes(stateName)) {
           helperIncrementCount(stateName, countOfLocationDictionaryArray[1]);
@@ -220,9 +238,8 @@ function retrieveDataForGroupByMonthTable() {
         }
       } else if (displayType === "state") {
         // Extract state name (only for USA)
-        retrieveDefaultInputValues(); // Retrieve default country suffix
         let countryName = cityCountrySplitArray[1].trim();
-        if (countryName == defaultInputValues[2].slice(1)) { // Check if country is USA
+        if (countryName == "USA") { // Check if country is USA
           let cityName = cityCountrySplitArray[0].trim();
           placeName = helperSplitStringLastOccurrence(cityName, " "); // Extract state from city name
         }
@@ -443,7 +460,7 @@ function updateDataSetToMatchSearchCriteria() {
     }
   }
 
-  // IF USER ONLY WANTS TO LIST TAGGED EVENTS THEN REMOVE THE OTHER ENTRIES NON TAGGED LINES FROM THE EVENTS CELL 
+  // IF USER ONLY WANTS TO LIST TAGGED EVENTS THEN REMOVE THE OTHER NON TAGGED LINES FROM THE EVENTS CELL 
   if (selectedDisplayOption == "List: Events (Tagged)") {
     // Retrieve the selected events from the events fields 
     var tempDataSet = []; // This will hold the data that will be displayed
@@ -490,21 +507,4 @@ function updateDataSetToMatchSearchCriteria() {
   }
 
   console.log(`updateDataSetToMatchSearchCriteria executed in: ${performance.now() - startTime} milliseconds`);
-}
-
-function retrieveDefaultInputValues() {
-  // Retrieve the default values for date, location, country to append, and event, which will be used later in the app
-
-  // Date
-  let defaultDate = new Date(datasetArray[0][0].split(', ')[1]); // Get default date string and convert it to actual date (in order to more easily increment it later) 
-  defaultDate.setDate(defaultDate.getDate() + 1); // increase the date by 1
-  defaultDate = new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(defaultDate); // Format date back to YYYY-MM-DD
-
-  // Location and events
-  let defaultValues = datasetArray[datasetArray.length-2][2].split("\n");
-  let defaultLocation = defaultValues[0]; // First line has the locations
-  let defaultCountrySuffix = defaultValues[1]; // Second line has the default country suffix
-  let defaultEventLine = defaultValues.slice(2).join("\n"); // Afterwards it's the default events
-  
-  defaultInputValues = [defaultDate, defaultLocation, defaultCountrySuffix, defaultEventLine]; // Store the default values in an array for later use
 }
