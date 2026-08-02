@@ -71,17 +71,17 @@ function eventThemeCheckboxChanged() {
 function eventFilterOrDisplayOptionChanged(whatChanged) {
   // Clear the search word text box (to avoid having to search for a keyword in order to optimize search speed)
   document.getElementById('textbox-keyword').value = '';
-
-  // Gather user inputs
-  retrieveDataFromTopPane();
  
-  // Update element visibility
+  // Enable the HTML element (in case they were disabled or hidden)
   document.getElementById("select-year").removeAttribute("disabled");
   document.getElementById("select-location").removeAttribute("disabled");
   document.getElementById("textbox-keyword").removeAttribute("disabled");
   document.getElementById("output-list").style.display = "grid";
 
-  // If the user selected an event then change the display mode to tagged lines only 
+  // Gather user inputs
+  retrieveDataFromTopPane();
+
+  // If the user selected a specific event then change the display mode to tagged lines only 
   if (whatChanged == 'event' && selectedDisplayOption === "List: Events & Thoughts") {
     document.getElementById("select-displayoption").value = "List: Events (Tagged)";
 
@@ -95,15 +95,15 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
     var todayDateString = (today.getMonth() + 1).toString().padStart(2, '0') + "/" + today.getDate().toString().padStart(2, '0');
     document.getElementById('textbox-keyword').value = todayDateString;
 
-    // Gather user inputs again since display option changed
+    // Gather user inputs again since keyword changed
     retrieveDataFromTopPane();
   }
 
-  // Filter dataset to only include lines matching from the search criteria
+  // Filter dataset to only include lines matching search criteria
   updateDataSetToMatchSearchCriteria();
 
   // Update the output
-  retrieveDataForOutput(); 
+  routeOutputDisplay(); 
 }
 
 function eventKeywordEntered() {
@@ -114,7 +114,7 @@ function eventKeywordEntered() {
   updateDataSetToMatchSearchCriteria(); 
 
   // Update the output
-  retrieveDataForOutput();
+  routeOutputDisplay();
 
 }
 
@@ -162,7 +162,7 @@ function saveActiveEditableOutputCellValue() {
   activeEditableOutputCellValue = "";
 }
 
-function retrieveDataForOutput() {
+function routeOutputDisplay() {
   // Check which display option user chose in order to call the corresponding function
   if (selectedDisplayOption.includes("List:")) {
       if (selectedDisplayOption == "List: Events & Thoughts") {
