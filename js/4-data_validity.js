@@ -5,11 +5,6 @@ function helperValidateEvent(eventCell) {
     return "The event cell is blank.";
   } 
 
-  // CHECK IF EVENT CELL DOES NOT END WITH A BREAK LINE
-  if (eventCell.slice(-1) != "\n") {
-    return "The event cell does not end with a line break.";
-  }
-
   // CHECK IF EVENT CELL HAS NO HASHTAGS
   if (!eventCell.includes("#")) {
     return "The event cell does not have any events. It should have at least one.";
@@ -25,8 +20,7 @@ function helperValidateEvent(eventCell) {
     return "The event cell contains a double quote character, which is not permitted";
   }
 
-  // CHECK IF THERE ARE EVENT TAGS THAT ARE NOT IN THE EVENT LIST
-  var eventsFromExcelFile = datasetArray[datasetArray.length-1][2].split(";"); // Retrieve the events list from the bottom cell
+  // CHECK IF THERE ARE EVENT TAGS THAT ARE NOT IN THE DEFAULT EVENT LIST
   // Check if there are any tags in the event cell that are missing from the list
   while (eventCell.includes("#")) { // Iterate over all the # entries in the same cell
     let new_eventCell = eventCell.slice(eventCell.indexOf("#")); // Remove anything before the first # in the cell
@@ -38,19 +32,27 @@ function helperValidateEvent(eventCell) {
     if (eventName.includes(",")) { 
       eventName = eventName.slice(0, eventName.indexOf(",")); // Remove the "," from the tag name if it happens to be linked to it. 
     }
-    // Should we handle other cases than . and , like \n perhaps?
+    if (eventName.includes("\n")) { 
+      eventName = eventName.slice(0, eventName.indexOf("\n")); // Remove the "\n" from the tag name if it happens to be linked to it. 
+    }
 
-    // Check if event name is not in the provided event list
-    var event_is_in_list = false;
-    for (let j = 0; j < eventsFromExcelFile.length; j++) {
-      if (eventsFromExcelFile[j].split("_")[1] == eventName) {
-        event_is_in_list = true;
+    // Check if event name is not in the approved or ignored event lists
+    var eventIsAllowed = false;
+    for (let j = 0; j < defaultInputValues[5].length; j++) {
+      if (eventName == defaultInputValues[5][j].split("_")[1]) {
+        eventIsAllowed = true;
         break;
       }
     }
-    if (event_is_in_list == false){
+    for (let j = 0; j < defaultInputValues[6].length; j++) {
+      if (eventName == defaultInputValues[6][j].split("_")[1]) {
+        eventIsAllowed = true;
+        break;
+      }
+    }
+    if (eventIsAllowed == false){
       // Since the loop over the event list completed with no breaks, then the event name is missing
-      return "The event " + eventName + " is not a valid event.";
+      return "The event #" + eventName + " is not a valid event.";
     }
   }
 
@@ -80,10 +82,10 @@ function validateDatasetArray() {
   let validationResult = "No errors found."; 
   var previousCellDate = new Date(datasetArray[0][0]); // Used further down by the validity check code 
   
-  // ITERATE OVER EVERY ROW TO INSPECT IT - SKIPPING LAST TWO ROWS AS THEY CONTAIN DIFFERENT DATA
-  for (let i = 0; i < datasetArray.length-2; i++) { 
+  // Iterate over the rows in the datasetArray for validation, skipping the last line since it contains default values
+  for (let i = 0; i < datasetArray.length-1; i++) { 
     
-    // CHECK THAT ROW'S DATE IS IN DESCENDING ORDER
+    // VALIDATE ROW DATE (IS IN DESCENDING ORDER)
     var currentCellDate = new Date(datasetArray[i][0]); 
     if (i == 0){ 
       // Do nothing as that means we're still in the first row and it's too early to check
@@ -96,7 +98,7 @@ function validateDatasetArray() {
         validationResult = "No errors found.";
       }
       if (validationResult != "No errors found.") {
-        validationResult = validationResult + " Row: " + ++i;
+        validationResult = validationResult + " Date: " + datasetArray[i][0];
         break;
       }
     }
@@ -111,8 +113,8 @@ function validateDatasetArray() {
     } else { // Check if any of the city_country values are missing a country suffix, and if so, append the default country suffix to it
       for (let j = 0; j < rowLocationValueArray.length; j++) { // Iterate over every city_country that day
         var cityCountrySplitArray = rowLocationValueArray[j].split("_"); // Split city_country into an array
-        if (cityCountrySplitArray.length != 2) {
-          rowLocationValueArray[j] = rowLocationValueArray[j] + defaultInputValues[2]; // defaultInputValues[2] is the default country suffix 
+        if (cityCountrySplitArray.length != 2) { // If country missing, then append the default country suffix to it
+          rowLocationValueArray[j] = rowLocationValueArray[j] + "_" + defaultInputValues[4]; 
         }
       }
       // Update the datasetArray with the modified location values
@@ -123,21 +125,21 @@ function validateDatasetArray() {
     }
     
     if (validationResult != "No errors found.") {
-      validationResult = validationResult + " Row: " + ++i;
+      validationResult = validationResult + " Date: " + datasetArray[i][0];
       break;
     }
     
-    // CHECK THE ROW'S EVENTS VALIDITY
+    // VALIDATE THE ROW'S EVENTS
     validationResult = helperValidateEvent(datasetArray[i][2]);
     if (validationResult != "No errors found.") {
-      validationResult = validationResult + " Row: " + ++i;
+      validationResult = validationResult + " Date: " + datasetArray[i][0];
       break;
     }
 
-    // CHECK THE ROW'S THOUGHTS VALIDITY
+    // VALIDATE THE ROW'S THOUGHTS
     validationResult = helperValidateThoughts(datasetArray[i][3]);
     if (validationResult != "No errors found.") {
-      validationResult = validationResult + " Row: " + ++i;
+      validationResult = validationResult + " Date: " + datasetArray[i][0];
       break;
     }
   }

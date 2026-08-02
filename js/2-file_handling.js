@@ -10,13 +10,17 @@ async function readFileAndDisplay(event) {
     var decryptedCsvData = await decrypt(reader, enteredPassword); // decrypt file
   }
   datasetArray = helperCsvToArray(decryptedCsvData); // Convert content from string format to array
-  datasetArray.shift(); //Remove the very first row as it only has the table headers
+  
+  // Remove the very first row as it only has the table headers
+  datasetArray.shift(); 
+
+  // Retrieve the default values from the dataset storing them in an array for later use
+  retrieveDefaultInputValues();
 
   // Append any missing dates to dataset
-  retrieveDefaultInputValues();
   let missingDates = helperGetDatesBetweenGivenDateAndToday(datasetArray[0][0]); // Get the missing dates between the last date in the dataset and today
   for (date of missingDates) {
-    datasetArray.unshift([date, defaultInputValues[1], defaultInputValues[3], ""]); // Add the missing dates to the top of the dataset array
+    datasetArray.unshift([date, defaultInputValues[1], defaultInputValues[2], ""]); // Add the missing dates to the top of the dataset array
   }
 
   // Set data in this array as it's the one used for the display
@@ -29,7 +33,7 @@ async function readFileAndDisplay(event) {
   retrieveDataFromTopPane();
 
   // Display Data in Table
-  retrieveDataForListView();
+  retrieveDataForListView(isEditableDisplayMode = true);
 
   // Clear old validity errors if any
   clearErrorMessages();
@@ -74,7 +78,7 @@ async function validateThenSaveContentToFile() {
     // UPDATE USER INTERFACE
     clearErrorMessages(); // Clear error messages in case of any from previous save attemps attemps
     retrieveDataForTopPane(); // Update top pane
-    retrieveDataForListView();  // Redisplay the table 
+    retrieveDataForListView(isEditableDisplayMode = true);  // Redisplay the table 
 
     // Refresh the output display after saving the new event
     document.getElementById("select-displayoption").value = "List: Events & Thoughts";

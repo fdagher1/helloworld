@@ -92,8 +92,13 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
   // Filter dataset to only include lines matching from the search word
   updateDataSetToMatchSearchCriteria(); 
 
+
   if (selectedDisplayOption.includes("List:")) {
-    retrieveDataForListView();
+      if (selectedDisplayOption == "List: Events & Thoughts") {
+        retrieveDataForListView(isEditableDisplayMode = true);
+      } else {
+        retrieveDataForListView(isEditableDisplayMode = false);
+      }
   } else if (selectedDisplayOption.includes(" grouping of days")) {
     retrieveDataForGroupByLocationTable();
   } else if (selectedDisplayOption.includes("Monthly grouping")) {
@@ -112,7 +117,11 @@ function eventKeywordEntered() {
 
   // Check which display option user chose in order to call the corresponding function
   if (selectedDisplayOption.includes("List:")) {
-    retrieveDataForListView();
+        if (selectedDisplayOption == "List: Events & Thoughts") {
+        retrieveDataForListView(isEditableDisplayMode = true);
+      } else {
+        retrieveDataForListView(isEditableDisplayMode = false);
+      }
   } else if (selectedDisplayOption.includes(" grouping of days")) {
     retrieveDataForGroupByLocationTable();
   } else if (selectedDisplayOption.includes("Monthly grouping")) {
@@ -143,14 +152,6 @@ function eventOutputCellClicked(event, rowIndex, columnIndex, columnName, source
     columnName: columnName
   };
   activeEditableOutputCellValue = helperNormalizeEditableCellValue(clickedElement.innerText || clickedElement.textContent);
-
-  console.log("Editable output cell clicked:", {
-    row: rowIndex,
-    sourceRow: sourceRowIndex,
-    column: columnIndex,
-    columnName: columnName,
-    value: activeEditableOutputCellValue
-  });
 }
 
 function saveActiveEditableOutputCellValue() {
