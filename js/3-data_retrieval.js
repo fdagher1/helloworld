@@ -37,9 +37,9 @@ function retrieveDataForTopPane() {
   let startTime = performance.now();
   
   // RETRIEVE THE YEARS LIST
-  var currentYear = new Date().getFullYear();
-  var startingYear = new Date(datasetArray[datasetArray.length-1][0]).getFullYear();
-  for (var year = currentYear; year >= startingYear; year--) {
+  var endingYear = new Date(datasetArray[1][0]).getFullYear();
+  var startingYear = new Date(datasetArray[datasetArray.length-2][0]).getFullYear();
+  for (var year = endingYear; year >= startingYear; year--) {
     allDropdownValues[0].push(year.toString());
   }
 
@@ -65,7 +65,7 @@ function retrieveDataForTopPane() {
   allDropdownValues[2] = defaultInputValues[5].slice(); // Set the events array equal to the default validated events array
 
   // RETRIEVE THE DISPLAY OPTIONS LIST
-  var displayOptionsText = ["List: Events & Thoughts", "List: Events (Tagged)", "List: Thoughts (All)","Country grouping of days", "US State grouping of days", "City grouping of days", "Monthly grouping of Countries", "Monthly grouping of US States", "Monthly grouping of Cities"]; // This holds the options to display in the Display Options dropdown 
+  var displayOptionsText = ["List: Events & Thoughts", "List: Events & Thoughts (today)", "List: Events (Tagged)", "List: Thoughts (All)", "Country grouping of days", "US State grouping of days", "City grouping of days", "Monthly grouping of Countries", "Monthly grouping of US States", "Monthly grouping of Cities"]; // This holds the options to display in the Display Options dropdown 
   var eventCategories = []; // This will hold the variable event categories to be used in the display
   for (eventName of allDropdownValues[2]) {
     var eventCategory = eventName.split("_")[0];
