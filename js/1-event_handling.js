@@ -89,23 +89,21 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
     retrieveDataFromTopPane();
   }
 
-  // Filter dataset to only include lines matching from the search word
-  updateDataSetToMatchSearchCriteria(); 
+  if (selectedDisplayOption == "List: Events & Thoughts (today)") { 
+    // Get today's date and add it to the search criteria, so that the output will only show lines from today
+    var today = new Date();
+    var todayDateString = (today.getMonth() + 1).toString().padStart(2, '0') + "/" + today.getDate().toString().padStart(2, '0');
+    document.getElementById('textbox-keyword').value = todayDateString;
 
+    // Gather user inputs again since display option changed
+    retrieveDataFromTopPane();
+  }
 
-  if (selectedDisplayOption.includes("List:")) {
-      if (selectedDisplayOption == "List: Events & Thoughts") {
-        retrieveDataForListView(isEditableDisplayMode = true);
-      } else {
-        retrieveDataForListView(isEditableDisplayMode = false);
-      }
-  } else if (selectedDisplayOption.includes(" grouping of days")) {
-    retrieveDataForGroupByLocationTable();
-  } else if (selectedDisplayOption.includes("Monthly grouping")) {
-    retrieveDataForGroupByMonthTable();
-  }  else if (selectedDisplayOption.includes("Summary:")) {
-    retrieveDataforSummaryTable();
-  } 
+  // Filter dataset to only include lines matching from the search criteria
+  updateDataSetToMatchSearchCriteria();
+
+  // Update the output
+  retrieveDataForOutput(); 
 }
 
 function eventKeywordEntered() {
@@ -115,20 +113,9 @@ function eventKeywordEntered() {
   // Filter datasets to only include lines matching the search word
   updateDataSetToMatchSearchCriteria(); 
 
-  // Check which display option user chose in order to call the corresponding function
-  if (selectedDisplayOption.includes("List:")) {
-        if (selectedDisplayOption == "List: Events & Thoughts") {
-        retrieveDataForListView(isEditableDisplayMode = true);
-      } else {
-        retrieveDataForListView(isEditableDisplayMode = false);
-      }
-  } else if (selectedDisplayOption.includes(" grouping of days")) {
-    retrieveDataForGroupByLocationTable();
-  } else if (selectedDisplayOption.includes("Monthly grouping")) {
-    retrieveDataForGroupByMonthTable();
-  } else if (selectedDisplayOption.includes("Summary:")) {
-    retrieveDataforSummaryTable();
-  }
+  // Update the output
+  retrieveDataForOutput();
+
 }
 
 function eventOutputCellClicked(event, rowIndex, columnIndex, columnName, sourceRowIndex = rowIndex) {
@@ -173,6 +160,23 @@ function saveActiveEditableOutputCellValue() {
 
   activeEditableOutputCell = null;
   activeEditableOutputCellValue = "";
+}
+
+function retrieveDataForOutput() {
+  // Check which display option user chose in order to call the corresponding function
+  if (selectedDisplayOption.includes("List:")) {
+      if (selectedDisplayOption == "List: Events & Thoughts") {
+        retrieveDataForListView(isEditableDisplayMode = true);
+      } else {
+        retrieveDataForListView(isEditableDisplayMode = false);
+      }
+  } else if (selectedDisplayOption.includes(" grouping of days")) {
+    retrieveDataForGroupByLocationTable();
+  } else if (selectedDisplayOption.includes("Monthly grouping")) {
+    retrieveDataForGroupByMonthTable();
+  } else if (selectedDisplayOption.includes("Summary:")) {
+    retrieveDataforSummaryTable();
+  }
 }
 
 // Initialize on DOM load

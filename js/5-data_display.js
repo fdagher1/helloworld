@@ -70,7 +70,7 @@ function displayListOutput(dataSetToDisplay, isEditableDisplayMode) {
 
   // If the last row of the datasetArrayForDisplay is "Default Values" then subtract 1 from the counter to avoid counting it as a day in the display
   let valueToSubtractFromCounter = 0;
-  if (datasetArrayForDisplay[datasetArrayForDisplay.length-1][0] == "Default Values") {
+  if (datasetArrayForDisplay.length > 0 && datasetArrayForDisplay[datasetArrayForDisplay.length-1][0] == "Default Values"){
     valueToSubtractFromCounter = 1;
   }
 
@@ -119,20 +119,14 @@ function displayListOutput(dataSetToDisplay, isEditableDisplayMode) {
       thoughtDiv.addEventListener("input", function () {activeEditableOutputCellValue = helperNormalizeEditableCellValue(thoughtDiv.innerText || thoughtDiv.textContent);});
       thoughtDiv.addEventListener("blur", function () {if (activeEditableOutputCell && activeEditableOutputCell.element === thoughtDiv) {saveActiveEditableOutputCellValue();}});
     }
-    if (selectedDisplayOption === "List: Events & Thoughts") {
-      const eventText = helperNormalizeEditableCellValue(dataSetToDisplay[i][2]);
-      const thoughtText = helperNormalizeEditableCellValue(dataSetToDisplay[i][3]);
-      eventDiv.innerHTML = helperHighlightKeyword(eventText, searchWord);
-      if (thoughtText != "") { // If thoughts for is not blank, then add it along with a line break before it to the display
-        thoughtDiv.innerHTML = helperHighlightKeyword(thoughtText, searchWord);
-      }
-    } else if (selectedDisplayOption.includes("List: Events (Tagged)")) {
+    if (selectedDisplayOption.includes("Events")) {
       const eventText = helperNormalizeEditableCellValue(dataSetToDisplay[i][2]);
       eventDiv.innerHTML = helperHighlightKeyword(eventText, searchWord);
-    } else if (selectedDisplayOption.includes("List: Thoughts (All)")) {
+    }
+    if (selectedDisplayOption.includes("Thoughts")) {
       const thoughtText = helperNormalizeEditableCellValue(dataSetToDisplay[i][3]);
       thoughtDiv.innerHTML = helperHighlightKeyword(thoughtText, searchWord);
-    }
+    }    
     
     // Create a separator line between each section
     const seperatorDiv = document.createElement("div");
