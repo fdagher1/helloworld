@@ -401,8 +401,6 @@ function retrieveDataforSummaryTable() {
 function updateDataSetToMatchSearchCriteria() {
   let startTime = performance.now();
 
-  datasetDisplayRowSourceIndexMap.length = 0;
-
   // FILTER BASED ON DROPDOWN VALUES
   datasetArrayForDisplay.length = 0; // First clear the contents of the array 
   for (i = 0; i < datasetArray.length; i++) { // Iterate over every row 
@@ -456,7 +454,6 @@ function updateDataSetToMatchSearchCriteria() {
     // If row should not be excluded, then add it to the output array
     if (includeRowToDataset == true) {
       datasetArrayForDisplay.push(datasetArray[i]);
-      datasetDisplayRowSourceIndexMap.push(i);
     }
   }
 
@@ -464,10 +461,8 @@ function updateDataSetToMatchSearchCriteria() {
   if (selectedDisplayOption == "List: Events (Tagged)") {
     // Retrieve the selected events from the events fields 
     var tempDataSet = []; // This will hold the data that will be displayed
-    var tempSourceRowIndexes = [];
     for (var displayRowIndex = 0; displayRowIndex < datasetArrayForDisplay.length; displayRowIndex++) {
       var row = datasetArrayForDisplay[displayRowIndex];
-      var sourceRowIndex = datasetDisplayRowSourceIndexMap[displayRowIndex];
       var eventLinesToAdd = ""; // will hold all the events of that cell
       var brIndices = getIndicesOf("\n", row[2]) // Get all the indices of \n in that cell
       brIndices.unshift(0); // Add 0 to the beginning for ease of looping over each line in that cell
@@ -483,27 +478,21 @@ function updateDataSetToMatchSearchCriteria() {
       }
       if (eventLinesToAdd != "") {
         tempDataSet.push([row[0], row[1], eventLinesToAdd]);
-        tempSourceRowIndexes.push(sourceRowIndex);
       }
     }
     datasetArrayForDisplay = tempDataSet.slice(0);
-    datasetDisplayRowSourceIndexMap = tempSourceRowIndexes.slice(0);
   }
 
   // FILTER BASED ON SEARCH WORD VALUE, ONLY IF THE SEARCH WORD HAS MORE THAN 2 CHARACTERS TO AVOID OVER FILTERING FROM SHORT COMMON WORDS
   if (searchWord.length > 2) { 
     var tempArray = []; // Array to hold rows that match the searchword criteria
-    var tempSourceRowIndexes = [];
     for (let displayRowIndex = 0; displayRowIndex < datasetArrayForDisplay.length; displayRowIndex++) {
       const row = datasetArrayForDisplay[displayRowIndex];
-      const sourceRowIndex = datasetDisplayRowSourceIndexMap[displayRowIndex];
       if (row[0].toLowerCase().includes(searchWord.toLowerCase()) || row[1].toLowerCase().includes(searchWord.toLowerCase()) || row[2].toLowerCase().includes(searchWord.toLowerCase()) || row[3].toLowerCase().includes(searchWord.toLowerCase())) {
         tempArray.push(row);
-        tempSourceRowIndexes.push(sourceRowIndex);
       }
     }
     datasetArrayForDisplay = tempArray.slice();
-    datasetDisplayRowSourceIndexMap = tempSourceRowIndexes.slice(0);
   }
 
   console.log(`updateDataSetToMatchSearchCriteria executed in: ${performance.now() - startTime} milliseconds`);

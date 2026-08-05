@@ -13,15 +13,12 @@ var selectedDisplayOption; // Value of the user selected drop down
 var searchWord = ""; // Value of the user entered keyword
 var datasetLoaded = false; // Flag to indicate if dataset has been loaded
 var themeMode = "darkMode"; // Default to dark mode
-let activeEditableOutputCell = null; // Holds the currently active editable output cell, if any
-let activeEditableOutputCellValue = ""; // Holds the value of the currently active editable output cell. 
-let datasetDisplayRowSourceIndexMap = []; // Map to track the source row index for each displayed row in datasetArrayForDisplay
+let valueToStore = ""; // Holds the value of the currently active editable output cell. 
 
 // DEFINE RESPONSE FUNCTIONS
 
 function eventAppLoaded() {
-  
-  // SET THE THEME BASED ON TIME OF DAY
+  // Set theme based on time of day
   const h = new Date().getHours();
   // Define day as 6:00-17:59, night 18:00-5:59
   if (h >= 8 && h < 18) {
@@ -53,7 +50,7 @@ function eventFileLoadSaveClicked(event) {
 
   } else { // FILE SAVE
     // Save content to file
-    validateThenSaveContentToFile();
+    saveContentToFile();
   }
 }
 
@@ -118,48 +115,31 @@ function eventKeywordEntered() {
 
 }
 
-function eventOutputCellClicked(event, rowIndex, columnIndex, columnName, sourceRowIndex = rowIndex) {
-  if (selectedDisplayOption !== "List: Events & Thoughts") {
-    return;
-  }
-
-  const clickedElement = event.currentTarget;
-
-  // Save the value of the previously active editable output cell if it exists and is different from the newly clicked cell
-  if (activeEditableOutputCell && (activeEditableOutputCell.row !== rowIndex || activeEditableOutputCell.column !== columnIndex)) {
-    saveActiveEditableOutputCellValue();
-  }
-
-  // Set the newly clicked cell as the active editable output cell
-  activeEditableOutputCell = {
-    element: clickedElement,
-    row: rowIndex,
-    sourceRow: sourceRowIndex,
-    column: columnIndex,
-    columnName: columnName
-  };
-  activeEditableOutputCellValue = helperNormalizeEditableCellValue(clickedElement.innerText || clickedElement.textContent);
+function eventCellValueChanged(divInnerText) {
+  valueToStore = helperNormalizeEditableCellValue(divInnerText);
 }
 
-function saveActiveEditableOutputCellValue() {
-  if (selectedDisplayOption !== "List: Events & Thoughts" || !activeEditableOutputCell) {
-    return;
+function eventCellDeselected(deselectedCellDate, deselectedCellColumnIndex) {
+  deselectedCellDate = deselectedCellDate.slice(0,15);
+  
+  if (valueToStore) { // If the cell was edited
+    // Update datasetArray accordingly
+    for (var i=0; i<datasetArray.length; i++) {
+      if (datasetArray[i][0] == deselectedCellDate) {
+        datasetArray[i][deselectedCellColumnIndex] = valueToStore;
+        break;
+      }
+    }
+    // Update datasetArrayForDisplay accordingly
+    for (var i=0; i<datasetArrayForDisplay.length; i++) {
+      if (datasetArray[i][0] == deselectedCellDate) {
+        datasetArrayForDisplay[i][deselectedCellColumnIndex] = valueToStore;
+        break;
+      }
+    }
   }
 
-  const displayRowIndex = activeEditableOutputCell.row;
-  const sourceRowIndex = activeEditableOutputCell.sourceRow ?? displayRowIndex;
-  const columnIndex = activeEditableOutputCell.column;
-
-  if (datasetArray[sourceRowIndex] && datasetArray[sourceRowIndex][columnIndex] !== undefined) {
-    datasetArray[sourceRowIndex][columnIndex] = activeEditableOutputCellValue;
-  }
-
-  if (datasetArrayForDisplay && datasetArrayForDisplay[displayRowIndex] && datasetArrayForDisplay[displayRowIndex][columnIndex] !== undefined) {
-    datasetArrayForDisplay[displayRowIndex][columnIndex] = activeEditableOutputCellValue;
-  }
-
-  activeEditableOutputCell = null;
-  activeEditableOutputCellValue = "";
+  valueToStore = "";
 }
 
 function routeOutputDisplay() {
