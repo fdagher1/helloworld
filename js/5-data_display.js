@@ -77,8 +77,6 @@ function displayListOutput(dataSetToDisplay, isEditableDisplayMode) {
   // Create the section elements to display the events in body
   const fragment = document.createDocumentFragment();
   for (let i = 0; i < dataSetToDisplay.length; i++) {
-    const displayRowIndex = i;
-    const sourceRowIndex = datasetDisplayRowSourceIndexMap[i] ?? i;
 
     // Create the parent/section HTML element
     const section = document.createElement("section");
@@ -97,9 +95,8 @@ function displayListOutput(dataSetToDisplay, isEditableDisplayMode) {
     locationDiv.classList.add("location-class");
     if (isEditableDisplayMode) {
       locationDiv.contentEditable = "true";
-      locationDiv.addEventListener("click", function (e) {eventOutputCellClicked(e, displayRowIndex, 1, "Location", sourceRowIndex);});
-      locationDiv.addEventListener("input", function () {activeEditableOutputCellValue = helperNormalizeEditableCellValue(locationDiv.innerText || locationDiv.textContent);});
-      locationDiv.addEventListener("blur", function () {if (activeEditableOutputCell && activeEditableOutputCell.element === locationDiv) {saveActiveEditableOutputCellValue();}});
+      locationDiv.addEventListener("input", function () {eventCellValueChanged(locationDiv.innerText);});
+      locationDiv.addEventListener("blur", function () {eventCellDeselected(dateText.innerText, 1);});
     }
 
     // Create the event and thought child elements
@@ -111,13 +108,11 @@ function displayListOutput(dataSetToDisplay, isEditableDisplayMode) {
     thoughtDiv.setAttribute("data-placeholder", "");
     if (isEditableDisplayMode) {
       eventDiv.contentEditable = "true";
-      eventDiv.addEventListener("click", function (e) {eventOutputCellClicked(e, displayRowIndex, 2, "Event", sourceRowIndex);});
-      eventDiv.addEventListener("input", function () {activeEditableOutputCellValue = helperNormalizeEditableCellValue(eventDiv.innerText || eventDiv.textContent);});
-      eventDiv.addEventListener("blur", function () {if (activeEditableOutputCell && activeEditableOutputCell.element === eventDiv) {saveActiveEditableOutputCellValue();}});
+      eventDiv.addEventListener("input", function () {eventCellValueChanged(eventDiv.innerText);});
+      eventDiv.addEventListener("blur", function () {eventCellDeselected(dateText.innerText, 2);});
       thoughtDiv.contentEditable = "true";
-      thoughtDiv.addEventListener("click", function (e) {eventOutputCellClicked(e, displayRowIndex, 3, "Thought", sourceRowIndex);});
-      thoughtDiv.addEventListener("input", function () {activeEditableOutputCellValue = helperNormalizeEditableCellValue(thoughtDiv.innerText || thoughtDiv.textContent);});
-      thoughtDiv.addEventListener("blur", function () {if (activeEditableOutputCell && activeEditableOutputCell.element === thoughtDiv) {saveActiveEditableOutputCellValue();}});
+      thoughtDiv.addEventListener("input", function () {eventCellValueChanged(thoughtDiv.innerText);});
+      thoughtDiv.addEventListener("blur", function () {eventCellDeselected(dateText.innerText, 3);});
     }
     if (selectedDisplayOption.includes("Events")) {
       const eventText = helperNormalizeEditableCellValue(dataSetToDisplay[i][2]);

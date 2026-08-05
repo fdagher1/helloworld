@@ -28,8 +28,8 @@
 
       <!-- Row 2: password and file import -->
       <div class="row row-2">
-        <form autocomplete="on"> <!-- Form tag is a workaround to enable autocomplete for the password field -->
-          <input type="password" id="textbox-password" class="textbox-default" placeholder="(Enter Password)" autocomplete="current-password">
+        <form autocomplete="on" data-form-type="login"> <!-- Form tag is a workaround to enable autocomplete for the password field -->
+          <input type="password" id="textbox-password" class="textbox-default" placeholder="(Enter Password)" autocomplete="current-password" data-form-type="password">
         </form>
         <div>
           <label for="button-filehandling" id ="button-filehandling-id" class="button-default">Load File</label>

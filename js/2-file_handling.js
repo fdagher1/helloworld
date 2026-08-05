@@ -40,7 +40,7 @@ async function readFileAndDisplay(event) {
 
 }
 
-async function validateThenSaveContentToFile() {
+async function saveContentToFile() {
   // GATHER USER INPUT AND CREATE CORRESPONDING ARRAY
   // Gather user input
   var enteredPassword = document.getElementById("textbox-password").value; // Get user entered password, if any
