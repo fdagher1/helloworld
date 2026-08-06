@@ -89,12 +89,10 @@ function retrieveDataFromTopPane() {
   selectedDropdownValues[1].length = 0;
   selectedDropdownValues[2].length = 0;
   
-  // Loop over the 3 criteria dropdowns to get their corresponding values
-  for (let i=0; i < selectedDropdownValues.length; i++) {
-    selectedDropdownValues[0][0] = document.getElementById("select-year").value;
-    selectedDropdownValues[1][0] = document.getElementById("select-location").value;
-    selectedDropdownValues[2][0] = document.getElementById("select-event").value;
-  }
+  // Collect the 3 criteria dropdowns values
+  selectedDropdownValues[0][0] = document.getElementById("select-year").value;
+  selectedDropdownValues[1][0] = document.getElementById("select-location").value;
+  selectedDropdownValues[2][0] = document.getElementById("select-event").value;
 
   // If any of the selections are "All " then fill the array with all of options (as if they were all selected)
   for (let i=0; i < selectedDropdownValues.length; i++) {
