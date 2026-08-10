@@ -77,6 +77,7 @@ async function saveContentToFile() {
 
     // UPDATE USER INTERFACE
     clearErrorMessages(); // Clear error messages in case of any from previous save attemps attemps
+    retrieveDefaultInputValues(); // Retrieve default values
     retrieveDataForTopPane(); // Update top pane
     retrieveDataForListView(isEditableDisplayMode = true);  // Redisplay the table 
 

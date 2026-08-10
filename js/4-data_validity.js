@@ -1,78 +1,66 @@
-// Returns a string confirming if eventCell is properly formatted based on various criteria
-function helperValidateEvent(eventCell) {
+// Returns a string confirming if cellValue is properly formatted based on various criteria
+function helperValidateEventOrThought(cellValue, cellType) {
   // CHECK IF EVENT CELL IS BLANK
-  if (eventCell === '') {
+  if (cellValue === '' && cellType == "event") {
     return "The event cell is blank.";
   } 
 
   // CHECK IF EVENT CELL HAS NO HASHTAGS
-  if (!eventCell.includes("#")) {
+  if (!cellValue.includes("#") && cellType == "event") {
     return "The event cell does not have any events. It should have at least one.";
   }
 
-  // CHECK IF EVENT CELL HAS ANY BACKSLASHES AS THAT CAN BREAK THE CSV STRUCTURE
-  if (eventCell.includes("\\")) {
-    return "The event cell contains a backslash character, which is not permitted";
+  // CHECK IF CELL HAS ANY BACKSLASHES AS THAT CAN BREAK THE CSV STRUCTURE
+  if (cellValue.includes("\\")) {
+    return "The " & cellType & " cell contains a backslash character, which is not permitted";
   }
 
-  // CHECK IF EVENT CELL HAS ANY DOUBLE QUOTES AS THAT CAN BREAK THE CSV STRUCTURE
-  if (eventCell.includes('"')) {
-    return "The event cell contains a double quote character, which is not permitted";
+  // CHECK IF CELL HAS ANY DOUBLE QUOTES AS THAT CAN BREAK THE CSV STRUCTURE
+  if (cellValue.includes('"')) {
+    return "The " & cellType & " cell contains a double quote character, which is not permitted";
   }
 
-  // CHECK IF THERE ARE EVENT TAGS THAT ARE NOT IN THE DEFAULT EVENT LIST
-  // Check if there are any tags in the event cell that are missing from the list
-  while (eventCell.includes("#")) { // Iterate over all the # entries in the same cell
-    let new_eventCell = eventCell.slice(eventCell.indexOf("#")); // Remove anything before the first # in the cell
-    eventCell = new_eventCell.slice(new_eventCell.indexOf(" ")); // Place anything after the first space from the tag in a new cell to iterate over once this is done 
-    let eventName = new_eventCell.slice(1,new_eventCell.indexOf(" ")); // Get the tag name
-    if (eventName.includes(".")) { 
-      eventName = eventName.slice(0, eventName.indexOf(".")); // Remove the "." from the tag name if it happens to be linked to it. 
+  // CHECK IF THERE ARE TAGS THAT ARE NOT IN THE DEFAULT LIST
+  // First collect the tag names
+  while (cellValue.includes("#")) { // Iterate over all the # entries in the same cell
+    let new_cellValue = cellValue.slice(cellValue.indexOf("#")); // Remove anything before the first # in the cell
+    cellValue = new_cellValue.slice(new_cellValue.indexOf(" ")); // Place anything after the first space from the tag in a new cell to iterate over once this is done 
+    let tagName = new_cellValue.slice(1,new_cellValue.indexOf(" ")); // Get the tag name
+    if (tagName.includes(".")) { 
+      tagName = tagName.slice(0, tagName.indexOf(".")); // Remove the "." from the tag name if it happens to be linked to it. 
     }
-    if (eventName.includes(",")) { 
-      eventName = eventName.slice(0, eventName.indexOf(",")); // Remove the "," from the tag name if it happens to be linked to it. 
+    if (tagName.includes(",")) { 
+      tagName = tagName.slice(0, tagName.indexOf(",")); // Remove the "," from the tag name if it happens to be linked to it. 
     }
-    if (eventName.includes("\n")) { 
-      eventName = eventName.slice(0, eventName.indexOf("\n")); // Remove the "\n" from the tag name if it happens to be linked to it. 
+    if (tagName.includes("\n")) { 
+      tagName = tagName.slice(0, tagName.indexOf("\n")); // Remove the "\n" from the tag name if it happens to be linked to it. 
     }
 
-    // Check if event name is not in the approved or ignored event lists
-    var eventIsAllowed = false;
-    for (let j = 0; j < defaultInputValues[5].length; j++) {
-      if (eventName == defaultInputValues[5][j].split("_")[1]) {
-        eventIsAllowed = true;
+    // Then check if the tag names are not in the approved or ignored event lists
+    // First check if we are validating event or thought cell
+    let indexToSearchIn;
+    if (cellType == "event") { indexToSearchIn = 5;}
+    if (cellType == "thought") { indexToSearchIn = 7;}
+    // Then check if the tagValue is allow or not
+    var tagIsAllowed = false;
+    for (let j = 0; j < defaultInputValues[indexToSearchIn].length; j++) {
+      if (tagName == defaultInputValues[indexToSearchIn][j].split("_")[1]) {
+        tagIsAllowed = true;
         break;
       }
     }
-    for (let j = 0; j < defaultInputValues[6].length; j++) {
-      if (eventName == defaultInputValues[6][j].split("_")[1]) {
-        eventIsAllowed = true;
+    for (let j = 0; j < defaultInputValues[indexToSearchIn+1].length; j++) {
+      if (tagName == defaultInputValues[indexToSearchIn+1][j].split("_")[1]) {
+        tagIsAllowed = true;
         break;
       }
     }
-    if (eventIsAllowed == false){
+    if (tagIsAllowed == false){
       // Since the loop over the event list completed with no breaks, then the event name is missing
-      return "The event #" + eventName + " is not a valid event.";
+      return "The tag #" + tagName + " is not valid";
     }
   }
 
-  return "No errors found.";
-}
-
-// Returns a string confirming if the thoughts cell is properly formatted based on various criteria
-function helperValidateThoughts(thoughtsCell) {
-  if (thoughtsCell !== undefined) { // If the thoughts cell is not undefined, that means cell is empty, no need to validate, otherwise code breaks
-    // CHECK IF THOUGHTS CELL HAS ANY BACKSLASHES AS THAT CAN BREAK THE CSV STRUCTURE
-    if (thoughtsCell.includes("\\")) {
-      return "The thoughts cell contains a backslash character, which is not permitted";
-    }
-
-    // CHECK IF THOUGHTS CELL HAS ANY DOUBLE QUOTES AS THAT CAN BREAK THE CSV STRUCTURE
-    if (thoughtsCell.includes('"')) {
-      return "The thoughts cell contains a double quote character, which is not permitted";
-    }
-  }
-  
   return "No errors found.";
 }
 
@@ -129,18 +117,22 @@ function validateDatasetArray() {
       break;
     }
     
-    // VALIDATE THE ROW'S EVENTS
-    validationResult = helperValidateEvent(datasetArray[i][2]);
-    if (validationResult != "No errors found.") {
-      validationResult = validationResult + " Date: " + datasetArray[i][0];
-      break;
-    }
+    // VALIDATE THE ROW'S EVENTS IF NOT BLANK
+    if (datasetArray[i][2] != "") {
+      validationResult = helperValidateEventOrThought(datasetArray[i][2], "event");
+      if (validationResult != "No errors found.") {
+        validationResult = validationResult + " Date: " + datasetArray[i][0];
+        break;
+      }
+    } 
 
-    // VALIDATE THE ROW'S THOUGHTS
-    validationResult = helperValidateThoughts(datasetArray[i][3]);
-    if (validationResult != "No errors found.") {
-      validationResult = validationResult + " Date: " + datasetArray[i][0];
-      break;
+    // VALIDATE THE ROW'S THOUGHTS IF NOT BLANK
+    if (datasetArray[i][3] != "") {
+      validationResult = helperValidateEventOrThought(datasetArray[i][3], "thought");
+      if (validationResult != "No errors found.") {
+        validationResult = validationResult + " Date: " + datasetArray[i][0];
+        break;
+      }
     }
   }
 

@@ -7,8 +7,8 @@ var defaultInputValues = []; // Holds the default values for date, location, cou
 
 // Input from webpage
 var datasetArrayForDisplay = []; // Holds the data to display in the output after the filter is applied
-var allDropdownValues = [[], [], []]; // Holds the values of all the checkboxes from Time, Locations, and Events dropdowns
-var selectedDropdownValues = [[], [], []]; // Holds the values of the selected checkboxes from Time, Locations, and Events dropdowns
+var allDropdownValues = [[], [], [], []]; // Holds the values of all the checkboxes from Time, Locations, Events, and Thoughts dropdowns
+var selectedDropdownValues = []; // Holds the values of the selected checkboxes from Time, Locations, Events, and Thoughts dropdowns
 var selectedDisplayOption; // Value of the user selected drop down
 var searchWord = ""; // Value of the user entered keyword
 var datasetLoaded = false; // Flag to indicate if dataset has been loaded
@@ -73,28 +73,30 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
   document.getElementById("select-year").removeAttribute("disabled");
   document.getElementById("select-location").removeAttribute("disabled");
   document.getElementById("textbox-keyword").removeAttribute("disabled");
+  document.getElementById("button-filehandling").removeAttribute("disabled");
   document.getElementById("output-list").style.display = "grid";
 
-  // Gather user inputs
+  // Gather user inputs (needed for the below if statements)
   retrieveDataFromTopPane();
 
-  // If the user selected a specific event then change the display mode to tagged lines only 
-  if (whatChanged == 'event' && selectedDisplayOption === "List: Events & Thoughts") {
+  // Depending on the combination of display option and filter chosen, change the display option or keyword search
+  if (selectedDisplayOption === "List: Events & Thoughts" && whatChanged == 'event') {
     document.getElementById("select-displayoption").value = "List: Events (Tagged)";
-
-    // Gather user inputs again since display option changed
-    retrieveDataFromTopPane();
   }
-
+  if (selectedDisplayOption === "List: Events & Thoughts" && whatChanged == 'thought') {
+    document.getElementById("select-displayoption").value = "List: Thoughts (Tagged)";
+  }
   if (selectedDisplayOption == "List: Events & Thoughts (today)") { 
     // Get today's date and add it to the search criteria, so that the output will only show lines from today
-    var today = new Date();
-    var todayDateString = (today.getMonth() + 1).toString().padStart(2, '0') + "/" + today.getDate().toString().padStart(2, '0');
+    var todayDateString = (new Date().getMonth() + 1).toString().padStart(2, '0') + "/" + new Date().getDate().toString().padStart(2, '0');
     document.getElementById('textbox-keyword').value = todayDateString;
-
-    // Gather user inputs again since keyword changed
-    retrieveDataFromTopPane();
   }
+  if (selectedDisplayOption != "List: Events & Thoughts") {
+    document.getElementById("button-filehandling").disabled = true;
+  }
+
+  // Gather user inputs again since displayoption or keyword may have changed in above if statements
+  retrieveDataFromTopPane();
 
   // Filter dataset to only include lines matching search criteria
   updateDataSetToMatchSearchCriteria();
@@ -115,11 +117,11 @@ function eventKeywordEntered() {
 
 }
 
-function eventCellValueChanged(divInnerText) {
+function cellValueChanged(divInnerText) {
   valueToStore = helperNormalizeEditableCellValue(divInnerText);
 }
 
-function eventCellDeselected(deselectedCellDate, deselectedCellColumnIndex) {
+function cellDeselected(deselectedCellDate, deselectedCellColumnIndex) {
   deselectedCellDate = deselectedCellDate.slice(0,15);
   
   if (valueToStore) { // If the cell was edited
@@ -154,8 +156,10 @@ function routeOutputDisplay() {
     retrieveDataForGroupByLocationTable();
   } else if (selectedDisplayOption.includes("Monthly grouping")) {
     retrieveDataForGroupByMonthTable();
-  } else if (selectedDisplayOption.includes("Summary:")) {
-    retrieveDataforSummaryTable();
+  } else if (selectedDisplayOption.includes("Summary(ev):")) {
+    retrieveDataforSummaryTable("event");
+  } else if (selectedDisplayOption.includes("Summary(th):")) {
+    retrieveDataforSummaryTable("thought");
   }
 }
 
