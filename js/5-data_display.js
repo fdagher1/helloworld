@@ -18,7 +18,7 @@ function displayDataInTopPane() {
   // Year
   var selectYear = document.getElementById("select-year");
   selectYear.replaceChildren(); // Clear what's already there
-  for (var year of ["All Years"].concat(allDropdownValues[0])) {
+  for (var year of allDropdownValues[0]) {
     var optionElement = document.createElement("option");
     optionElement.value = year;
     optionElement.text = year;
@@ -28,21 +28,31 @@ function displayDataInTopPane() {
   // Location
   var selectLocation = document.getElementById("select-location");
   selectLocation.replaceChildren(); // Clear what's already there
-  for (var year of ["All Locations"].concat(allDropdownValues[1])) {
+  for (var location of allDropdownValues[1]) {
     var optionElement = document.createElement("option");
-    optionElement.value = year;
-    optionElement.text = year;
+    optionElement.value = location;
+    optionElement.text = location;
     selectLocation.appendChild(optionElement);
   }
 
   // Event
   var selectEvent = document.getElementById("select-event");
   selectEvent.replaceChildren(); // Clear what's already there
-  for (var year of ["All Events"].concat(allDropdownValues[2])) {
+  for (var event of allDropdownValues[2]) {
     var optionElement = document.createElement("option");
-    optionElement.value = year;
-    optionElement.text = year;
+    optionElement.value = event;
+    optionElement.text = event;
     selectEvent.appendChild(optionElement);
+  }
+
+  // Thought
+  var selectThought = document.getElementById("select-thought");
+  selectThought.replaceChildren(); // Clear what's already there
+  for (var thought of allDropdownValues[3]) {
+    var optionElement = document.createElement("option");
+    optionElement.value = thought;
+    optionElement.text = thought;
+    selectThought.appendChild(optionElement);
   }
   
   // Fill the Display Options dropdown with its options
@@ -70,7 +80,7 @@ function displayListOutput(dataSetToDisplay, isEditableDisplayMode) {
 
   // If the last row of the datasetArrayForDisplay is "Default Values" then subtract 1 from the counter to avoid counting it as a day in the display
   let valueToSubtractFromCounter = 0;
-  if (datasetArrayForDisplay.length > 0 && datasetArrayForDisplay[datasetArrayForDisplay.length-1][0] == "Default Values"){
+  if (datasetArrayForDisplay.length > 0 && datasetArrayForDisplay[datasetArrayForDisplay.length-1][0] == "_DefaultValues_"){
     valueToSubtractFromCounter = 1;
   }
 
@@ -95,8 +105,8 @@ function displayListOutput(dataSetToDisplay, isEditableDisplayMode) {
     locationDiv.classList.add("location-class");
     if (isEditableDisplayMode) {
       locationDiv.contentEditable = "true";
-      locationDiv.addEventListener("input", function () {eventCellValueChanged(locationDiv.innerText);});
-      locationDiv.addEventListener("blur", function () {eventCellDeselected(dateText.innerText, 1);});
+      locationDiv.addEventListener("input", function () {cellValueChanged(locationDiv.innerText);});
+      locationDiv.addEventListener("blur", function () {cellDeselected(dateText.innerText, 1);});
     }
 
     // Create the event and thought child elements
@@ -108,11 +118,11 @@ function displayListOutput(dataSetToDisplay, isEditableDisplayMode) {
     thoughtDiv.setAttribute("data-placeholder", "");
     if (isEditableDisplayMode) {
       eventDiv.contentEditable = "true";
-      eventDiv.addEventListener("input", function () {eventCellValueChanged(eventDiv.innerText);});
-      eventDiv.addEventListener("blur", function () {eventCellDeselected(dateText.innerText, 2);});
+      eventDiv.addEventListener("input", function () {cellValueChanged(eventDiv.innerText);});
+      eventDiv.addEventListener("blur", function () {cellDeselected(dateText.innerText, 2);});
       thoughtDiv.contentEditable = "true";
-      thoughtDiv.addEventListener("input", function () {eventCellValueChanged(thoughtDiv.innerText);});
-      thoughtDiv.addEventListener("blur", function () {eventCellDeselected(dateText.innerText, 3);});
+      thoughtDiv.addEventListener("input", function () {cellValueChanged(thoughtDiv.innerText);});
+      thoughtDiv.addEventListener("blur", function () {cellDeselected(dateText.innerText, 3);});
     }
     if (selectedDisplayOption.includes("Events")) {
       const eventText = helperNormalizeEditableCellValue(dataSetToDisplay[i][2]);

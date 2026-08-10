@@ -3,13 +3,10 @@ function retrieveDefaultInputValues() {
   let defaultDate = "dummydate"; // since we dont need a default date
   let defaultLocation = datasetArray[datasetArray.length-1][1]; 
   let defaultEvents = datasetArray[datasetArray.length-1][2];
-  let defaultThoughts = "dummythought"; // since we dont need a default thought
-  
-  // Get default country suffix 
-  let defaultCountrySuffix = defaultLocation.match(/_([^_]+)$/)[1] // Get the country suffix from the default location (the part after the last underscore)
-  
+  let defaultThoughts = datasetArray[datasetArray.length-1][3];
+    
   // Get default validated events
-  let defaultApprovedEventsArray = datasetArray[datasetArray.length-1][3].split(";");
+  let defaultApprovedEventsArray = datasetArray[datasetArray.length-1][4].split(";");
   let defaultIgnoredEventsArray = []; // This will hold the events that are to be ignored when checking for errors in the event cell
   defaultApprovedEventsArray.pop(); // Remove the last empty entry from the array
   // Then remove the breakline characters at the beginning of each entry
@@ -28,9 +25,33 @@ function retrieveDefaultInputValues() {
     }
   }
   defaultApprovedEventsArray = cleanupArray.slice(); // Set existing array equal to the new/cleaned one
+
+  // Get default validated thoughts
+  let defaultApprovedThoughtsArray = datasetArray[datasetArray.length-1][5].split(";");
+  let defaultIgnoredThoughtsArray = []; // This will hold the thoughts that are to be ignored when checking for errors in the thought cell
+  defaultApprovedThoughtsArray.pop(); // Remove the last empty entry from the array
+  // Then remove the breakline characters at the beginning of each entry
+  for (let i=0; i < defaultApprovedThoughtsArray.length; i++) {
+    if (defaultApprovedThoughtsArray[i].includes("\n")) {
+      defaultApprovedThoughtsArray[i] = defaultApprovedThoughtsArray[i].split("\n")[1];
+    }
+  }
+  // Then move the thoughts with Ignore_ in their name to a different array so that they are not considered as errors when checking the thought cell 
+  cleanupArray.length = []; //reset its value in order to repurpose it here
+  for (let i=0; i < defaultApprovedThoughtsArray.length; i++) {
+    if (defaultApprovedThoughtsArray[i].includes("Ignore_")) { //If the thought category is Ignore, then add it to the Ignore array (will be used later to not consider such thoughts as errors)
+      defaultIgnoredThoughtsArray.push(defaultApprovedThoughtsArray[i]);
+    } else {
+      cleanupArray.push(defaultApprovedThoughtsArray[i]);  
+    }
+  }
+  defaultApprovedThoughtsArray = cleanupArray.slice(); // Set existing array equal to the new/cleaned one
+
+  // Get default country suffix 
+  let defaultCountrySuffix = defaultLocation.match(/_([^_]+)$/)[1] // Get the country suffix from the default location (the part after the last underscore)
   
   // Store the default values in an array for later use
-  defaultInputValues = [defaultDate, defaultLocation, defaultEvents, defaultThoughts, defaultCountrySuffix, defaultApprovedEventsArray, defaultIgnoredEventsArray]; 
+  defaultInputValues = [defaultDate, defaultLocation, defaultEvents, defaultThoughts, defaultCountrySuffix, defaultApprovedEventsArray, defaultIgnoredEventsArray, defaultApprovedThoughtsArray, defaultIgnoredThoughtsArray]; 
 }
 
 function retrieveDataForTopPane() {
@@ -42,6 +63,7 @@ function retrieveDataForTopPane() {
   for (var year = endingYear; year >= startingYear; year--) {
     allDropdownValues[0].push(year.toString());
   }
+  allDropdownValues[0].unshift("All Years");
 
   // RETRIEVE THE LOCATIONS LIST
   // Iterate over every row in the table
@@ -60,18 +82,32 @@ function retrieveDataForTopPane() {
     }
   }
   allDropdownValues[1].sort();
+  allDropdownValues[1].unshift("All Locations");
 
   // RETRIEVE THE EVENTS LIST
   allDropdownValues[2] = defaultInputValues[5].slice(); // Set the events array equal to the default validated events array
+  allDropdownValues[2].unshift("All Events");
+
+  // RETRIEVE THE THOUGHTS LIST
+  allDropdownValues[3] = defaultInputValues[7].slice(); // Set the thoughts array equal to the default validated thoughts array
+  allDropdownValues[3].unshift("All Thoughts");
 
   // RETRIEVE THE DISPLAY OPTIONS LIST
-  var displayOptionsText = ["List: Events & Thoughts", "List: Events & Thoughts (today)", "List: Events (Tagged)", "List: Thoughts (All)", "Country grouping of days", "US State grouping of days", "City grouping of days", "Monthly grouping of Countries", "Monthly grouping of US States", "Monthly grouping of Cities"]; // This holds the options to display in the Display Options dropdown 
+  var displayOptionsText = ["List: Events & Thoughts", "List: Events & Thoughts (today)", "List: Events (All)", "List: Thoughts (All)", "List: Events (Tagged)", "List: Thoughts (Tagged)", "Country grouping of days", "US State grouping of days", "City grouping of days", "Monthly grouping of Countries", "Monthly grouping of US States", "Monthly grouping of Cities"]; // This holds the options to display in the Display Options dropdown 
   var eventCategories = []; // This will hold the variable event categories to be used in the display
-  for (eventName of allDropdownValues[2]) {
+  for (eventName of allDropdownValues[2].slice(1)) { // The slice is to remove the first element "All"
     var eventCategory = eventName.split("_")[0];
     if (!eventCategories.includes(eventCategory)) {
       eventCategories.push(eventCategory);
-      displayOptionsText.push("Summary: " + eventCategory);
+      displayOptionsText.push("Summary(ev): " + eventCategory);
+    }
+  }
+  var thoughtCategories = []; // This will hold the variable event categories to be used in the display
+  for (thoughtName of allDropdownValues[3].slice(1)) { // The slice is to remove the first element "All"
+    var thoughtCategory = thoughtName.split("_")[0];
+    if (!thoughtCategories.includes(thoughtCategory)) {
+      thoughtCategories.push(thoughtCategory);
+      displayOptionsText.push("Summary(th): " + thoughtCategory);
     }
   }
   
@@ -83,36 +119,17 @@ function retrieveDataForTopPane() {
 
 function retrieveDataFromTopPane() {
   let startTime = performance.now();
-  // RETRIEVE SELECTED DATE(S), LOCATION(S), EVENT(S)
-  // Clear content of the dropdown arrays before filling them again
-  selectedDropdownValues[0].length = 0;
-  selectedDropdownValues[1].length = 0;
-  selectedDropdownValues[2].length = 0;
-  
-  // Collect the 3 criteria dropdowns values
-  selectedDropdownValues[0][0] = document.getElementById("select-year").value;
-  selectedDropdownValues[1][0] = document.getElementById("select-location").value;
-  selectedDropdownValues[2][0] = document.getElementById("select-event").value;
 
-  // If any of the selections are "All " then fill the array with all of options (as if they were all selected)
-  for (let i=0; i < selectedDropdownValues.length; i++) {
-    if (selectedDropdownValues[i][0].includes("All ")) { // Meaning no values were selected
-      if (i != 2) { // Meaning it's not events, then copy the data as is
-        selectedDropdownValues[i] = allDropdownValues[i].slice();
-      } else { // Meaning it's events, then only display the part after the _ sign
-        for (j=0; j<allDropdownValues[i].length; j++) {
-          selectedDropdownValues[i].push(allDropdownValues[i][j].split("_")[1]);
-        }
-      }
-    } else if (i == 2) { // Meaning it's events, then only display the part after the _ sign
-      selectedDropdownValues[i][0] = selectedDropdownValues[i][0].split("_")[1];
-    }
-  }
+  // Collect the 4 criteria dropdowns values
+  selectedDropdownValues[0] = document.getElementById("select-year").value;
+  selectedDropdownValues[1] = document.getElementById("select-location").value;
+  selectedDropdownValues[2] = document.getElementById("select-event").value;
+  selectedDropdownValues[3] = document.getElementById("select-thought").value;
 
-  // RETRIEVE SELECTED DISPLAY OPTIONS
+  // Retrieve the selected display option 
   selectedDisplayOption = document.getElementById("select-displayoption").value;
 
-  // RETRIEVE THE TEXTBOX CONTENT
+  // Retrieve the entered keyword 
   searchWord = document.getElementById("textbox-keyword").value;
   if (searchWord == null) {
     searchWord = "";
@@ -189,7 +206,12 @@ function retrieveDataForGroupByMonthTable() {
   let startTime = performance.now();
   // This function is similar to the retrieveDataforSummaryTable function but it is specific for the "Places Visited By Month" display option, which has a different format than the other summary options
 
-  // Determine which type of places to display (cities, states, or countries) based on user selection
+  // If datasetArrayForDisplay includes the Default Values row then remove it first
+  if (datasetArrayForDisplay[datasetArrayForDisplay.length-1][0] == "_DefaultValues_") {
+    datasetArrayForDisplay.pop();
+  }
+
+  // Based on user selection, determine which type of places to display (cities, states, or countries) 
   var displayType = "city"; // Default to city
   var placesTypeLabel = "Cities";
   if (selectedDisplayOption.includes("Countries")) {
@@ -198,11 +220,11 @@ function retrieveDataForGroupByMonthTable() {
   } else if (selectedDisplayOption.includes("US States")) {
     displayType = "state";
     placesTypeLabel = "States";
-  }
+  } 
 
   // Compile the month/year array based on the dates in the dataset
-  var month_year_arr = []; // holds the month/year array
-  for (var row of datasetArrayForDisplay) { // Loop over the filtered datasheet to identify the different months needed to be covered
+  var month_year_arr = []; // holds the month/year array  
+  for (var row of datasetArrayForDisplay) { // Loop over the filtered datasheet to identify the different months needed to be covered, excluding
     var month_year = (new Date(row[0]).getMonth()+1).toString() +"/" + new Date(row[0]).getFullYear().toString(); //Adding 1 to month as it starts from 0
     if (!month_year_arr.includes(month_year)) {
       month_year_arr.push(month_year);
@@ -279,20 +301,26 @@ function retrieveDataForGroupByMonthTable() {
   displayTableOutput(columnHeaders, placesDataset);
 }
 
-function retrieveDataforSummaryTable() {
+function retrieveDataforSummaryTable(eventOrThought) {
   let startTime = performance.now();
 
-  // ITERATE OVER THE DATASET TO FIND MATCHES WITH THE EVENTS FROM THE USER'S SUMMARY OPTION
-  // Compile event list of interest based on the user's "Summary: " selection
-  var eventsToQuery = [];
-  for (eventName of allDropdownValues[2]) {
-    if (eventName.includes(selectedDisplayOption.split(" ")[1])) { // i.e., take after the word "Summary: "
-      eventsToQuery.push(eventName.split("_")[1]);
+  // Check if we are summarizing events or thoughts
+  let indexToQuery;
+  if (eventOrThought == "event") { indexToQuery=2;}
+  if (eventOrThought == "thought") { indexToQuery=3;}
+
+  // ITERATE OVER THE DATASET TO FIND MATCHES WITH THE TAGS FROM THE USER'S SUMMARY CHOICE
+  // Compile event list of interest based on the user's summary selection
+  var tagsToQuery = [];
+  for (tagName of allDropdownValues[indexToQuery]) {
+    if (tagName.includes(selectedDisplayOption.split(" ")[1])) { // i.e., take after the word "Summary: "
+      tagsToQuery.push(tagName.split("_")[1]);
     }
   }
 
   // Compile the month/year array based on the dates in the dataset
   var month_year_arr = []; // holds the month/year array
+  datasetArrayForDisplay.pop() // remove the last line since it doesnt have a date
   for (var row of datasetArrayForDisplay) { // Loop over the filtered datasheet to identify the different months needed to be covered
     var month_year = (new Date(row[0]).getMonth()+1).toString() +"/" + new Date(row[0]).getFullYear().toString(); //Adding 1 to month as it starts from 0
     if (!month_year_arr.includes(month_year)) {
@@ -306,12 +334,12 @@ function retrieveDataforSummaryTable() {
   for (let month_year of month_year_arr) {
     countByMonth[month_year] = {};
     averageByMonth[month_year] = {};
-    for (let eventToQuery of eventsToQuery) {
+    for (let tagToQuery of tagsToQuery) {
       let temp_month_year_dict = {};
-      temp_month_year_dict[eventToQuery] = 0;
-      countByMonth[month_year] = Object.assign(countByMonth[month_year], temp_month_year_dict); // This is needed as countByMonth[eventToQuery] = {month_year: 0}; results in month_year used as value 
-      if (eventToQuery.includes("(avg)")) { // If event has the average keyword
-        averageByMonth[month_year] = Object.assign(averageByMonth[month_year], temp_month_year_dict); // This is needed as averageByMonth[eventToQuery] = {month_year: 0}; results in month_year used as value 
+      temp_month_year_dict[tagToQuery] = 0;
+      countByMonth[month_year] = Object.assign(countByMonth[month_year], temp_month_year_dict); // This is needed as countByMonth[tagToQuery] = {month_year: 0}; results in month_year used as value 
+      if (tagToQuery.includes("(avg)")) { // If event has the average keyword
+        averageByMonth[month_year] = Object.assign(averageByMonth[month_year], temp_month_year_dict); // This is needed as averageByMonth[tagToQuery] = {month_year: 0}; results in month_year used as value 
       }
     }
   }
@@ -324,16 +352,16 @@ function retrieveDataforSummaryTable() {
     var month_year = (cell_date.getMonth()+1).toString() +"/" + cell_date.getFullYear().toString();
     
     // Iterate over each line in the row's event cell 
-    var linesFromEventsCell = datasetArrayForDisplay[i][2].split("\n");
-    for (lineFromEventsCell of linesFromEventsCell) {
+    var linesFromCell = datasetArrayForDisplay[i][indexToQuery].split("\n");
+    for (lineFromCell of linesFromCell) {
       // Check if line has hashtag sign first to save time from iterating for each selected event later
-      if (lineFromEventsCell.includes("#")) {
-        for (const eventToQuery of eventsToQuery) { // Iterate over every selected event to check for matches 
-          if (lineFromEventsCell.includes("#" + eventToQuery))  { // If event found
-            if (eventToQuery.includes("(avg)")) { // If event has the average keyword
-              averageByMonth[month_year][eventToQuery] = helperAverageValue(lineFromEventsCell, countByMonth[month_year][eventToQuery], averageByMonth[month_year][eventToQuery]); // Calculate the average value
+      if (lineFromCell.includes("#")) {
+        for (const tagToQuery of tagsToQuery) { // Iterate over every selected event to check for matches 
+          if (lineFromCell.includes("#" + tagToQuery))  { // If event found
+            if (tagToQuery.includes("(avg)")) { // If event has the average keyword
+              averageByMonth[month_year][tagToQuery] = helperAverageValue(lineFromCell, countByMonth[month_year][tagToQuery], averageByMonth[month_year][tagToQuery]); // Calculate the average value
             }
-            countByMonth[month_year][eventToQuery] += 1 // Increment count in dictionary
+            countByMonth[month_year][tagToQuery] += 1 // Increment count in dictionary
           }
         }
       }
@@ -369,7 +397,7 @@ function retrieveDataforSummaryTable() {
   // Create the table header and include the total from each column in the header
   var columnHeaders = ["Month"];
   var totalCount;
-  for (tag of eventsToQuery) { // Iterate over every column (i.e. tag) 
+  for (tag of tagsToQuery) { // Iterate over every column (i.e. tag) 
     totalCount = 0;
     for (let monthYearDictionaryKey in countByMonth) { // Iterate over every row (i.e. month) in this column in order to sum the total to later display it in the header
       totalCount += Number(countByMonth[monthYearDictionaryKey][tag]);
@@ -405,49 +433,52 @@ function updateDataSetToMatchSearchCriteria() {
     var includeRowToDataset = false; // assume row should not be included in dataset
     
     // Filter based on year
-    if (selectedDropdownValues[0].length != allDropdownValues[0].length) { // Check if any years were explicitly selected as criteria
-      for (const year of selectedDropdownValues[0]) {
-        if (datasetArray[i][0].includes(year)) { // If the selected year is in this row, then include row to the output dataset
-          includeRowToDataset = true;
-          break; // no need to keep looping since we want to include this row
-        } else {
-          includeRowToDataset = false;
-        }
-      }
-    } else {
+    if (selectedDropdownValues[0].includes("All")) { // Check if any year was explicitly selected as criteria
       includeRowToDataset = true; // If no year was selected, then it is not a filter critera and row should be included 
+    } else { // else check if the selected value is in this row
+      if (datasetArray[i][0].includes(selectedDropdownValues[0])) { // If the selected year is in this row, then include row to the output dataset
+        includeRowToDataset = true;
+      } else {
+        includeRowToDataset = false;
+        continue; // If row should not be included per this criteria, then go to next row, since there's no point checking for other criteria
+      }
     }
-    if (includeRowToDataset == false) {continue;} // If row should not be included per this criteria, then go to next row, since there's no point checking for other criteria
 
     // Filter based on location
-    if (selectedDropdownValues[1].length != allDropdownValues[1].length) { // Check if any locations were explicitly selected as criteria
-      for (const location of selectedDropdownValues[1]) {
-        if (datasetArray[i][1].includes(location)) { // If the selected location is in this row, then include row to the output dataset
-          includeRowToDataset = true;
-          break; // no need to keep looping since we want to include this row
-        } else {
-          includeRowToDataset = false;
-        }
-      }
-    } else {
+    if (selectedDropdownValues[1].includes("All")) { // Check if any location was explicitly selected as criteria
       includeRowToDataset = true; // If no location was selected, then it is not a filter critera and row should be included 
+    } else { // else check if the selected value is in this row
+      if (datasetArray[i][1].includes(selectedDropdownValues[1])) { // If the selected location is in this row, then include row to the output dataset
+        includeRowToDataset = true;
+      } else {
+        includeRowToDataset = false;
+        continue; // If row should not be included per this criteria, then go to next row, since there's no point checking for other criteria
+      }
     }
-    if (includeRowToDataset == false) {continue;} // If row should not be included per this criteria, then go to next row, since there's no point checking for other criteria
 
     // Filter based on events
-    if (selectedDropdownValues[2].length != allDropdownValues[2].length) { // Check if any events were explicitly selected as criteria
-      for (const event of selectedDropdownValues[2]) {
-        if (datasetArray[i][2].includes("#" + event)) { // If the selected event is in this row, then include row to the output dataset
-          includeRowToDataset = true;
-          break; // no need to keep looping since we want to include this row
-        } else {
-          includeRowToDataset = false;
-        }
+    if (selectedDropdownValues[2].includes("All")) { // Check if any event was explicitly selected as criteria. 
+      includeRowToDataset = true; // If no event was selected, then it is not a filter critera and row should be included   
+    } else { // else check if the selected value is in this row
+      if (datasetArray[i][2].includes("#" + selectedDropdownValues[2].split("_")[1])) { // If the selected event is in this row, then include row to the output dataset
+        includeRowToDataset = true;
+      } else {
+        includeRowToDataset = false;
+        continue; // If row should not be included per this criteria, then go to next row, since there's no point checking for other criteria
       }
-    } else {
-      includeRowToDataset = true; // If no event was selected, then it is not a filter critera and row should be included 
     }
-    if (includeRowToDataset == false) {continue;} // If row should not be included per this criteria, then go to next row, since there's no point checking for other criteria
+
+    // Filter based on thoughts
+    if (selectedDropdownValues[3].includes("All")) { // Check if any thought was explicitly selected as criteria. 
+      includeRowToDataset = true; // If no thought was selected, then it is not a filter critera and row should be included   
+    } else { // else check if the selected value is in this row
+      if (datasetArray[i][3].includes("#" + selectedDropdownValues[3].split("_")[1])) { // If the selected thought is in this row, then include row to the output dataset
+        includeRowToDataset = true;
+      } else {
+        includeRowToDataset = false;
+        continue; // If row should not be included per this criteria, then go to next row, since there's no point checking for other criteria
+      }
+    }
 
     // If row should not be excluded, then add it to the output array
     if (includeRowToDataset == true) {
@@ -455,27 +486,40 @@ function updateDataSetToMatchSearchCriteria() {
     }
   }
 
-  // IF USER ONLY WANTS TO LIST TAGGED EVENTS THEN REMOVE THE OTHER NON TAGGED LINES FROM THE EVENTS CELL 
-  if (selectedDisplayOption == "List: Events (Tagged)") {
-    // Retrieve the selected events from the events fields 
+  // IF USER ONLY WANTS TO LIST TAGGED EVENTS OR THOUGHTS THEN REMOVE THE OTHER NON TAGGED LINES FROM THE EVENTS CELL 
+  if (selectedDisplayOption == "List: Events (Tagged)" || selectedDisplayOption == "List: Thoughts (Tagged)") {
+    // Set the search index for the array based on what the user selected 
+    let indexToQuery;
+    if (selectedDisplayOption == "List: Events (Tagged)") { indexToQuery=2;}
+    if (selectedDisplayOption == "List: Thoughts (Tagged)") { indexToQuery=3;}
+    
+    // Retrieve the selected tags from the events or thoughts fields 
     var tempDataSet = []; // This will hold the data that will be displayed
     for (var displayRowIndex = 0; displayRowIndex < datasetArrayForDisplay.length; displayRowIndex++) {
       var row = datasetArrayForDisplay[displayRowIndex];
-      var eventLinesToAdd = ""; // will hold all the events of that cell
-      var brIndices = getIndicesOf("\n", row[2]) // Get all the indices of \n in that cell
+      var eventOrThoughtLinesToAdd = ""; // will hold all the events of that cell
+      var brIndices = getIndicesOf("\n", row[indexToQuery]) // Get all the indices of \n in that cell
       brIndices.unshift(0); // Add 0 to the beginning for ease of looping over each line in that cell
       for (var i = 0; i < brIndices.length ; i++) { // Loop over the different lines in that cell
-        for (var event of selectedDropdownValues[2]) { // Loop over every selected event to check if it's present in that line
-          var line = row[2].substring(brIndices[i],brIndices[i+1]) + "\n"; // Extract the line.
-          if (line.includes("#" + event)) { // Now check if the line contains the event
-            if (!eventLinesToAdd.includes(line)) { // If so then check if that line is not already there (useful for lines that have multiple tags)
-              eventLinesToAdd += line; // If not then add it
+        let tagsToQuery = [];
+        if (selectedDropdownValues[indexToQuery].includes("All")) { // If user selected All, then loop over all the events/thoughts to check if it's present in that line
+          tagsToQuery = allDropdownValues[indexToQuery].slice(1); // The slice is to remove the first element "All"
+        } else {
+          tagsToQuery[0] = selectedDropdownValues[indexToQuery];
+        }
+        for (var eventOrThought of tagsToQuery) { 
+          var line = row[indexToQuery].substring(brIndices[i],brIndices[i+1]) + "\n"; // Extract the line.
+          if (line.includes("#" + eventOrThought.split("_")[1])) { // Now check if tag is present
+            if (!eventOrThoughtLinesToAdd.includes(line)) { // If so then check if that line is not already there (useful for lines that have multiple tags)
+              eventOrThoughtLinesToAdd += line; // If not then add it
             }
           }
         }
+      
       }
-      if (eventLinesToAdd != "") {
-        tempDataSet.push([row[0], row[1], eventLinesToAdd]);
+      if (eventOrThoughtLinesToAdd != "") {
+        if (selectedDisplayOption == "List: Events (Tagged)") { tempDataSet.push([row[0], row[1], eventOrThoughtLinesToAdd, ""]);}
+        if (selectedDisplayOption == "List: Thoughts (Tagged)") { tempDataSet.push([row[0], row[1], "", eventOrThoughtLinesToAdd]);}
       }
     }
     datasetArrayForDisplay = tempDataSet.slice(0);
