@@ -37,6 +37,7 @@ a {
 .location-class {
   font-style: italic;
   margin-left: 10px;
+  padding-left: 0.15em;
   color: var(--text-color-dateandlocation);
 }
 
@@ -51,7 +52,7 @@ a {
   display: block;
   min-height: 1.4em;
   line-height: 1.4;
-  padding: 0.15em 0;
+  padding: 0.15em 0.25em;
   overflow-wrap: anywhere;
   caret-color: currentColor;
 }
