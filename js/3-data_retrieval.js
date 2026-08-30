@@ -1,57 +1,51 @@
 function retrieveDefaultInputValues() {
-  // Get default dataset values
+  // Get default date and location values
   let defaultDate = "dummydate"; // since we dont need a default date
   let defaultLocation = datasetArray[datasetArray.length-1][1]; 
-  let defaultEvents = datasetArray[datasetArray.length-1][2];
-  let defaultThoughts = datasetArray[datasetArray.length-1][3];
-    
-  // Get default validated events
-  let defaultApprovedEventsArray = datasetArray[datasetArray.length-1][4].split(";");
-  let defaultIgnoredEventsArray = []; // This will hold the events that are to be ignored when checking for errors in the event cell
-  defaultApprovedEventsArray.pop(); // Remove the last empty entry from the array
-  // Then remove the breakline characters at the beginning of each entry
-  for (let i=0; i < defaultApprovedEventsArray.length; i++) {
-    if (defaultApprovedEventsArray[i].includes("\n")) {
-      defaultApprovedEventsArray[i] = defaultApprovedEventsArray[i].split("\n")[1];
-    }
-  }
-  // Then move the events with Ignore_ in their name to a different array so that they are not considered as errors when checking the event cell 
-  let cleanupArray = [];
-  for (let i=0; i < defaultApprovedEventsArray.length; i++) {
-    if (defaultApprovedEventsArray[i].includes("Ignore_")) { //If the event category is Ignore, then add it to the Ignore array (will be used later to not consider such events as errors)
-      defaultIgnoredEventsArray.push(defaultApprovedEventsArray[i]);
-    } else {
-      cleanupArray.push(defaultApprovedEventsArray[i]);  
-    }
-  }
-  defaultApprovedEventsArray = cleanupArray.slice(); // Set existing array equal to the new/cleaned one
 
-  // Get default validated thoughts
-  let defaultApprovedThoughtsArray = datasetArray[datasetArray.length-1][5].split(";");
-  let defaultIgnoredThoughtsArray = []; // This will hold the thoughts that are to be ignored when checking for errors in the thought cell
-  defaultApprovedThoughtsArray.pop(); // Remove the last empty entry from the array
-  // Then remove the breakline characters at the beginning of each entry
-  for (let i=0; i < defaultApprovedThoughtsArray.length; i++) {
-    if (defaultApprovedThoughtsArray[i].includes("\n")) {
-      defaultApprovedThoughtsArray[i] = defaultApprovedThoughtsArray[i].split("\n")[1];
+  // Get default events and thoughts along with validated tags list
+  // Same code needed for events and thoughts so I placed it in array
+  let defaultEventAndThoughts = [];
+  const splitKeyword = "Validated:";
+  for (i=0; i<2; i++) {
+    let cellContent = datasetArray[datasetArray.length-1][i+2];
+    let keywordIndex = cellContent.indexOf(splitKeyword); 
+    if (keywordIndex == -1) {
+      // EXIT
+    } 
+    let cellContentFirstSection = cellContent.slice(0, keywordIndex);
+    let cellContentSecondSection = cellContent.slice(keywordIndex + splitKeyword.length);
+  
+    // Get default validated tags
+    let defaultApprovedTagsArray = cellContentSecondSection.split(";");
+    let defaultIgnoredTagsArray = []; // This will hold the events that are to be ignored when checking for errors in the event cell
+    defaultApprovedTagsArray.pop(); // Remove the last empty entry from the array
+    // Then remove the breakline characters at the beginning of each entry
+    for (let i=0; i < defaultApprovedTagsArray.length; i++) {
+      if (defaultApprovedTagsArray[i].includes("\n")) {
+        defaultApprovedTagsArray[i] = defaultApprovedTagsArray[i].split("\n")[1];
+      }
     }
-  }
-  // Then move the thoughts with Ignore_ in their name to a different array so that they are not considered as errors when checking the thought cell 
-  cleanupArray.length = []; //reset its value in order to repurpose it here
-  for (let i=0; i < defaultApprovedThoughtsArray.length; i++) {
-    if (defaultApprovedThoughtsArray[i].includes("Ignore_")) { //If the thought category is Ignore, then add it to the Ignore array (will be used later to not consider such thoughts as errors)
-      defaultIgnoredThoughtsArray.push(defaultApprovedThoughtsArray[i]);
-    } else {
-      cleanupArray.push(defaultApprovedThoughtsArray[i]);  
+    // Then move the events with Ignore_ in their name to a different array so that they are not considered as errors when checking the event cell 
+    let tempApprovedTagsArray = [];
+    for (let j=0; j < defaultApprovedTagsArray.length; j++) {
+      if (defaultApprovedTagsArray[j].includes("Ignore_")) { //If the event category is Ignore, then add it to the Ignore array (will be used later to not consider such events as errors)
+        defaultIgnoredTagsArray.push(defaultApprovedTagsArray[j]);
+      } else {
+        tempApprovedTagsArray.push(defaultApprovedTagsArray[j]);  
+      }
     }
+    defaultApprovedTagsArray = tempApprovedTagsArray.slice(); // Set existing array equal to the new/cleaned one
+    defaultEventAndThoughts.push(cellContentFirstSection);
+    defaultEventAndThoughts.push(defaultApprovedTagsArray);
+    defaultEventAndThoughts.push(defaultIgnoredTagsArray);
   }
-  defaultApprovedThoughtsArray = cleanupArray.slice(); // Set existing array equal to the new/cleaned one
 
   // Get default country suffix 
   let defaultCountrySuffix = defaultLocation.match(/_([^_]+)$/)[1] // Get the country suffix from the default location (the part after the last underscore)
   
   // Store the default values in an array for later use
-  defaultInputValues = [defaultDate, defaultLocation, defaultEvents, defaultThoughts, defaultCountrySuffix, defaultApprovedEventsArray, defaultIgnoredEventsArray, defaultApprovedThoughtsArray, defaultIgnoredThoughtsArray]; 
+  defaultInputValues = [defaultDate, defaultLocation, defaultEventAndThoughts[0], defaultEventAndThoughts[3], defaultCountrySuffix, defaultEventAndThoughts[1], defaultEventAndThoughts[2], defaultEventAndThoughts[4], defaultEventAndThoughts[5]]; 
 }
 
 function retrieveDataForTopPane() {
