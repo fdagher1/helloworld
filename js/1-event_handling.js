@@ -2,12 +2,12 @@
 
 // Input from excel file
 var datasetArray = []; // Data from excel file, program never changes it
+var allDropdownValues = [[], [], [], []]; // Holds the values of all the checkboxes from Time, Locations, Events, and Thoughts dropdowns
 var allDisplayOptions = []; // All Display Options in the Display Options dropdown
 var defaultInputValues = []; // Holds the default values for date, location, country to append, and event, which will be used later in the app
 
 // Input from webpage
 var datasetArrayForDisplay = []; // Holds the data to display in the output after the filter is applied
-var allDropdownValues = [[], [], [], []]; // Holds the values of all the checkboxes from Time, Locations, Events, and Thoughts dropdowns
 var selectedDropdownValues = []; // Holds the values of the selected checkboxes from Time, Locations, Events, and Thoughts dropdowns
 var selectedDisplayOption; // Value of the user selected drop down
 var searchWord = ""; // Value of the user entered keyword
@@ -146,15 +146,13 @@ function cellDeselected(deselectedCellDate, deselectedCellColumnIndex) {
 
 function routeOutputDisplay() {
   // Check which display option user chose in order to call the corresponding function
-  if (selectedDisplayOption.includes("List:")) {
-      if (selectedDisplayOption == "List: Events & Thoughts") {
-        retrieveDataForListView(isEditableDisplayMode = true);
-      } else {
-        retrieveDataForListView(isEditableDisplayMode = false);
-      }
+  if (selectedDisplayOption == "List: Events & Thoughts") {
+    retrieveDataForListView(true);
+  } else if (selectedDisplayOption.includes("List:")) {
+    retrieveDataForListView(false);
   } else if (selectedDisplayOption.includes(" grouping of days")) {
     retrieveDataForGroupByLocationTable();
-  } else if (selectedDisplayOption.includes("Monthly grouping")) {
+  } else if (selectedDisplayOption.includes("Monthly grouping ")) {
     retrieveDataForGroupByMonthTable();
   } else if (selectedDisplayOption.includes("Summary(ev):")) {
     retrieveDataforSummaryTable("event");

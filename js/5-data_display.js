@@ -186,7 +186,7 @@ function displayTableOutput(columnHeaders, dataSetToDisplay) {
       let cell = row.insertCell(j);
       let textToInsert = '';
       if (j == 0) { // If data is date, then make it clickable 
-        textToInsert = `<bold>` + dataSetToDisplay[i][j] + `</bold>`;
+        textToInsert = `<b>` + dataSetToDisplay[i][j] + `</b>`;
       } else {
         textToInsert = dataSetToDisplay[i][j];
       }
