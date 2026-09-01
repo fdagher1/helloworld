@@ -19,7 +19,7 @@ async function readFileAndDisplay(event) {
 
   // Append any missing dates to dataset
   let missingDates = helperGetDatesBetweenGivenDateAndToday(datasetArray[0][0]); // Get the missing dates between the last date in the dataset and today
-  for (date of missingDates) {
+  for (let date of missingDates) {
     datasetArray.unshift([date, defaultInputValues[1], defaultInputValues[2], ""]); // Add the missing dates to the top of the dataset array
   }
 
@@ -101,7 +101,7 @@ async function decrypt(encryptedCsvData, enteredPassword) {
     const decryptedData = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, encryptedCsvData);
     return new TextDecoder().decode(decryptedData);
   } catch (err) {
-    displayFileValidityError('Decryption failed:', err.message);
+    displayFileValidityError('Decryption failed: ' + err.message);
   }
 }
 
@@ -116,6 +116,6 @@ async function encrypt(datasetCSV, enteredPassword) {
     const encodedPlaintext = new TextEncoder().encode(datasetCSV);
     return await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encodedPlaintext);
   } catch (err) {
-    displayFileValidityError('Encryption failed:', err.message);
+    displayFileValidityError('Encryption failed: ' + err.message);
   }
 }

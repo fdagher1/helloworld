@@ -12,12 +12,12 @@ function helperValidateEventOrThought(cellValue, cellType) {
 
   // CHECK IF CELL HAS ANY BACKSLASHES AS THAT CAN BREAK THE CSV STRUCTURE
   if (cellValue.includes("\\")) {
-    return "The " & cellType & " cell contains a backslash character, which is not permitted";
+    return "The " + cellType + " cell contains a backslash character, which is not permitted";
   }
 
   // CHECK IF CELL HAS ANY DOUBLE QUOTES AS THAT CAN BREAK THE CSV STRUCTURE
   if (cellValue.includes('"')) {
-    return "The " & cellType & " cell contains a double quote character, which is not permitted";
+    return "The " + cellType + " cell contains a double quote character, which is not permitted";
   }
 
   // CHECK IF THERE ARE TAGS THAT ARE NOT IN THE DEFAULT LIST

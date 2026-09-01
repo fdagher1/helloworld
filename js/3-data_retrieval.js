@@ -7,7 +7,7 @@ function retrieveDefaultInputValues() {
   // Same code needed for events and thoughts so I placed it in array
   let defaultEventAndThoughts = [];
   const splitKeyword = "Validated:";
-  for (i=0; i<2; i++) {
+  for (let i=0; i<2; i++) {
     let cellContent = datasetArray[datasetArray.length-1][i+2];
     let keywordIndex = cellContent.indexOf(splitKeyword); 
     if (keywordIndex == -1) {
@@ -52,6 +52,7 @@ function retrieveDataForTopPane() {
   let startTime = performance.now();
   
   // RETRIEVE THE YEARS LIST
+  allDropdownValues[0].length = 0; // clear array content in case it was previously filled
   var endingYear = new Date(datasetArray[1][0]).getFullYear();
   var startingYear = new Date(datasetArray[datasetArray.length-2][0]).getFullYear();
   for (var year = endingYear; year >= startingYear; year--) {
@@ -61,6 +62,7 @@ function retrieveDataForTopPane() {
 
   // RETRIEVE THE LOCATIONS LIST
   // Iterate over every row in the table
+  allDropdownValues[1].length = 0; // clear array content in case it was previously filled
   for (let i = 0; i < datasetArray.length; i++) {
     let rowLocationValueArray = datasetArray[i][1].split(","); // Get the city and country values in an array
     // Iterate over every city_country that day
@@ -79,10 +81,12 @@ function retrieveDataForTopPane() {
   allDropdownValues[1].unshift("All Locations");
 
   // RETRIEVE THE EVENTS LIST
+  allDropdownValues[2].length = 0; // clear array content in case it was previously filled
   allDropdownValues[2] = defaultInputValues[5].slice(); // Set the events array equal to the default validated events array
   allDropdownValues[2].unshift("All Events");
 
   // RETRIEVE THE THOUGHTS LIST
+  allDropdownValues[3].length = 0; // clear array content in case it was previously filled
   allDropdownValues[3] = defaultInputValues[7].slice(); // Set the thoughts array equal to the default validated thoughts array
   allDropdownValues[3].unshift("All Thoughts");
 
