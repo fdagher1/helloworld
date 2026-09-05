@@ -80,11 +80,19 @@ function eventFilterOrDisplayOptionChanged(whatChanged) {
   retrieveDataFromTopPane();
 
   // Depending on the combination of display option and filter chosen, change the display option or keyword search
-  if (selectedDisplayOption === "List: Events & Thoughts" && whatChanged == 'event') {
-    document.getElementById("select-displayoption").value = "List: Events (Tagged)";
+  if (selectedDisplayOption.includes("List") && whatChanged == 'event') {
+    if (document.getElementById("select-event").value.includes("All")) {
+      document.getElementById("select-displayoption").value = "List: Events & Thoughts";  
+    } else {
+      document.getElementById("select-displayoption").value = "List: Events (Tagged)";
+    } 
   }
-  if (selectedDisplayOption === "List: Events & Thoughts" && whatChanged == 'thought') {
-    document.getElementById("select-displayoption").value = "List: Thoughts (Tagged)";
+  if (selectedDisplayOption.includes("List") && whatChanged == 'thought') {
+    if (document.getElementById("select-thought").value.includes("All")) {
+      document.getElementById("select-displayoption").value = "List: Events & Thoughts";  
+    } else {
+      document.getElementById("select-displayoption").value = "List: Thoughts (Tagged)";
+    } 
   }
   if (selectedDisplayOption == "List: Events & Thoughts (today)") { 
     // Get today's date and add it to the search criteria, so that the output will only show lines from today
