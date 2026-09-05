@@ -84,6 +84,12 @@ function displayListOutput(dataSetToDisplay, isEditableDisplayMode) {
     valueToSubtractFromCounter = 1;
   }
 
+  // Compile the keyword-highlight regex once instead of re-compiling it 3 times per row
+  const highlightRegex = helperBuildHighlightRegex(searchWord);
+
+  const displayOptionIncludesEvents = selectedDisplayOption.includes("Events");
+  const displayOptionIncludesThoughts = selectedDisplayOption.includes("Thoughts")
+
   // Create the section elements to display the events in body
   const fragment = document.createDocumentFragment();
   for (let i = 0; i < dataSetToDisplay.length; i++) {
@@ -101,7 +107,12 @@ function displayListOutput(dataSetToDisplay, isEditableDisplayMode) {
 
     // Create the location child element
     const locationDiv = document.createElement("div");
-    locationDiv.innerHTML = helperHighlightKeyword(dataSetToDisplay[i][1], searchWord);
+    const locationText = dataSetToDisplay[i][1];
+    if (highlightRegex) {
+      locationDiv.innerHTML = locationText.replace(highlightRegex, '<span class="keyword-highlight">$1</span>');
+    } else {
+      locationDiv.textContent = locationText; // Skip HTML parsing entirely when there's nothing to highlight
+    }
     locationDiv.classList.add("location-class");
     if (isEditableDisplayMode) {
       locationDiv.contentEditable = "true";
@@ -124,19 +135,30 @@ function displayListOutput(dataSetToDisplay, isEditableDisplayMode) {
       thoughtDiv.addEventListener("input", function () {cellValueChanged(thoughtDiv.innerText);});
       thoughtDiv.addEventListener("blur", function () {cellDeselected(dateText.innerText, 3);});
     }
-    if (selectedDisplayOption.includes("Events")) {
+    if (displayOptionIncludesEvents) {
       const eventText = helperNormalizeEditableCellValue(dataSetToDisplay[i][2]);
-      eventDiv.innerHTML = helperHighlightKeyword(eventText, searchWord);
+      if (highlightRegex) {
+        eventDiv.innerHTML = eventText.replace(highlightRegex, '<span class="keyword-highlight">$1</span>');
+      } else {
+        eventDiv.textContent = eventText;
+      }
     }
-    if (selectedDisplayOption.includes("Thoughts")) {
+    if (displayOptionIncludesThoughts) {
       const thoughtText = helperNormalizeEditableCellValue(dataSetToDisplay[i][3]);
-      thoughtDiv.innerHTML = helperHighlightKeyword(thoughtText, searchWord);
-    }    
-    
-    // Create a separator line between each section
+      if (highlightRegex) {
+        thoughtDiv.innerHTML = thoughtText.replace(highlightRegex, '<span class="keyword-highlight">$1</span>');
+      } else {
+        thoughtDiv.textContent = thoughtText;
+      }
+    }
+
+    // Create a separator line between each section (built via DOM nodes instead of an innerHTML string to avoid re-parsing HTML on every row)
     const seperatorDiv = document.createElement("div");
-    seperatorDiv.innerHTML = `</br><hr style="border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">`;
-    
+    seperatorDiv.appendChild(document.createElement("br"));
+    const seperatorHr = document.createElement("hr");
+    seperatorHr.classList.add("list-separator-hr");
+    seperatorDiv.appendChild(seperatorHr);
+
     // Append the HTML
     section.appendChild(seperatorDiv);
     section.appendChild(dateDiv);
@@ -151,7 +173,7 @@ function displayListOutput(dataSetToDisplay, isEditableDisplayMode) {
 
   datasetArrayForDisplay.length = 0; // to reduce the size of variables in the app
   
-  console.log(`displayEventsInBody executed in: ${performance.now() - startTime} milliseconds`);
+  console.log(`displayListOutput executed in: ${performance.now() - startTime} milliseconds`);
 }
 
 function displayTableOutput(columnHeaders, dataSetToDisplay) {

@@ -35,14 +35,13 @@ function helperCsvToArray(csvString) {
   return rows;
 }
 
-// Highlights occurrences of a keyword in text by wrapping them in a span with keyword-highlight class
-function helperHighlightKeyword(text, keyword) {
+// Builds the case-insensitive regex used to find keyword occurrences, or null if the keyword is too short to search for.
+// Exposed separately so callers looping over many rows can compile it once instead of once per row.
+function helperBuildHighlightRegex(keyword) {
   if (!keyword || keyword.trim() === '' || keyword.length < 3) { // Only highlight if the keyword has more than 2 characters to avoid over highlighting from short common words
-    return text; // Return original text if no keyword provided
+    return null;
   }
-  
-  const regex = new RegExp(`(${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'); // Case-insensitive global search with escaped special characters
-  return text.replace(regex, '<span class="keyword-highlight">$1</span>');
+  return new RegExp(`(${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'); // Case-insensitive global search with escaped special characters
 }
 
 // Normalizes editable cell content so line breaks entered in contenteditable divs are preserved

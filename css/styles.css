@@ -46,6 +46,12 @@ a {
   color: var(--text-color-thought);
 }
 
+.list-separator-hr {
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 .event-class,
 .thought-class {
   white-space: pre-wrap;
